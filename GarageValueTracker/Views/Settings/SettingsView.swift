@@ -7,6 +7,7 @@ struct SettingsView: View {
     
     @State private var showingSwapInsight = false
     @State private var showingUpgradePath = false
+    @State private var showingDataStorage = false
     
     private var userSettings: UserSettingsEntity {
         if let existing = settings.first {
@@ -25,7 +26,12 @@ struct SettingsView: View {
                 
                 hassleAssumptionsSection
                 
+                dataStorageSection
+                
                 aboutSection
+            }
+            .onAppear {
+                AppPreferences.shared.recordLaunch()
             }
             .navigationTitle("Settings")
             .sheet(isPresented: $showingSwapInsight) {
@@ -33,6 +39,9 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingUpgradePath) {
                 UpgradePathView()
+            }
+            .sheet(isPresented: $showingDataStorage) {
+                DataStorageDebugView()
             }
         }
     }
@@ -118,6 +127,45 @@ struct SettingsView: View {
             Text("Hassle Model Assumptions")
         } footer: {
             Text("These values are used in Deal Checker to estimate time cost of selling.")
+        }
+    }
+    
+    private var dataStorageSection: some View {
+        Section("Data & Storage") {
+            Button {
+                showingDataStorage = true
+            } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Data Storage")
+                            .font(.headline)
+                        Text("View storage statistics & verify persistence")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "externaldrive")
+                }
+            }
+            .foregroundStyle(.primary)
+            
+            HStack {
+                Text("App Launches")
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(AppPreferences.shared.launchCount)")
+                    .fontWeight(.semibold)
+            }
+            
+            if let lastLaunch = AppPreferences.shared.lastLaunchDate {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Last Opened")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(lastLaunch.formatted(date: .abbreviated, time: .shortened))
+                        .font(.caption)
+                }
+            }
         }
     }
     
