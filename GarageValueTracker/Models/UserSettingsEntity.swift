@@ -1,31 +1,28 @@
 import Foundation
-import SwiftData
+import CoreData
 
-@Model
-final class UserSettingsEntity {
-    var id: UUID
-    var hoursPerWeekActiveListing: Double
-    var hoursPerTestDrive: Double
-    var hoursPerPriceChange: Double
-    var defaultZipCode: String
-    var currencySymbol: String
-    
-    init(
-        id: UUID = UUID(),
-        hoursPerWeekActiveListing: Double = 1.5,
-        hoursPerTestDrive: Double = 1.0,
-        hoursPerPriceChange: Double = 0.5,
-        defaultZipCode: String = "",
-        currencySymbol: String = "$"
-    ) {
-        self.id = id
-        self.hoursPerWeekActiveListing = hoursPerWeekActiveListing
-        self.hoursPerTestDrive = hoursPerTestDrive
-        self.hoursPerPriceChange = hoursPerPriceChange
-        self.defaultZipCode = defaultZipCode
-        self.currencySymbol = currencySymbol
-    }
+@objc(UserSettingsEntity)
+public class UserSettingsEntity: NSManagedObject {
+    @NSManaged public var id: UUID
+    @NSManaged public var currency: String
+    @NSManaged public var distanceUnit: String // miles or km
+    @NSManaged public var notificationsEnabled: Bool
+    @NSManaged public var createdAt: Date
+    @NSManaged public var updatedAt: Date
 }
 
-
-
+extension UserSettingsEntity {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<UserSettingsEntity> {
+        return NSFetchRequest<UserSettingsEntity>(entityName: "UserSettingsEntity")
+    }
+    
+    nonisolated convenience init(context: NSManagedObjectContext) {
+        self.init(context: context)
+        self.id = UUID()
+        self.currency = "USD"
+        self.distanceUnit = "miles"
+        self.notificationsEnabled = true
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+}

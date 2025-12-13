@@ -1,90 +1,59 @@
 import Foundation
-import SwiftData
+import CoreData
 
-@Model
-final class VehicleEntity {
-    var id: UUID
-    var ownershipType: OwnershipType
-    var vin: String?
-    var year: Int
-    var make: String
-    var model: String
-    var trim: String
-    var transmission: String
-    var mileageCurrent: Int
-    var zip: String
-    var segment: String?
-    var regionBucket: String?
-    var mileageBand: String?
+@objc(VehicleEntity)
+public class VehicleEntity: NSManagedObject, Identifiable {
+    @NSManaged public var id: UUID
+    @NSManaged public var make: String
+    @NSManaged public var model: String
+    @NSManaged public var year: Int16
+    @NSManaged public var trim: String?
+    @NSManaged public var vin: String?
+    @NSManaged public var mileage: Int32
+    @NSManaged public var purchasePrice: Double
+    @NSManaged public var purchaseDate: Date
+    @NSManaged public var currentValue: Double
+    @NSManaged public var lastValuationUpdate: Date?
+    @NSManaged public var imageData: Data?
+    @NSManaged public var notes: String?
+    @NSManaged public var createdAt: Date
+    @NSManaged public var updatedAt: Date
+}
+
+extension VehicleEntity {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<VehicleEntity> {
+        return NSFetchRequest<VehicleEntity>(entityName: "VehicleEntity")
+    }
     
-    // Purchase info (for owned vehicles)
-    var purchasePrice: Double?
-    var purchaseDate: Date?
-    var purchaseMileage: Int?
-    
-    // Watchlist info
-    var targetPrice: Double?
-    var alertEnabled: Bool
-    
-    var createdAt: Date
-    
-    @Relationship(deleteRule: .cascade, inverse: \CostEntryEntity.vehicle)
-    var costEntries: [CostEntryEntity]?
-    
-    @Relationship(deleteRule: .cascade, inverse: \ValuationSnapshotEntity.vehicle)
-    var valuationSnapshots: [ValuationSnapshotEntity]?
-    
-    init(
-        id: UUID = UUID(),
-        ownershipType: OwnershipType,
-        vin: String? = nil,
-        year: Int,
-        make: String,
-        model: String,
-        trim: String,
-        transmission: String,
-        mileageCurrent: Int,
-        zip: String,
-        segment: String? = nil,
-        regionBucket: String? = nil,
-        mileageBand: String? = nil,
-        purchasePrice: Double? = nil,
-        purchaseDate: Date? = nil,
-        purchaseMileage: Int? = nil,
-        targetPrice: Double? = nil,
-        alertEnabled: Bool = false,
-        createdAt: Date = Date()
-    ) {
-        self.id = id
-        self.ownershipType = ownershipType
-        self.vin = vin
-        self.year = year
+    convenience init(context: NSManagedObjectContext,
+                     make: String,
+                     model: String,
+                     year: Int,
+                     trim: String? = nil,
+                     vin: String? = nil,
+                     mileage: Int = 0,
+                     purchasePrice: Double,
+                     purchaseDate: Date = Date()) {
+        self.init(context: context)
+        self.id = UUID()
         self.make = make
         self.model = model
+        self.year = Int16(year)
         self.trim = trim
-        self.transmission = transmission
-        self.mileageCurrent = mileageCurrent
-        self.zip = zip
-        self.segment = segment
-        self.regionBucket = regionBucket
-        self.mileageBand = mileageBand
+        self.vin = vin
+        self.mileage = Int32(mileage)
         self.purchasePrice = purchasePrice
         self.purchaseDate = purchaseDate
-        self.purchaseMileage = purchaseMileage
-        self.targetPrice = targetPrice
-        self.alertEnabled = alertEnabled
-        self.createdAt = createdAt
+        self.currentValue = purchasePrice
+        self.createdAt = Date()
+        self.updatedAt = Date()
     }
     
     var displayName: String {
-        "\(year) \(make) \(model) \(trim)"
+        var name = "\(year) \(make) \(model)"
+        if let trim = trim {
+            name += " \(trim)"
+        }
+        return name
     }
 }
-
-enum OwnershipType: String, Codable {
-    case owned
-    case watchlist
-}
-
-
-

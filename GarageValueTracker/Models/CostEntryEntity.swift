@@ -1,51 +1,69 @@
 import Foundation
-import SwiftData
+import CoreData
 
-@Model
-final class CostEntryEntity {
-    var id: UUID
-    var date: Date
-    var category: CostCategory
-    var amount: Double
-    var notes: String
-    var vehicle: VehicleEntity?
+@objc(CostEntryEntity)
+public class CostEntryEntity: NSManagedObject, Identifiable {
+    @NSManaged public var id: UUID
+    @NSManaged public var vehicleID: UUID
+    @NSManaged public var date: Date
+    @NSManaged public var category: String
+    @NSManaged public var amount: Double
+    @NSManaged public var merchantName: String?
+    @NSManaged public var notes: String?
+    @NSManaged public var receiptImageData: Data?
+    @NSManaged public var receiptImagePath: String?
+    @NSManaged public var createdAt: Date
+    @NSManaged public var updatedAt: Date
+}
+
+extension CostEntryEntity {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<CostEntryEntity> {
+        return NSFetchRequest<CostEntryEntity>(entityName: "CostEntryEntity")
+    }
     
-    init(
-        id: UUID = UUID(),
-        date: Date,
-        category: CostCategory,
-        amount: Double,
-        notes: String = ""
-    ) {
-        self.id = id
+    convenience init(context: NSManagedObjectContext,
+                     vehicleID: UUID,
+                     date: Date = Date(),
+                     category: String,
+                     amount: Double,
+                     merchantName: String? = nil,
+                     notes: String? = nil,
+                     receiptImageData: Data? = nil) {
+        self.init(context: context)
+        self.id = UUID()
+        self.vehicleID = vehicleID
         self.date = date
         self.category = category
         self.amount = amount
+        self.merchantName = merchantName
         self.notes = notes
+        self.receiptImageData = receiptImageData
+        self.createdAt = Date()
+        self.updatedAt = Date()
     }
 }
 
-enum CostCategory: String, Codable, CaseIterable {
+// Cost categories
+enum CostCategory: String, CaseIterable {
     case maintenance = "Maintenance"
-    case repairs = "Repairs"
-    case insurance = "Insurance"
-    case registration = "Registration/Tax"
-    case mods = "Modifications"
+    case repair = "Repair"
     case fuel = "Fuel"
+    case insurance = "Insurance"
+    case registration = "Registration"
+    case modification = "Modification"
+    case cleaning = "Cleaning"
     case other = "Other"
     
     var icon: String {
         switch self {
         case .maintenance: return "wrench.and.screwdriver"
-        case .repairs: return "hammer"
+        case .repair: return "hammer"
+        case .fuel: return "fuelpump"
         case .insurance: return "shield"
         case .registration: return "doc.text"
-        case .mods: return "sparkles"
-        case .fuel: return "fuelpump"
+        case .modification: return "sparkles"
+        case .cleaning: return "sparkles"
         case .other: return "ellipsis.circle"
         }
     }
 }
-
-
-

@@ -1,42 +1,74 @@
 import SwiftUI
-import SwiftData
+import CoreData
 
 struct ContentView: View {
-    @State private var selectedTab = 0
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \VehicleEntity.year, ascending: false)],
+        animation: .default)
+    private var vehicles: FetchedResults<VehicleEntity>
+    
+    @State private var showingAddVehicle = false
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            GarageListView()
-                .tabItem {
-                    Label("Garage", systemImage: "car.2")
+        NavigationView {
+            ZStack {
+                if vehicles.isEmpty {
+                    // Empty state
+                    VStack(spacing: 20) {
+                        Image(systemName: "car.fill")
+                            .font(.system(size: 70))
+                            .foregroundColor(.blue)
+                        
+                        Text("Welcome to Garage Value Tracker")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Text("Add your first vehicle to get started")
+                            .foregroundColor(.secondary)
+                        
+                        Button(action: {
+                            showingAddVehicle = true
+                        }) {
+                            Label("Add Vehicle", systemImage: "plus.circle.fill")
+                                .font(.headline)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                        .padding(.top)
+                    }
+                    .padding()
+                } else {
+                    // Vehicle list
+                    GarageListView()
                 }
-                .tag(0)
-            
-            WatchlistView()
-                .tabItem {
-                    Label("Watchlist", systemImage: "star")
+            }
+            .navigationTitle("My Garage")
+            .toolbar {
+                if !vehicles.isEmpty {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            showingAddVehicle = true
+                        }) {
+                            Image(systemName: "plus")
+                        }
+                    }
                 }
-                .tag(1)
-            
-            DealCheckerView()
-                .tabItem {
-                    Label("Deal Check", systemImage: "checkmark.circle")
-                }
-                .tag(2)
-            
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
-                .tag(3)
+            }
+            .sheet(isPresented: $showingAddVehicle) {
+                AddVehicleView()
+                    .environment(\.managedObjectContext, viewContext)
+            }
         }
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: [VehicleEntity.self, CostEntryEntity.self])
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
 }
-
-
-

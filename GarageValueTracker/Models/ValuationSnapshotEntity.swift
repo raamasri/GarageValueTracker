@@ -1,64 +1,34 @@
 import Foundation
-import SwiftData
+import CoreData
 
-@Model
-final class ValuationSnapshotEntity {
-    var id: UUID
-    var date: Date
-    var low: Double
-    var mid: Double
-    var high: Double
-    var confidence: ConfidenceLevel
-    var sampleSize: Int
-    var momentum90d: Double?
-    var liquidityScore: Double?
-    var recommendation: Recommendation?
-    var vehicle: VehicleEntity?
+@objc(ValuationSnapshotEntity)
+public class ValuationSnapshotEntity: NSManagedObject {
+    @NSManaged public var id: UUID
+    @NSManaged public var vehicleID: UUID
+    @NSManaged public var date: Date
+    @NSManaged public var estimatedValue: Double
+    @NSManaged public var mileageAtTime: Int32
+    @NSManaged public var source: String // API, Manual, etc.
+    @NSManaged public var createdAt: Date
+}
+
+extension ValuationSnapshotEntity {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<ValuationSnapshotEntity> {
+        return NSFetchRequest<ValuationSnapshotEntity>(entityName: "ValuationSnapshotEntity")
+    }
     
-    init(
-        id: UUID = UUID(),
-        date: Date,
-        low: Double,
-        mid: Double,
-        high: Double,
-        confidence: ConfidenceLevel,
-        sampleSize: Int,
-        momentum90d: Double? = nil,
-        liquidityScore: Double? = nil,
-        recommendation: Recommendation? = nil
-    ) {
-        self.id = id
-        self.date = date
-        self.low = low
-        self.mid = mid
-        self.high = high
-        self.confidence = confidence
-        self.sampleSize = sampleSize
-        self.momentum90d = momentum90d
-        self.liquidityScore = liquidityScore
-        self.recommendation = recommendation
+    convenience init(context: NSManagedObjectContext,
+                     vehicleID: UUID,
+                     estimatedValue: Double,
+                     mileage: Int,
+                     source: String = "Manual") {
+        self.init(context: context)
+        self.id = UUID()
+        self.vehicleID = vehicleID
+        self.date = Date()
+        self.estimatedValue = estimatedValue
+        self.mileageAtTime = Int32(mileage)
+        self.source = source
+        self.createdAt = Date()
     }
 }
-
-enum ConfidenceLevel: String, Codable {
-    case low = "Low"
-    case medium = "Medium"
-    case high = "High"
-}
-
-enum Recommendation: String, Codable {
-    case hold = "Hold"
-    case considerSelling = "Consider Selling"
-    case strongSell = "Strong Sell"
-    
-    var color: String {
-        switch self {
-        case .hold: return "green"
-        case .considerSelling: return "orange"
-        case .strongSell: return "red"
-        }
-    }
-}
-
-
-

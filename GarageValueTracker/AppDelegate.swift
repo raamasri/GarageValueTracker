@@ -7,6 +7,7 @@
 
 import UIKit
 
+// Note: @main is in GarageValueTrackerApp.swift for SwiftUI
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
