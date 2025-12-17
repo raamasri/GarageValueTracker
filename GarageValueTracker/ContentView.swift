@@ -10,7 +10,10 @@ struct ContentView: View {
     private var vehicles: FetchedResults<VehicleEntity>
     
     @State private var showingAddVehicle = false
+    @State private var showingAddWishlist = false
     @State private var showingSettings = false
+    @State private var showingAddOptions = false
+    @State private var selectedTab: GarageListView.GarageTab = .myGarage
     
     var body: some View {
         NavigationView {
@@ -29,15 +32,38 @@ struct ContentView: View {
                         Text("Add your first vehicle to get started")
                             .foregroundColor(.secondary)
                         
-                        Button(action: {
-                            showingAddVehicle = true
-                        }) {
-                            Label("Add Vehicle", systemImage: "plus.circle.fill")
-                                .font(.headline)
+                        HStack(spacing: 16) {
+                            Button(action: {
+                                showingAddVehicle = true
+                            }) {
+                                VStack {
+                                    Image(systemName: "car.fill")
+                                        .font(.title)
+                                    Text("Add Vehicle")
+                                        .font(.headline)
+                                }
                                 .padding()
+                                .frame(maxWidth: .infinity)
                                 .background(Color.blue)
                                 .foregroundColor(.white)
-                                .cornerRadius(10)
+                                .cornerRadius(16)
+                            }
+                            
+                            Button(action: {
+                                showingAddWishlist = true
+                            }) {
+                                VStack {
+                                    Image(systemName: "heart.fill")
+                                        .font(.title)
+                                    Text("Add Wishlist")
+                                        .font(.headline)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.orange)
+                                .foregroundColor(.white)
+                                .cornerRadius(16)
+                            }
                         }
                         .padding(.top)
                     }
@@ -59,9 +85,19 @@ struct ContentView: View {
                 
                 if !vehicles.isEmpty {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            showingAddVehicle = true
-                        }) {
+                        Menu {
+                            Button(action: {
+                                showingAddVehicle = true
+                            }) {
+                                Label("Add to My Garage", systemImage: "car.fill")
+                            }
+                            
+                            Button(action: {
+                                showingAddWishlist = true
+                            }) {
+                                Label("Add to Wishlist", systemImage: "heart.fill")
+                            }
+                        } label: {
                             Image(systemName: "plus")
                         }
                     }
@@ -69,6 +105,10 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingAddVehicle) {
                 AddVehicleView()
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingAddWishlist) {
+                AddWishlistVehicleView()
                     .environment(\.managedObjectContext, viewContext)
             }
             .sheet(isPresented: $showingSettings) {

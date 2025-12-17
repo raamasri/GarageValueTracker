@@ -110,7 +110,7 @@ class MaintenanceViewModel: ObservableObject {
         let receiptImageData = receiptImage?.jpegData(compressionQuality: 0.7)
         
         // Create cost entry
-        let costEntry = CostEntryEntity(
+        _ = CostEntryEntity(
             context: viewContext,
             vehicleID: vehicleID,
             date: date,
@@ -463,7 +463,7 @@ struct ReceiptScannerTestUtilities {
             ("GRAND TOTAL $1,234.56", 1234.56)
         ]
         
-        let service = ReceiptScannerService()
+        _ = ReceiptScannerService()
         
         for (text, expectedAmount) in testCases {
             // Note: This is a simplified test

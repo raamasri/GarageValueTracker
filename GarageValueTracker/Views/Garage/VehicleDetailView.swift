@@ -154,42 +154,6 @@ struct VehicleDetailView: View {
                 .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
                 .padding(.horizontal)
                 
-                // Dashboard Button (Featured)
-                NavigationLink(destination: VehicleDashboardView(vehicle: vehicle)) {
-                    HStack {
-                        Image(systemName: "gauge.medium")
-                            .font(.title2)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("View Dashboard")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            Text("Service reminders, fuel tracking & more")
-                                .font(.caption)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        ZStack {
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                            .blur(radius: 0.5)
-                            
-                            Color.white.opacity(0.15)
-                        }
-                    )
-                    .foregroundColor(.white)
-                    .cornerRadius(16)
-                    .shadow(color: .blue.opacity(0.3), radius: 15, x: 0, y: 5)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .padding(.horizontal)
-                
                 // Action Buttons Row 1
                 HStack(spacing: 12) {
                     Button(action: {

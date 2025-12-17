@@ -184,7 +184,7 @@ struct AddCostEntryView: View {
     private func saveCostEntry() {
         guard let amountValue = Double(amount) else { return }
         
-        let costEntry = CostEntryEntity(
+        _ = CostEntryEntity(
             context: viewContext,
             vehicleID: vehicleID,
             date: date,

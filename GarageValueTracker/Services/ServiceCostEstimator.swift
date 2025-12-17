@@ -163,7 +163,7 @@ class ServiceCostEstimator {
     
     /// Get recommended services based on mileage
     func getRecommendedServices(for mileage: Int) -> [ServiceRecommendation] {
-        guard let database = database else { return [] }
+        guard database != nil else { return [] }
         
         var recommendations: [ServiceRecommendation] = []
         

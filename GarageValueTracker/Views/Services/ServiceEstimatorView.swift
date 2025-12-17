@@ -276,7 +276,7 @@ struct ServiceDetailView: View {
                     .padding()
                     
                     // Cost Estimate
-                    if let estimate = estimate, let vehicle = vehicle {
+                    if let estimate = estimate, vehicle != nil {
                         VStack(spacing: 16) {
                             VStack(spacing: 8) {
                                 Text("Estimated Cost")
