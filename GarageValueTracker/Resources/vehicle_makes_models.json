@@ -2,104 +2,594 @@
   "makes": [
     {
       "name": "Toyota",
-      "models": ["Camry", "Corolla", "RAV4", "Highlander", "4Runner", "Tacoma", "Tundra", "Prius", "Sienna", "Avalon", "C-HR", "Venza", "Sequoia", "Land Cruiser"]
+      "models": [
+        "4Runner SR5", "4Runner TRD Off-Road", "4Runner TRD Pro", "4Runner Limited", "4Runner Nightshade",
+        "Avalon XLE", "Avalon XSE", "Avalon Touring", "Avalon Limited", "Avalon Hybrid XLE", "Avalon Hybrid XSE", "Avalon Hybrid Limited",
+        "Camry LE", "Camry SE", "Camry SE Nightshade", "Camry XLE", "Camry XSE", "Camry TRD", "Camry Hybrid LE", "Camry Hybrid SE", "Camry Hybrid XLE", "Camry Hybrid XSE",
+        "C-HR LE", "C-HR XLE", "C-HR Limited", "C-HR Nightshade",
+        "Corolla L", "Corolla LE", "Corolla SE", "Corolla XLE", "Corolla XSE", "Corolla Apex", "Corolla Hybrid LE", "Corolla Hybrid SE", "Corolla Cross L", "Corolla Cross LE", "Corolla Cross XLE",
+        "Crown Platinum", "Crown Limited",
+        "GR86 Base", "GR86 Premium",
+        "GR Corolla Core", "GR Corolla Circuit", "GR Corolla Morizo",
+        "GR Supra 2.0", "GR Supra 3.0", "GR Supra 3.0 Premium", "GR Supra A91-MT",
+        "Highlander L", "Highlander LE", "Highlander XLE", "Highlander XSE", "Highlander Limited", "Highlander Platinum", "Highlander Hybrid LE", "Highlander Hybrid XLE", "Highlander Hybrid Limited", "Highlander Hybrid Platinum",
+        "Land Cruiser Base", "Land Cruiser First Edition",
+        "Mirai XLE", "Mirai Limited",
+        "Prius LE", "Prius XLE", "Prius Limited", "Prius Prime SE", "Prius Prime XSE", "Prius Prime XSE Premium",
+        "RAV4 LE", "RAV4 XLE", "RAV4 XLE Premium", "RAV4 Adventure", "RAV4 TRD Off-Road", "RAV4 Limited", "RAV4 Hybrid LE", "RAV4 Hybrid XLE", "RAV4 Hybrid XLE Premium", "RAV4 Hybrid XSE", "RAV4 Hybrid Limited", "RAV4 Prime SE", "RAV4 Prime XSE",
+        "Sequoia SR5", "Sequoia Limited", "Sequoia Platinum", "Sequoia TRD Pro", "Sequoia Capstone",
+        "Sienna LE", "Sienna XLE", "Sienna XSE", "Sienna Limited", "Sienna Platinum",
+        "Tacoma SR", "Tacoma SR5", "Tacoma TRD Sport", "Tacoma TRD Off-Road", "Tacoma Limited", "Tacoma TRD Pro", "Tacoma PreRunner",
+        "Tundra SR", "Tundra SR5", "Tundra Limited", "Tundra Platinum", "Tundra 1794", "Tundra TRD Pro", "Tundra Capstone",
+        "Venza LE", "Venza XLE", "Venza Limited"
+      ]
     },
     {
       "name": "Honda",
-      "models": ["Accord", "Civic", "CR-V", "Pilot", "Odyssey", "HR-V", "Passport", "Ridgeline", "Insight", "Fit"]
+      "models": [
+        "Accord LX", "Accord Sport", "Accord Sport-L", "Accord EX-L", "Accord Touring", "Accord Hybrid Sport", "Accord Hybrid EX-L", "Accord Hybrid Touring",
+        "Civic LX", "Civic Sport", "Civic EX", "Civic EX-L", "Civic Touring", "Civic Si", "Civic Type R",
+        "Civic Hatchback LX", "Civic Hatchback Sport", "Civic Hatchback Sport Touring", "Civic Hatchback EX-L",
+        "CR-V LX", "CR-V EX", "CR-V EX-L", "CR-V Sport", "CR-V Sport Touring", "CR-V Touring", "CR-V Hybrid Sport", "CR-V Hybrid Sport-L", "CR-V Hybrid Sport Touring",
+        "CR-Z EX", "CR-Z EX-L", "CR-Z EX-L Navi",
+        "Fit LX", "Fit Sport", "Fit EX", "Fit EX-L",
+        "HR-V LX", "HR-V Sport", "HR-V EX-L",
+        "Insight LX", "Insight EX", "Insight Touring",
+        "Odyssey LX", "Odyssey EX", "Odyssey EX-L", "Odyssey Touring", "Odyssey Elite",
+        "Passport Sport", "Passport EX-L", "Passport TrailSport", "Passport Touring", "Passport Elite",
+        "Pilot LX", "Pilot EX", "Pilot EX-L", "Pilot Special Edition", "Pilot Touring", "Pilot TrailSport", "Pilot Elite", "Pilot Black Edition",
+        "Prologue EX", "Prologue Touring", "Prologue Elite",
+        "Ridgeline RT", "Ridgeline Sport", "Ridgeline RTL", "Ridgeline RTL-E", "Ridgeline Black Edition", "Ridgeline TrailSport"
+      ]
     },
     {
       "name": "Ford",
-      "models": ["F-150", "Mustang", "Explorer", "Escape", "Edge", "Expedition", "Ranger", "Bronco", "Maverick", "EcoSport", "Transit"]
+      "models": [
+        "Bronco Base", "Bronco Big Bend", "Bronco Black Diamond", "Bronco Outer Banks", "Bronco Badlands", "Bronco Wildtrak", "Bronco Raptor", "Bronco Everglades", "Bronco Heritage", "Bronco Heritage Limited",
+        "Bronco Sport Base", "Bronco Sport Big Bend", "Bronco Sport Outer Banks", "Bronco Sport Badlands", "Bronco Sport Heritage", "Bronco Sport Heritage Limited",
+        "Edge SE", "Edge SEL", "Edge ST", "Edge ST-Line", "Edge Titanium",
+        "EcoSport S", "EcoSport SE", "EcoSport SES", "EcoSport Titanium",
+        "Escape S", "Escape SE", "Escape SEL", "Escape ST-Line", "Escape Titanium", "Escape Plug-In Hybrid SE", "Escape Plug-In Hybrid SEL", "Escape Plug-In Hybrid Titanium",
+        "Expedition XLT", "Expedition XLT MAX", "Expedition Limited", "Expedition Limited MAX", "Expedition King Ranch", "Expedition King Ranch MAX", "Expedition Platinum", "Expedition Platinum MAX", "Expedition Timberline", "Expedition Timberline MAX",
+        "Explorer Base", "Explorer XLT", "Explorer Limited", "Explorer ST", "Explorer ST-Line", "Explorer Timberline", "Explorer Platinum", "Explorer King Ranch",
+        "F-150 XL", "F-150 XLT", "F-150 Lariat", "F-150 King Ranch", "F-150 Platinum", "F-150 Limited", "F-150 Tremor", "F-150 Raptor", "F-150 Raptor R", "F-150 Lightning Pro", "F-150 Lightning XLT", "F-150 Lightning Lariat", "F-150 Lightning Platinum",
+        "F-250 Super Duty XL", "F-250 Super Duty XLT", "F-250 Super Duty Lariat", "F-250 Super Duty King Ranch", "F-250 Super Duty Platinum", "F-250 Super Duty Limited", "F-250 Super Duty Tremor",
+        "F-350 Super Duty XL", "F-350 Super Duty XLT", "F-350 Super Duty Lariat", "F-350 Super Duty King Ranch", "F-350 Super Duty Platinum", "F-350 Super Duty Limited",
+        "Maverick XL", "Maverick XLT", "Maverick Lariat", "Maverick Tremor",
+        "Mustang EcoBoost", "Mustang EcoBoost Premium", "Mustang GT", "Mustang GT Premium", "Mustang Mach 1", "Mustang Shelby GT350", "Mustang Shelby GT500", "Mustang Dark Horse",
+        "Mustang Mach-E Select", "Mustang Mach-E Premium", "Mustang Mach-E California Route 1", "Mustang Mach-E GT", "Mustang Mach-E GT Performance", "Mustang Mach-E Rally",
+        "Ranger XL", "Ranger XLT", "Ranger Lariat", "Ranger Raptor", "Ranger Tremor",
+        "Transit Cargo Van", "Transit Connect XL", "Transit Connect XLT", "Transit Crew Van", "Transit Passenger Van"
+      ]
     },
     {
       "name": "Chevrolet",
-      "models": ["Silverado 1500", "Equinox", "Traverse", "Malibu", "Tahoe", "Suburban", "Colorado", "Blazer", "Trax", "Camaro", "Corvette"]
+      "models": [
+        "Blazer 1LT", "Blazer 2LT", "Blazer 3LT", "Blazer RS", "Blazer Premier",
+        "Bolt EV 1LT", "Bolt EV 2LT", "Bolt EV Premier", "Bolt EUV LT", "Bolt EUV Premier",
+        "Camaro 1LS", "Camaro 1LT", "Camaro 2LT", "Camaro 3LT", "Camaro 1SS", "Camaro 2SS", "Camaro LT1", "Camaro ZL1", "Camaro Z/28",
+        "Colorado WT", "Colorado LT", "Colorado Z71", "Colorado ZR2", "Colorado Trail Boss",
+        "Corvette Stingray", "Corvette Stingray 2LT", "Corvette Stingray 3LT", "Corvette Z06", "Corvette Z06 2LZ", "Corvette Z06 3LZ", "Corvette E-Ray", "Corvette ZR1",
+        "Equinox LS", "Equinox LT", "Equinox RS", "Equinox Premier", "Equinox EV 1LT", "Equinox EV 2LT", "Equinox EV 3LT", "Equinox EV RS",
+        "Malibu LS", "Malibu LT", "Malibu RS", "Malibu Premier",
+        "Silverado 1500 WT", "Silverado 1500 Custom", "Silverado 1500 LT", "Silverado 1500 RST", "Silverado 1500 LTZ", "Silverado 1500 High Country", "Silverado 1500 ZR2", "Silverado 1500 Trail Boss",
+        "Silverado 2500HD WT", "Silverado 2500HD LT", "Silverado 2500HD LTZ", "Silverado 2500HD High Country", "Silverado 2500HD ZR2",
+        "Silverado 3500HD WT", "Silverado 3500HD LT", "Silverado 3500HD LTZ", "Silverado 3500HD High Country",
+        "Silverado EV WT", "Silverado EV RST", "Silverado EV Trail Boss", "Silverado EV 4WT", "Silverado EV 4LT", "Silverado EV 4RST",
+        "Suburban LS", "Suburban LT", "Suburban RST", "Suburban Z71", "Suburban Premier", "Suburban High Country",
+        "Tahoe LS", "Tahoe LT", "Tahoe RST", "Tahoe Z71", "Tahoe Premier", "Tahoe High Country",
+        "Trailblazer LS", "Trailblazer LT", "Trailblazer Activ", "Trailblazer RS",
+        "Traverse LS", "Traverse LT", "Traverse RS", "Traverse Premier", "Traverse High Country",
+        "Trax LS", "Trax LT", "Trax Premier", "Trax 1RS", "Trax 2RS", "Trax Activ"
+      ]
     },
     {
       "name": "BMW",
-      "models": ["3 Series", "5 Series", "X3", "X5", "7 Series", "X1", "X7", "4 Series", "2 Series", "8 Series", "Z4", "i4", "iX"]
+      "models": [
+        "218i Gran Coupe", "220i Gran Coupe", "M235i Gran Coupe",
+        "228i", "230i", "230i xDrive", "M240i", "M240i xDrive", "M2", "M2 Competition", "M2 CS",
+        "320i", "320i xDrive", "325i", "328i", "328i xDrive", "330i", "330i xDrive", "330e", "330e xDrive", "335i", "335i xDrive", "340i", "340i xDrive", "M340i", "M340i xDrive", "M3", "M3 Competition", "M3 CS",
+        "420i", "428i", "428i xDrive", "430i", "430i xDrive", "440i", "440i xDrive", "M440i", "M440i xDrive", "M4", "M4 Competition", "M4 CS", "M4 CSL",
+        "520i", "523i", "525i", "528i", "528i xDrive", "530i", "530i xDrive", "530e", "530e xDrive", "535i", "535i xDrive", "540i", "540i xDrive", "545e xDrive", "550i", "550i xDrive", "M550i xDrive", "M5", "M5 Competition", "M5 CS",
+        "630i", "640i", "640i xDrive", "640i Gran Coupe", "650i", "650i xDrive", "M6", "M6 Gran Coupe",
+        "740i", "740i xDrive", "745e xDrive", "750i", "750i xDrive", "760i", "M760i xDrive", "Alpina B7", "M7",
+        "840i", "840i xDrive", "840i Gran Coupe", "M850i xDrive", "M850i Gran Coupe", "M8", "M8 Competition", "M8 Gran Coupe",
+        "i3", "i3 REx", "i3s",
+        "i4 eDrive35", "i4 eDrive40", "i4 M50",
+        "i5 eDrive40", "i5 M60 xDrive",
+        "i7 xDrive60", "i7 M70 xDrive",
+        "iX xDrive40", "iX xDrive50", "iX M60",
+        "X1 sDrive28i", "X1 xDrive28i", "X1 xDrive23i", "X1 xDrive30i", "X1 M35i",
+        "X2 sDrive28i", "X2 xDrive28i", "X2 M35i",
+        "X3 sDrive30i", "X3 xDrive30i", "X3 xDrive30e", "X3 M40i", "X3 M", "X3 M Competition",
+        "X4 xDrive30i", "X4 M40i", "X4 M", "X4 M Competition",
+        "X5 sDrive40i", "X5 xDrive40i", "X5 xDrive45e", "X5 xDrive50e", "X5 M50i", "X5 M60i", "X5 M", "X5 M Competition",
+        "X6 sDrive40i", "X6 xDrive40i", "X6 M50i", "X6 M60i", "X6 M", "X6 M Competition",
+        "X7 xDrive40i", "X7 M50i", "X7 M60i", "X7 Alpina XB7",
+        "Z4 sDrive20i", "Z4 sDrive30i", "Z4 M40i"
+      ]
     },
     {
       "name": "Mercedes-Benz",
-      "models": ["C-Class", "E-Class", "S-Class", "GLC", "GLE", "GLA", "GLB", "GLS", "A-Class", "CLA", "EQE", "EQS"]
+      "models": [
+        "A220", "A220 4MATIC", "A250", "A250 4MATIC", "AMG A35", "AMG A45",
+        "C200", "C250", "C300", "C300 4MATIC", "C350e", "C400", "C400 4MATIC", "C43 AMG", "C43 AMG 4MATIC", "C63 AMG", "C63 S AMG",
+        "CLA250", "CLA250 4MATIC", "AMG CLA35", "AMG CLA45", "AMG CLA45 S",
+        "CLS450", "CLS450 4MATIC", "AMG CLS53", "AMG CLS63",
+        "E200", "E250", "E300", "E300 4MATIC", "E350", "E350 4MATIC", "E400", "E400 4MATIC", "E450", "E450 4MATIC", "E450 All-Terrain", "E53 AMG", "E53 AMG 4MATIC+", "E63 S AMG", "E63 S AMG 4MATIC+",
+        "EQB250+", "EQB300 4MATIC", "EQB350 4MATIC",
+        "EQE350", "EQE350+", "EQE350 4MATIC", "EQE500 4MATIC", "AMG EQE43", "AMG EQE53",
+        "EQS450+", "EQS450 4MATIC", "EQS500 4MATIC", "EQS580 4MATIC", "AMG EQS53",
+        "EQS SUV450+", "EQS SUV450 4MATIC", "EQS SUV500 4MATIC", "EQS SUV580 4MATIC",
+        "G550", "G63 AMG",
+        "GLA250", "GLA250 4MATIC", "AMG GLA35", "AMG GLA45",
+        "GLB250", "GLB250 4MATIC", "AMG GLB35",
+        "GLC300", "GLC300 4MATIC", "GLC300 Coupe", "GLC300 4MATIC Coupe", "AMG GLC43", "AMG GLC43 Coupe", "AMG GLC63", "AMG GLC63 S", "AMG GLC63 Coupe",
+        "GLE350", "GLE350 4MATIC", "GLE400", "GLE400 4MATIC", "GLE450", "GLE450 4MATIC", "GLE450 4MATIC Coupe", "GLE580 4MATIC", "AMG GLE53", "AMG GLE53 Coupe", "AMG GLE63 S", "AMG GLE63 S Coupe",
+        "GLS450", "GLS450 4MATIC", "GLS580 4MATIC", "AMG GLS63",
+        "S400", "S450", "S450 4MATIC", "S500", "S500 4MATIC", "S560", "S560 4MATIC", "S580", "S580 4MATIC", "Maybach S580", "Maybach S680", "AMG S63", "AMG S65",
+        "SL450", "SL550", "SL55 AMG", "SL63 AMG", "SL65 AMG",
+        "SLC300", "AMG SLC43",
+        "SLK250", "SLK300", "SLK350", "SLK55 AMG"
+      ]
     },
     {
       "name": "Audi",
-      "models": ["A4", "A6", "Q5", "Q7", "A3", "Q3", "A5", "Q8", "e-tron", "A7", "A8", "RS5", "RS7"]
+      "models": [
+        "A3 Premium", "A3 Premium Plus", "A3 Prestige", "S3 Premium Plus", "S3 Prestige",
+        "A4 Premium", "A4 Premium Plus", "A4 Prestige", "A4 allroad Premium", "A4 allroad Premium Plus", "A4 allroad Prestige", "S4 Premium Plus", "S4 Prestige", "RS4 Avant",
+        "A5 Premium", "A5 Premium Plus", "A5 Prestige", "S5 Premium Plus", "S5 Prestige", "RS5 Sportback",
+        "A6 Premium", "A6 Premium Plus", "A6 Prestige", "A6 allroad Premium", "A6 allroad Premium Plus", "A6 allroad Prestige", "S6 Premium Plus", "S6 Prestige", "RS6 Avant",
+        "A7 Premium", "A7 Premium Plus", "A7 Prestige", "S7 Premium Plus", "S7 Prestige", "RS7",
+        "A8 L Premium", "A8 L Premium Plus", "A8 L Prestige", "S8 Premium Plus", "S8 Prestige",
+        "e-tron Premium", "e-tron Premium Plus", "e-tron Prestige", "e-tron Sportback Premium", "e-tron Sportback Premium Plus", "e-tron Sportback Prestige", "e-tron GT Premium Plus", "e-tron GT Prestige", "RS e-tron GT",
+        "Q3 Premium", "Q3 Premium Plus", "Q3 Prestige", "RS Q3",
+        "Q4 e-tron Premium", "Q4 e-tron Premium Plus", "Q4 e-tron Prestige", "Q4 Sportback e-tron Premium", "Q4 Sportback e-tron Premium Plus", "Q4 Sportback e-tron Prestige",
+        "Q5 Premium", "Q5 Premium Plus", "Q5 Prestige", "Q5 Sportback Premium", "Q5 Sportback Premium Plus", "Q5 Sportback Prestige", "SQ5 Premium Plus", "SQ5 Prestige", "SQ5 Sportback Premium Plus", "SQ5 Sportback Prestige",
+        "Q7 Premium", "Q7 Premium Plus", "Q7 Prestige", "SQ7 Premium Plus", "SQ7 Prestige",
+        "Q8 Premium", "Q8 Premium Plus", "Q8 Prestige", "SQ8 Premium Plus", "SQ8 Prestige", "RS Q8",
+        "R8 Coupe", "R8 Spyder", "R8 V10 Performance", "R8 V10 Performance Spyder",
+        "TT Coupe", "TT Roadster", "TTS Coupe", "TTS Roadster", "TT RS Coupe", "TT RS Roadster"
+      ]
     },
     {
       "name": "Lexus",
-      "models": ["ES", "RX", "NX", "IS", "GX", "UX", "LS", "LX", "RC", "LC"]
+      "models": [
+        "ES250", "ES300h", "ES350", "ES350 F Sport",
+        "GS200t", "GS300", "GS350", "GS350 F Sport", "GS450h", "GS F",
+        "GX460", "GX460 Premium", "GX460 Luxury", "GX550 Premium", "GX550 Premium+", "GX550 Luxury", "GX550 Luxury+", "GX550 Overtrail", "GX550 Overtrail+",
+        "IS200t", "IS250", "IS300", "IS300 AWD", "IS350", "IS350 AWD", "IS350 F Sport", "IS500 F Sport Performance",
+        "LC500", "LC500 Convertible", "LC500h",
+        "LS430", "LS460", "LS460 AWD", "LS460 L", "LS500", "LS500 AWD", "LS500 F Sport", "LS500h", "LS500h AWD",
+        "LX470", "LX570", "LX600", "LX600 Premium", "LX600 Luxury", "LX600 F Sport", "LX600 Ultra Luxury",
+        "NX200t", "NX250", "NX300", "NX300 AWD", "NX300h", "NX350", "NX350 F Sport", "NX350h", "NX350h F Sport", "NX450h+", "NX450h+ Luxury",
+        "RC200t", "RC300", "RC300 AWD", "RC350", "RC350 AWD", "RC350 F Sport", "RC F", "RC F Track Edition",
+        "RX300", "RX330", "RX350", "RX350 AWD", "RX350 F Sport", "RX350 L", "RX350 L AWD", "RX350h", "RX350h AWD", "RX400h", "RX450h", "RX450h AWD", "RX450h L", "RX450h+ AWD", "RX500h F Sport Performance",
+        "RZ450e Premium", "RZ450e Luxury",
+        "TX350", "TX350 AWD", "TX350 Luxury", "TX350 Premium", "TX500h F Sport", "TX550h+ Luxury",
+        "UX200", "UX250h", "UX250h AWD", "UX250h F Sport", "UX300e"
+      ]
     },
     {
       "name": "Tesla",
-      "models": ["Model 3", "Model Y", "Model S", "Model X", "Cybertruck"]
+      "models": [
+        "Model 3 Rear-Wheel Drive", "Model 3 Long Range AWD", "Model 3 Performance",
+        "Model S Long Range", "Model S Plaid",
+        "Model X Long Range", "Model X Plaid",
+        "Model Y Rear-Wheel Drive", "Model Y Long Range AWD", "Model Y Performance",
+        "Cybertruck AWD", "Cybertruck Cyberbeast", "Cybertruck RWD",
+        "Roadster Base", "Roadster Founders Series"
+      ]
     },
     {
       "name": "Nissan",
-      "models": ["Altima", "Rogue", "Sentra", "Pathfinder", "Frontier", "Maxima", "Murano", "Armada", "Kicks", "Versa", "Leaf", "Ariya"]
+      "models": [
+        "Altima S", "Altima SV", "Altima SR", "Altima SL", "Altima Platinum",
+        "Armada SV", "Armada SL", "Armada Platinum",
+        "Ariya Engage", "Ariya Venture+", "Ariya Evolve+", "Ariya Empower+", "Ariya Premiere", "Ariya Platinum+",
+        "Frontier S", "Frontier SV", "Frontier PRO-4X", "Frontier PRO-X",
+        "GT-R Premium", "GT-R Track Edition", "GT-R NISMO",
+        "Kicks S", "Kicks SV", "Kicks SR", "Kicks SV Premium",
+        "Leaf S", "Leaf SV", "Leaf SV Plus", "Leaf S Plus", "Leaf SL Plus",
+        "Maxima S", "Maxima SV", "Maxima SR", "Maxima SL", "Maxima Platinum",
+        "Murano S", "Murano SV", "Murano SL", "Murano Platinum",
+        "Pathfinder S", "Pathfinder SV", "Pathfinder SL", "Pathfinder Platinum", "Pathfinder Rock Creek",
+        "Rogue S", "Rogue SV", "Rogue SL", "Rogue Platinum", "Rogue Sport S", "Rogue Sport SV", "Rogue Sport SL",
+        "Sentra S", "Sentra SV", "Sentra SR", "Sentra Spec V",
+        "Titan S", "Titan SV", "Titan PRO-4X", "Titan SL", "Titan Platinum Reserve",
+        "Versa S", "Versa SV", "Versa SR",
+        "Z Sport", "Z Performance", "Z Proto Spec"
+      ]
     },
     {
       "name": "Hyundai",
-      "models": ["Elantra", "Sonata", "Tucson", "Santa Fe", "Palisade", "Kona", "Venue", "Ioniq 5", "Ioniq 6", "Genesis"]
+      "models": [
+        "Accent SE", "Accent SEL", "Accent Limited",
+        "Azera Base", "Azera Limited",
+        "Elantra SE", "Elantra SEL", "Elantra N Line", "Elantra Limited", "Elantra N",
+        "Genesis 3.8", "Genesis 5.0",
+        "Ioniq SE", "Ioniq SEL", "Ioniq Limited", "Ioniq Blue", "Ioniq Hybrid", "Ioniq Plug-In Hybrid",
+        "Ioniq 5 SE Standard Range", "Ioniq 5 SE Long Range", "Ioniq 5 SEL", "Ioniq 5 Limited", "Ioniq 5 N",
+        "Ioniq 6 SE Long Range", "Ioniq 6 SEL", "Ioniq 6 Limited",
+        "Ioniq 9 SE", "Ioniq 9 SEL", "Ioniq 9 Limited", "Ioniq 9 Calligraphy",
+        "Kona SE", "Kona SEL", "Kona N Line", "Kona Limited", "Kona Ultimate", "Kona Electric SE", "Kona Electric SEL", "Kona Electric Limited", "Kona N",
+        "Nexo Blue", "Nexo Limited",
+        "Palisade SE", "Palisade SEL", "Palisade XRT", "Palisade Limited", "Palisade Calligraphy",
+        "Santa Cruz SE", "Santa Cruz SEL", "Santa Cruz SEL Premium", "Santa Cruz XRT", "Santa Cruz Limited",
+        "Santa Fe SE", "Santa Fe SEL", "Santa Fe XRT", "Santa Fe Limited", "Santa Fe Calligraphy", "Santa Fe Hybrid SE", "Santa Fe Hybrid SEL", "Santa Fe Hybrid Limited", "Santa Fe Plug-In Hybrid SEL", "Santa Fe Plug-In Hybrid Limited",
+        "Santa Fe Sport Base", "Santa Fe Sport 2.0T", "Santa Fe Sport Ultimate",
+        "Sonata SE", "Sonata SEL", "Sonata SEL Plus", "Sonata N Line", "Sonata Limited", "Sonata Hybrid SE", "Sonata Hybrid SEL", "Sonata Hybrid Limited",
+        "Tucson SE", "Tucson SEL", "Tucson N Line", "Tucson XRT", "Tucson Limited", "Tucson Hybrid Blue", "Tucson Hybrid SEL", "Tucson Hybrid Limited", "Tucson Plug-In Hybrid SEL", "Tucson Plug-In Hybrid Limited",
+        "Veloster Base", "Veloster Turbo", "Veloster N",
+        "Venue SE", "Venue SEL", "Venue Limited"
+      ]
     },
     {
       "name": "Kia",
-      "models": ["Forte", "K5", "Sportage", "Sorento", "Telluride", "Seltos", "Soul", "Carnival", "Stinger", "EV6", "Niro"]
+      "models": [
+        "Cadenza Premium", "Cadenza Technology", "Cadenza Limited",
+        "Carnival LX", "Carnival EX", "Carnival SX", "Carnival SX Prestige",
+        "EV6 Light", "EV6 Light Long Range", "EV6 Wind", "EV6 GT-Line", "EV6 GT",
+        "EV9 Light", "EV9 Light Long Range", "EV9 Wind", "EV9 Land", "EV9 GT-Line",
+        "Forte FE", "Forte LXS", "Forte GT-Line", "Forte GT",
+        "K5 LX", "K5 LXS", "K5 GT-Line", "K5 EX", "K5 GT",
+        "Niro FE", "Niro LX", "Niro EX", "Niro SX Touring", "Niro EV Wind", "Niro EV Wave", "Niro Plug-In Hybrid LX", "Niro Plug-In Hybrid EX",
+        "Optima LX", "Optima S", "Optima EX", "Optima SX", "Optima SXL",
+        "Rio LX", "Rio S", "Rio EX",
+        "Sedona LX", "Sedona EX", "Sedona SX", "Sedona SX Limited",
+        "Seltos LX", "Seltos S", "Seltos EX", "Seltos Nightfall Edition", "Seltos SX", "Seltos X-Line",
+        "Sorento LX", "Sorento S", "Sorento EX", "Sorento X-Line", "Sorento SX", "Sorento SX Prestige", "Sorento Hybrid LX", "Sorento Hybrid EX", "Sorento Hybrid SX", "Sorento Plug-In Hybrid SX", "Sorento Plug-In Hybrid SX Prestige",
+        "Soul LX", "Soul S", "Soul EX", "Soul GT-Line", "Soul Turbo",
+        "Sportage LX", "Sportage EX", "Sportage X-Line", "Sportage SX", "Sportage SX Prestige", "Sportage Hybrid LX", "Sportage Hybrid EX", "Sportage Hybrid SX", "Sportage Plug-In Hybrid X-Line", "Sportage Plug-In Hybrid SX Prestige",
+        "Stinger GT", "Stinger GT1", "Stinger GT2", "Stinger GT-Line", "Stinger Scorpion",
+        "Telluride LX", "Telluride S", "Telluride EX", "Telluride X-Line", "Telluride X-Pro", "Telluride SX", "Telluride SX Prestige"
+      ]
     },
     {
       "name": "Mazda",
-      "models": ["Mazda3", "Mazda6", "CX-5", "CX-9", "CX-30", "CX-50", "MX-5 Miata", "CX-90"]
+      "models": [
+        "CX-3 Sport", "CX-3 Touring", "CX-3 Grand Touring",
+        "CX-30 Base", "CX-30 Preferred", "CX-30 Select", "CX-30 Premium", "CX-30 Turbo", "CX-30 Turbo Premium Plus",
+        "CX-5 Sport", "CX-5 Touring", "CX-5 Carbon Edition", "CX-5 Grand Touring", "CX-5 Signature",
+        "CX-50 2.5 S", "CX-50 2.5 S Preferred", "CX-50 2.5 S Premium", "CX-50 2.5 S Premium Plus", "CX-50 2.5 Turbo", "CX-50 2.5 Turbo Premium", "CX-50 2.5 Turbo Premium Plus",
+        "CX-70 3.3 Turbo S", "CX-70 3.3 Turbo S Plus", "CX-70 3.3 Turbo Premium", "CX-70 3.3 Turbo Premium Plus", "CX-70 PHEV Preferred", "CX-70 PHEV Premium", "CX-70 PHEV Premium Plus",
+        "CX-9 Sport", "CX-9 Touring", "CX-9 Carbon Edition", "CX-9 Grand Touring", "CX-9 Signature",
+        "CX-90 3.3 Turbo S", "CX-90 3.3 Turbo S Plus", "CX-90 3.3 Turbo Premium", "CX-90 3.3 Turbo Premium Plus", "CX-90 PHEV Preferred", "CX-90 PHEV Premium", "CX-90 PHEV Premium Plus",
+        "Mazda2 Sport", "Mazda2 Touring", "Mazda2 Grand Touring",
+        "Mazda3 Sedan Base", "Mazda3 Sedan Preferred", "Mazda3 Sedan Select", "Mazda3 Sedan Premium", "Mazda3 Sedan Premium Plus",
+        "Mazda3 Hatchback Base", "Mazda3 Hatchback Preferred", "Mazda3 Hatchback Select", "Mazda3 Hatchback Premium", "Mazda3 Hatchback Premium Plus", "Mazda3 Turbo Hatchback",
+        "Mazda6 Sport", "Mazda6 Touring", "Mazda6 Carbon Edition", "Mazda6 Grand Touring", "Mazda6 Grand Touring Reserve", "Mazda6 Signature",
+        "MX-5 Miata Sport", "MX-5 Miata Club", "MX-5 Miata Grand Touring", "MX-5 Miata RF Club", "MX-5 Miata RF Grand Touring"
+      ]
     },
     {
       "name": "Subaru",
-      "models": ["Outback", "Forester", "Crosstrek", "Impreza", "Ascent", "Legacy", "WRX", "BRZ", "Solterra"]
+      "models": [
+        "Ascent Base", "Ascent Premium", "Ascent Onyx Edition", "Ascent Limited", "Ascent Touring",
+        "BRZ Premium", "BRZ Limited", "BRZ tS",
+        "Crosstrek Base", "Crosstrek Premium", "Crosstrek Sport", "Crosstrek Limited", "Crosstrek Hybrid", "Crosstrek Wilderness",
+        "Forester Base", "Forester Premium", "Forester Sport", "Forester Limited", "Forester Touring", "Forester Wilderness",
+        "Impreza Base", "Impreza Premium", "Impreza Sport", "Impreza Limited",
+        "Legacy Base", "Legacy Premium", "Legacy Sport", "Legacy Limited", "Legacy Touring XT",
+        "Outback Base", "Outback Premium", "Outback Onyx Edition", "Outback Limited", "Outback Touring", "Outback Wilderness",
+        "Solterra Premium", "Solterra Limited", "Solterra Touring",
+        "WRX Base", "WRX Premium", "WRX Limited", "WRX GT", "WRX TR", "WRX STI"
+      ]
     },
     {
       "name": "Volkswagen",
-      "models": ["Jetta", "Passat", "Tiguan", "Atlas", "Taos", "ID.4", "Golf", "Arteon"]
+      "models": [
+        "Arteon SE", "Arteon SEL", "Arteon SEL Premium R-Line",
+        "Atlas 2.0T S", "Atlas 2.0T SE", "Atlas 2.0T SE w/Technology", "Atlas 2.0T SEL", "Atlas 2.0T SEL Premium", "Atlas 3.6L V6 SE", "Atlas 3.6L V6 SEL", "Atlas 3.6L V6 SEL Premium",
+        "Atlas Cross Sport 2.0T S", "Atlas Cross Sport 2.0T SE", "Atlas Cross Sport 2.0T SE w/Technology", "Atlas Cross Sport 2.0T SEL", "Atlas Cross Sport 2.0T SEL Premium", "Atlas Cross Sport 3.6L V6 SE", "Atlas Cross Sport 3.6L V6 SEL", "Atlas Cross Sport 3.6L V6 SEL Premium R-Line",
+        "Golf GTI S", "Golf GTI SE", "Golf GTI Autobahn",
+        "Golf R", "Golf R w/DCC & Navigation",
+        "ID.4 Standard", "ID.4 Pro S", "ID.4 Pro", "ID.4 Pro S Plus", "ID.4 AWD Pro", "ID.4 AWD Pro S",
+        "Jetta S", "Jetta SE", "Jetta R-Line", "Jetta SEL", "Jetta SEL Premium", "Jetta GLI S", "Jetta GLI Autobahn",
+        "Passat S", "Passat SE", "Passat R-Line", "Passat SEL Premium",
+        "Taos S", "Taos SE", "Taos SEL",
+        "Tiguan S", "Tiguan SE", "Tiguan SE R-Line Black", "Tiguan SEL", "Tiguan SEL Premium R-Line"
+      ]
     },
     {
       "name": "Jeep",
-      "models": ["Wrangler", "Grand Cherokee", "Cherokee", "Compass", "Renegade", "Gladiator", "Wagoneer", "Grand Wagoneer"]
+      "models": [
+        "Cherokee Latitude", "Cherokee Latitude Plus", "Cherokee Altitude", "Cherokee Limited", "Cherokee Trailhawk", "Cherokee Overland",
+        "Compass Sport", "Compass Latitude", "Compass Altitude", "Compass Limited", "Compass Trailhawk",
+        "Gladiator Sport", "Gladiator Sport S", "Gladiator Overland", "Gladiator Rubicon", "Gladiator Mojave", "Gladiator High Altitude",
+        "Grand Cherokee Laredo", "Grand Cherokee Altitude", "Grand Cherokee Limited", "Grand Cherokee Trailhawk", "Grand Cherokee Overland", "Grand Cherokee Summit", "Grand Cherokee Summit Reserve", "Grand Cherokee 4xe Trailhawk", "Grand Cherokee 4xe Overland", "Grand Cherokee 4xe Summit", "Grand Cherokee Trackhawk",
+        "Grand Cherokee L Laredo", "Grand Cherokee L Altitude", "Grand Cherokee L Limited", "Grand Cherokee L Overland", "Grand Cherokee L Summit", "Grand Cherokee L Summit Reserve",
+        "Grand Wagoneer Series I", "Grand Wagoneer Series II", "Grand Wagoneer Series III", "Grand Wagoneer Obsidian",
+        "Renegade Sport", "Renegade Latitude", "Renegade Altitude", "Renegade Limited", "Renegade Trailhawk",
+        "Wagoneer Series I", "Wagoneer Series II", "Wagoneer Series III",
+        "Wrangler Sport", "Wrangler Sport S", "Wrangler Willys", "Wrangler Willys Sport", "Wrangler Sport Altitude", "Wrangler Sahara", "Wrangler Sahara Altitude", "Wrangler Rubicon", "Wrangler Rubicon 392", "Wrangler High Altitude", "Wrangler 4xe Sahara", "Wrangler 4xe Rubicon"
+      ]
     },
     {
       "name": "RAM",
-      "models": ["1500", "2500", "3500", "ProMaster"]
+      "models": [
+        "1500 Tradesman", "1500 Big Horn", "1500 Lone Star", "1500 Laramie", "1500 Rebel", "1500 Longhorn", "1500 Limited", "1500 Limited Longhorn", "1500 TRX", "1500 Classic Tradesman", "1500 Classic Express", "1500 Classic Big Horn",
+        "2500 Tradesman", "2500 Big Horn", "2500 Lone Star", "2500 Power Wagon", "2500 Laramie", "2500 Longhorn", "2500 Limited",
+        "3500 Tradesman", "3500 Big Horn", "3500 Lone Star", "3500 Laramie", "3500 Longhorn", "3500 Limited",
+        "ProMaster 1500 Low Roof", "ProMaster 1500 High Roof", "ProMaster 2500 High Roof", "ProMaster 3500 High Roof", "ProMaster 3500 Extended",
+        "ProMaster City Tradesman", "ProMaster City Wagon"
+      ]
     },
     {
       "name": "GMC",
-      "models": ["Sierra 1500", "Terrain", "Acadia", "Yukon", "Canyon", "Sierra 2500", "Hummer EV"]
+      "models": [
+        "Acadia SLE", "Acadia SLT", "Acadia AT4", "Acadia Denali",
+        "Canyon Elevation", "Canyon AT4", "Canyon AT4X", "Canyon Denali",
+        "Hummer EV 2X", "Hummer EV 3X", "Hummer EV Edition 1",
+        "Sierra 1500 Base", "Sierra 1500 Elevation", "Sierra 1500 SLE", "Sierra 1500 SLT", "Sierra 1500 AT4", "Sierra 1500 AT4X", "Sierra 1500 Denali", "Sierra 1500 Denali Ultimate",
+        "Sierra 2500HD Base", "Sierra 2500HD SLE", "Sierra 2500HD SLT", "Sierra 2500HD AT4", "Sierra 2500HD AT4X", "Sierra 2500HD Denali",
+        "Sierra 3500HD Base", "Sierra 3500HD SLE", "Sierra 3500HD SLT", "Sierra 3500HD AT4", "Sierra 3500HD Denali",
+        "Terrain SLE", "Terrain SLT", "Terrain AT4", "Terrain Denali",
+        "Yukon SLE", "Yukon SLT", "Yukon AT4", "Yukon Denali", "Yukon Denali Ultimate",
+        "Yukon XL SLE", "Yukon XL SLT", "Yukon XL AT4", "Yukon XL Denali", "Yukon XL Denali Ultimate"
+      ]
     },
     {
       "name": "Dodge",
-      "models": ["Charger", "Challenger", "Durango", "Hornet"]
+      "models": [
+        "Challenger SXT", "Challenger GT", "Challenger R/T", "Challenger R/T Scat Pack", "Challenger R/T Scat Pack Widebody", "Challenger SRT Hellcat", "Challenger SRT Hellcat Widebody", "Challenger SRT Hellcat Redeye", "Challenger SRT Hellcat Redeye Widebody", "Challenger SRT Super Stock", "Challenger SRT Demon", "Challenger SRT Demon 170",
+        "Charger SXT", "Charger GT", "Charger R/T", "Charger R/T Scat Pack", "Charger R/T Scat Pack Widebody", "Charger SRT Hellcat", "Charger SRT Hellcat Widebody", "Charger SRT Hellcat Redeye", "Charger SRT Hellcat Redeye Widebody", "Charger Daytona SRT",
+        "Durango SXT", "Durango GT", "Durango R/T", "Durango Citadel", "Durango SRT 392", "Durango SRT Hellcat",
+        "Hornet GT", "Hornet R/T"
+      ]
     },
     {
       "name": "Porsche",
-      "models": ["911", "Cayenne", "Macan", "Panamera", "Taycan", "718 Boxster", "718 Cayman"]
+      "models": [
+        "718 Boxster", "718 Boxster S", "718 Boxster GTS 4.0", "718 Boxster Spyder", "718 Boxster Style Edition",
+        "718 Cayman", "718 Cayman S", "718 Cayman GTS 4.0", "718 Cayman GT4", "718 Cayman GT4 RS", "718 Cayman Style Edition",
+        "911 Carrera", "911 Carrera S", "911 Carrera 4", "911 Carrera 4S", "911 Carrera GTS", "911 Carrera 4 GTS", "911 Targa 4", "911 Targa 4S", "911 Targa 4 GTS", "911 Turbo", "911 Turbo S", "911 Turbo S Cabriolet", "911 GT3", "911 GT3 RS", "911 GT3 Touring", "911 GT2 RS", "911 Sport Classic", "911 Dakar",
+        "Cayenne Base", "Cayenne S", "Cayenne GTS", "Cayenne Turbo", "Cayenne Turbo GT", "Cayenne E-Hybrid", "Cayenne S E-Hybrid", "Cayenne Turbo S E-Hybrid", "Cayenne Coupe", "Cayenne S Coupe", "Cayenne GTS Coupe", "Cayenne Turbo Coupe", "Cayenne Turbo GT Coupe", "Cayenne E-Hybrid Coupe", "Cayenne Turbo S E-Hybrid Coupe",
+        "Macan Base", "Macan S", "Macan GTS", "Macan Turbo", "Macan EV 4", "Macan EV 4S", "Macan EV Turbo",
+        "Panamera Base", "Panamera 4", "Panamera 4S", "Panamera GTS", "Panamera Turbo S", "Panamera 4 E-Hybrid", "Panamera 4S E-Hybrid", "Panamera Turbo S E-Hybrid", "Panamera 4 Sport Turismo", "Panamera 4S Sport Turismo", "Panamera GTS Sport Turismo", "Panamera Turbo S Sport Turismo", "Panamera 4 E-Hybrid Sport Turismo", "Panamera Turbo S E-Hybrid Sport Turismo",
+        "Taycan RWD", "Taycan 4S", "Taycan GTS", "Taycan Turbo", "Taycan Turbo S", "Taycan Cross Turismo 4", "Taycan Cross Turismo 4S", "Taycan Cross Turismo Turbo", "Taycan Cross Turismo Turbo S", "Taycan Sport Turismo 4S", "Taycan Sport Turismo GTS", "Taycan Sport Turismo Turbo", "Taycan Sport Turismo Turbo S"
+      ]
     },
     {
       "name": "Volvo",
-      "models": ["XC90", "XC60", "XC40", "S60", "S90", "V60", "V90", "C40 Recharge"]
+      "models": [
+        "C40 Recharge Single Motor", "C40 Recharge Twin Motor", "C40 Recharge Twin Motor Ultimate",
+        "EX30 Single Motor", "EX30 Single Motor Extended Range", "EX30 Twin Motor Performance",
+        "EX90 Twin Motor", "EX90 Twin Motor Performance",
+        "S60 B5 Core", "S60 B5 Plus", "S60 B5 Ultimate", "S60 B6 Ultimate", "S60 Recharge T8 Plus", "S60 Recharge T8 Ultimate",
+        "S90 B5 Core", "S90 B5 Plus", "S90 B5 Ultimate", "S90 B6 Ultimate", "S90 Recharge T8 Plus", "S90 Recharge T8 Ultimate",
+        "V60 B5 Core", "V60 B5 Plus", "V60 B5 Ultimate", "V60 B6 Ultimate", "V60 Cross Country B5 Plus", "V60 Cross Country B5 Ultimate", "V60 Cross Country B6 Ultimate", "V60 Recharge T8 Plus", "V60 Recharge T8 Ultimate",
+        "V90 B5 Core", "V90 B5 Plus", "V90 B5 Ultimate", "V90 B6 Ultimate", "V90 Cross Country B5 Plus", "V90 Cross Country B5 Ultimate", "V90 Cross Country B6 Ultimate",
+        "XC40 B4 Core", "XC40 B4 Plus", "XC40 B5 Ultimate", "XC40 Recharge Single Motor", "XC40 Recharge Twin Motor", "XC40 Recharge Twin Motor Ultimate",
+        "XC60 B5 Core", "XC60 B5 Plus", "XC60 B5 Ultimate", "XC60 B6 Ultimate", "XC60 Recharge T8 Plus", "XC60 Recharge T8 Ultimate",
+        "XC90 B5 Core", "XC90 B5 Plus", "XC90 B5 Ultimate", "XC90 B6 Ultimate", "XC90 Recharge T8 Plus", "XC90 Recharge T8 Ultimate"
+      ]
     },
     {
       "name": "Acura",
-      "models": ["MDX", "RDX", "TLX", "Integra", "NSX"]
+      "models": [
+        "ILX Base", "ILX Premium", "ILX Technology", "ILX A-Spec",
+        "Integra Base", "Integra A-Spec", "Integra A-Spec w/Technology", "Integra Type S",
+        "MDX Base", "MDX Technology", "MDX A-Spec", "MDX Advance", "MDX Type S", "MDX Type S Advance",
+        "NSX Base", "NSX Type S",
+        "RDX Base", "RDX Technology", "RDX A-Spec", "RDX A-Spec Advance", "RDX Advance", "RDX PMC Edition",
+        "TLX Base", "TLX Technology", "TLX A-Spec", "TLX Advance", "TLX Type S", "TLX Type S Advance",
+        "ZDX A-Spec", "ZDX Type S"
+      ]
     },
     {
       "name": "Infiniti",
-      "models": ["Q50", "Q60", "QX50", "QX60", "QX80"]
+      "models": [
+        "Q50 Luxe", "Q50 Sensory", "Q50 Sport", "Q50 Red Sport 400",
+        "Q60 Luxe", "Q60 Sensory", "Q60 Sport", "Q60 Red Sport 400",
+        "QX50 Luxe", "QX50 Sensory", "QX50 Autograph",
+        "QX55 Luxe", "QX55 Sensory", "QX55 Autograph",
+        "QX60 Pure", "QX60 Luxe", "QX60 Sensory", "QX60 Autograph",
+        "QX80 Luxe", "QX80 Sensory", "QX80 Premium Select", "QX80 Autograph"
+      ]
     },
     {
       "name": "Cadillac",
-      "models": ["Escalade", "XT5", "XT6", "CT5", "CT4", "Lyriq"]
+      "models": [
+        "CT4 Luxury", "CT4 Premium Luxury", "CT4 Sport", "CT4-V", "CT4-V Blackwing",
+        "CT5 Luxury", "CT5 Premium Luxury", "CT5 Sport", "CT5-V", "CT5-V Blackwing",
+        "Escalade Luxury", "Escalade Premium Luxury", "Escalade Sport", "Escalade Platinum", "Escalade V", "Escalade ESV Luxury", "Escalade ESV Premium Luxury", "Escalade ESV Sport", "Escalade ESV Platinum",
+        "Lyriq Luxury", "Lyriq Sport", "Lyriq Tech",
+        "XT4 Luxury", "XT4 Premium Luxury", "XT4 Sport",
+        "XT5 Luxury", "XT5 Premium Luxury", "XT5 Sport", "XT5 Platinum",
+        "XT6 Luxury", "XT6 Premium Luxury", "XT6 Sport", "XT6 Platinum"
+      ]
     },
     {
       "name": "Lincoln",
-      "models": ["Navigator", "Aviator", "Nautilus", "Corsair"]
+      "models": [
+        "Aviator Standard", "Aviator Reserve", "Aviator Grand Touring", "Aviator Black Label",
+        "Corsair Standard", "Corsair Reserve", "Corsair Grand Touring",
+        "Nautilus Standard", "Nautilus Reserve", "Nautilus Black Label",
+        "Navigator Standard", "Navigator Reserve", "Navigator Reserve L", "Navigator Black Label", "Navigator Black Label L"
+      ]
+    },
+    {
+      "name": "Alfa Romeo",
+      "models": [
+        "Giulia Sprint", "Giulia Ti", "Giulia Ti Sport", "Giulia Veloce", "Giulia Quadrifoglio",
+        "Stelvio Sprint", "Stelvio Ti", "Stelvio Ti Sport", "Stelvio Veloce", "Stelvio Quadrifoglio",
+        "Tonale Sprint", "Tonale Ti", "Tonale Veloce"
+      ]
+    },
+    {
+      "name": "Genesis",
+      "models": [
+        "Electrified G80 Advanced", "Electrified G80 Prestige",
+        "Electrified GV70 Advanced", "Electrified GV70 Prestige",
+        "G70 2.0T", "G70 2.0T Sport Prestige", "G70 3.3T Sport", "G70 3.3T Sport Prestige",
+        "G80 2.5T", "G80 2.5T Sport Prestige", "G80 3.5T", "G80 3.5T Sport Prestige",
+        "G90 3.3T", "G90 3.3T Prestige", "G90 5.0 Ultimate",
+        "GV60 Advanced", "GV60 Performance",
+        "GV70 2.5T", "GV70 2.5T Sport Prestige", "GV70 3.5T", "GV70 3.5T Sport Prestige",
+        "GV80 2.5T", "GV80 2.5T Advanced", "GV80 3.5T", "GV80 3.5T Prestige"
+      ]
+    },
+    {
+      "name": "Buick",
+      "models": [
+        "Enclave Preferred", "Enclave Essence", "Enclave Avenir",
+        "Encore Preferred", "Encore Essence", "Encore Sport Touring",
+        "Encore GX Preferred", "Encore GX Select", "Encore GX Essence", "Encore GX ST",
+        "Envision Preferred", "Envision Essence", "Envision Avenir"
+      ]
+    },
+    {
+      "name": "Chrysler",
+      "models": [
+        "300 Touring", "300 Limited", "300S", "300C",
+        "Pacifica Touring", "Pacifica Touring L", "Pacifica Limited", "Pacifica Pinnacle", "Pacifica Hybrid Touring", "Pacifica Hybrid Touring L", "Pacifica Hybrid Limited"
+      ]
+    },
+    {
+      "name": "Mitsubishi",
+      "models": [
+        "Eclipse Cross ES", "Eclipse Cross SE", "Eclipse Cross SEL", "Eclipse Cross SE Plug-In Hybrid", "Eclipse Cross SEL Plug-In Hybrid",
+        "Mirage ES", "Mirage LE", "Mirage SE", "Mirage G4 ES", "Mirage G4 LE", "Mirage G4 SE",
+        "Outlander ES", "Outlander SE", "Outlander SEL", "Outlander GT",
+        "Outlander PHEV ES", "Outlander PHEV SE", "Outlander PHEV SEL", "Outlander PHEV GT",
+        "Outlander Sport ES", "Outlander Sport SE", "Outlander Sport SEL", "Outlander Sport GT"
+      ]
+    },
+    {
+      "name": "Land Rover",
+      "models": [
+        "Defender 90 Base", "Defender 90 S", "Defender 90 SE", "Defender 90 X-Dynamic SE", "Defender 90 X", "Defender 90 V8",
+        "Defender 110 Base", "Defender 110 S", "Defender 110 SE", "Defender 110 X-Dynamic SE", "Defender 110 X", "Defender 110 V8",
+        "Defender 130 S", "Defender 130 SE", "Defender 130 X-Dynamic SE", "Defender 130 X",
+        "Discovery Sport S", "Discovery Sport SE", "Discovery Sport R-Dynamic SE", "Discovery Sport R-Dynamic HSE",
+        "Discovery Metropolitan Edition", "Discovery S", "Discovery SE", "Discovery R-Dynamic SE", "Discovery R-Dynamic HSE",
+        "Range Rover Evoque S", "Range Rover Evoque SE", "Range Rover Evoque R-Dynamic SE", "Range Rover Evoque R-Dynamic HSE", "Range Rover Evoque Autobiography",
+        "Range Rover Sport SE", "Range Rover Sport Dynamic SE", "Range Rover Sport Dynamic HSE", "Range Rover Sport Autobiography", "Range Rover Sport SV",
+        "Range Rover Velar S", "Range Rover Velar SE", "Range Rover Velar R-Dynamic SE", "Range Rover Velar R-Dynamic HSE", "Range Rover Velar R-Dynamic S", "Range Rover Velar Autobiography",
+        "Range Rover SE", "Range Rover Dynamic SE", "Range Rover Dynamic HSE", "Range Rover Autobiography", "Range Rover SV", "Range Rover Long Wheelbase SE", "Range Rover Long Wheelbase Autobiography", "Range Rover Long Wheelbase SV"
+      ]
+    },
+    {
+      "name": "Jaguar",
+      "models": [
+        "E-PACE S", "E-PACE SE", "E-PACE R-Dynamic S", "E-PACE R-Dynamic SE", "E-PACE R-Dynamic HSE",
+        "F-PACE S", "F-PACE SE", "F-PACE R-Dynamic SE", "F-PACE R-Dynamic HSE", "F-PACE SVR",
+        "F-TYPE P300", "F-TYPE P380", "F-TYPE P450", "F-TYPE R", "F-TYPE SVR",
+        "I-PACE S", "I-PACE SE", "I-PACE EV400 HSE",
+        "XE S", "XE SE", "XE R-Dynamic S", "XE R-Dynamic SE", "XE R-Dynamic HSE",
+        "XF S", "XF SE", "XF R-Dynamic SE", "XF R-Dynamic HSE"
+      ]
+    },
+    {
+      "name": "Maserati",
+      "models": [
+        "Ghibli GT", "Ghibli Modena", "Ghibli Modena S Q4", "Ghibli Trofeo",
+        "GranTurismo Modena", "GranTurismo Trofeo", "GranTurismo Folgore",
+        "Grecale GT", "Grecale Modena", "Grecale Trofeo", "Grecale Folgore",
+        "Levante GT", "Levante Modena", "Levante Modena S", "Levante Trofeo",
+        "MC20", "MC20 Cielo",
+        "Quattroporte GT", "Quattroporte Modena", "Quattroporte Trofeo"
+      ]
+    },
+    {
+      "name": "Ferrari",
+      "models": [
+        "296 GTB", "296 GTS",
+        "812 Competizione", "812 Competizione A",
+        "F8 Tributo", "F8 Spider",
+        "Portofino", "Portofino M",
+        "Purosangue",
+        "Roma", "Roma Spider",
+        "SF90 Stradale", "SF90 Spider"
+      ]
+    },
+    {
+      "name": "Lamborghini",
+      "models": [
+        "Huracan EVO", "Huracan EVO Spyder", "Huracan STO", "Huracan Tecnica",
+        "Revuelto",
+        "Urus S", "Urus Performante"
+      ]
+    },
+    {
+      "name": "McLaren",
+      "models": [
+        "570S", "570S Spider", "570GT",
+        "600LT", "600LT Spider",
+        "620R",
+        "720S", "720S Spider",
+        "750S", "750S Spider",
+        "Artura",
+        "GT"
+      ]
+    },
+    {
+      "name": "Aston Martin",
+      "models": [
+        "DB11 V8", "DB11 V12", "DB11 Volante",
+        "DB12", "DB12 Volante",
+        "DBX707",
+        "DBS Superleggera", "DBS Superleggera Volante",
+        "Vantage", "Vantage Roadster"
+      ]
+    },
+    {
+      "name": "Bentley",
+      "models": [
+        "Bentayga V8", "Bentayga S", "Bentayga Hybrid", "Bentayga Speed", "Bentayga EWB",
+        "Continental GT V8", "Continental GT Speed", "Continental GT Mulliner",
+        "Continental GT Convertible V8", "Continental GT Convertible Speed",
+        "Flying Spur V8", "Flying Spur S", "Flying Spur Speed", "Flying Spur Mulliner"
+      ]
+    },
+    {
+      "name": "Rolls-Royce",
+      "models": [
+        "Cullinan", "Cullinan Black Badge",
+        "Ghost", "Ghost Extended", "Ghost Black Badge",
+        "Phantom", "Phantom Extended", "Phantom Tranquillity",
+        "Spectre"
+      ]
+    },
+    {
+      "name": "Lotus",
+      "models": [
+        "Emira V6", "Emira i4",
+        "Evija"
+      ]
+    },
+    {
+      "name": "Rivian",
+      "models": [
+        "R1S Adventure", "R1S Explore", "R1S Performance", "R1S Launch Edition",
+        "R1T Adventure", "R1T Explore", "R1T Performance", "R1T Launch Edition"
+      ]
+    },
+    {
+      "name": "Lucid",
+      "models": [
+        "Air Pure", "Air Touring", "Air Grand Touring", "Air Sapphire",
+        "Gravity Grand Touring", "Gravity Touring"
+      ]
+    },
+    {
+      "name": "Polestar",
+      "models": [
+        "Polestar 2 Single Motor", "Polestar 2 Long Range Single Motor", "Polestar 2 Long Range Dual Motor", "Polestar 2 Performance",
+        "Polestar 3 Long Range Dual Motor", "Polestar 3 Performance",
+        "Polestar 4 Long Range Dual Motor", "Polestar 4 Performance"
+      ]
+    },
+    {
+      "name": "Fisker",
+      "models": [
+        "Ocean Sport", "Ocean Ultra", "Ocean Extreme", "Ocean One"
+      ]
+    },
+    {
+      "name": "Custom",
+      "models": ["Custom Entry"]
     }
   ]
 }
-

@@ -49,17 +49,23 @@ struct DealCheckerView: View {
                             TextField("Make (e.g., Toyota)", text: $make)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .autocapitalization(.words)
-                                .onChange(of: make) { _ in checkTrimsAvailability() }
+                                .onChange(of: make) {
+                                    checkTrimsAvailability()
+                                }
                             
                             TextField("Model (e.g., Camry)", text: $model)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .autocapitalization(.words)
-                                .onChange(of: model) { _ in checkTrimsAvailability() }
+                                .onChange(of: model) {
+                                    checkTrimsAvailability()
+                                }
                             
                             TextField("Year", text: $year)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .keyboardType(.numberPad)
-                                .onChange(of: year) { _ in checkTrimsAvailability() }
+                                .onChange(of: year) {
+                                    checkTrimsAvailability()
+                                }
                             
                             // Trim selection
                             if hasTrimsAvailable {

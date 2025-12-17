@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import PhotosUI
 
 struct AddVehicleView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -30,9 +31,88 @@ struct AddVehicleView: View {
     @State private var customModel: String = ""
     @State private var customYear: String = ""
     
+    // Photo picker states
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var selectedPhotoData: Data?
+    @State private var showingImagePicker = false
+    
     var body: some View {
         NavigationView {
             Form {
+                // Photo Section
+                Section(header: Text("Vehicle Photo")) {
+                    VStack(spacing: 12) {
+                        if let photoData = selectedPhotoData,
+                           let uiImage = UIImage(data: photoData) {
+                            // Show selected photo
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
+                        } else {
+                            // Placeholder
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.gray.opacity(0.1))
+                                    .frame(height: 200)
+                                
+                                VStack(spacing: 8) {
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.gray)
+                                    Text("Add Photo")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        
+                        // Photo picker button
+                        PhotosPicker(selection: $selectedPhotoItem,
+                                   matching: .images) {
+                            HStack {
+                                Image(systemName: selectedPhotoData == nil ? "photo.on.rectangle" : "arrow.triangle.2.circlepath")
+                                Text(selectedPhotoData == nil ? "Choose Photo" : "Change Photo")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                        }
+                        .onChange(of: selectedPhotoItem) { _, newItem in
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                    selectedPhotoData = compressImage(data)
+                                }
+                            }
+                        }
+                        
+                        if selectedPhotoData != nil {
+                            Button(role: .destructive) {
+                                selectedPhotoData = nil
+                                selectedPhotoItem = nil
+                            } label: {
+                                HStack {
+                                    Image(systemName: "trash")
+                                    Text("Remove Photo")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.red.opacity(0.1))
+                                .foregroundColor(.red)
+                                .cornerRadius(8)
+                            }
+                        }
+                    }
+                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                }
+                
                 Section(header: Text("Vehicle Information")) {
                     // Make Picker
                     VStack(alignment: .leading, spacing: 8) {
@@ -46,7 +126,7 @@ struct AddVehicleView: View {
                             }
                         }
                         .pickerStyle(.menu)
-                        .onChange(of: selectedMake) { newMake in
+                        .onChange(of: selectedMake) { _, newMake in
                             if newMake != "Custom" {
                                 make = newMake
                                 updateAvailableModels()
@@ -59,7 +139,7 @@ struct AddVehicleView: View {
                         if selectedMake == "Custom" {
                             TextField("Enter make", text: $customMake)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .onChange(of: customMake) { newValue in
+                                .onChange(of: customMake) { _, newValue in
                                     make = newValue
                                     checkTrimsAvailability()
                                 }
@@ -78,7 +158,7 @@ struct AddVehicleView: View {
                             }
                         }
                         .pickerStyle(.menu)
-                        .onChange(of: selectedModel) { newModel in
+                        .onChange(of: selectedModel) { _, newModel in
                             if newModel != "Custom" {
                                 model = newModel
                             } else {
@@ -90,7 +170,7 @@ struct AddVehicleView: View {
                         if selectedModel == "Custom" {
                             TextField("Enter model", text: $customModel)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .onChange(of: customModel) { newValue in
+                                .onChange(of: customModel) { _, newValue in
                                     model = newValue
                                     checkTrimsAvailability()
                                 }
@@ -109,7 +189,7 @@ struct AddVehicleView: View {
                             }
                         }
                         .pickerStyle(.menu)
-                        .onChange(of: selectedYear) { newYear in
+                        .onChange(of: selectedYear) { _, newYear in
                             if newYear != "Custom" {
                                 year = newYear
                             } else {
@@ -122,7 +202,7 @@ struct AddVehicleView: View {
                             TextField("Enter year", text: $customYear)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
                                 .keyboardType(.numberPad)
-                                .onChange(of: customYear) { newValue in
+                                .onChange(of: customYear) { _, newValue in
                                     year = newValue
                                     checkTrimsAvailability()
                                 }
@@ -270,6 +350,11 @@ struct AddVehicleView: View {
             vehicle.notes = notes
         }
         
+        // Save photo if selected
+        if let photoData = selectedPhotoData {
+            vehicle.imageData = photoData
+        }
+        
         do {
             try viewContext.save()
             presentationMode.wrappedValue.dismiss()
@@ -353,6 +438,34 @@ struct AddVehicleView: View {
             selectedModel = "Custom"
             model = ""
         }
+    }
+    
+    // MARK: - Image Helpers
+    
+    private func compressImage(_ data: Data) -> Data? {
+        guard let image = UIImage(data: data) else { return nil }
+        
+        // Resize to max width/height of 1024
+        let maxDimension: CGFloat = 1024
+        let size = image.size
+        var newSize = size
+        
+        if size.width > maxDimension || size.height > maxDimension {
+            let ratio = size.width / size.height
+            if size.width > size.height {
+                newSize = CGSize(width: maxDimension, height: maxDimension / ratio)
+            } else {
+                newSize = CGSize(width: maxDimension * ratio, height: maxDimension)
+            }
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: CGRect(origin: .zero, size: newSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        // Compress to JPEG with 0.8 quality
+        return resizedImage?.jpegData(compressionQuality: 0.8)
     }
 }
 

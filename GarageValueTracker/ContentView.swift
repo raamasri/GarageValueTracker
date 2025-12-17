@@ -10,6 +10,7 @@ struct ContentView: View {
     private var vehicles: FetchedResults<VehicleEntity>
     
     @State private var showingAddVehicle = false
+    @State private var showingSettings = false
     
     var body: some View {
         NavigationView {
@@ -48,6 +49,14 @@ struct ContentView: View {
             }
             .navigationTitle("My Garage")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        showingSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                    }
+                }
+                
                 if !vehicles.isEmpty {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
@@ -61,6 +70,9 @@ struct ContentView: View {
             .sheet(isPresented: $showingAddVehicle) {
                 AddVehicleView()
                     .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
             }
         }
     }

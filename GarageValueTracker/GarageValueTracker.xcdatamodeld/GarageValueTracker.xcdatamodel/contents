@@ -56,6 +56,35 @@
         <attribute name="recommendation" optional="YES" attributeType="String"/>
         <attribute name="vehicleID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
+    <entity name="ServiceReminderEntity" representedClassName="ServiceReminderEntity" syncable="YES">
+        <attribute name="completedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dueDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dueMileage" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="iconName" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="intervalMileage" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="intervalMonths" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="lastServiceDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastServiceMileage" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="serviceType" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="FuelEntryEntity" representedClassName="FuelEntryEntity" syncable="YES">
+        <attribute name="cost" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="gallons" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="mileage" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="pricePerGallon" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="station" optional="YES" attributeType="String"/>
+        <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
     <entity name="VehicleEntity" representedClassName="VehicleEntity" syncable="YES">
         <attribute name="accidentDetails" optional="YES" attributeType="String"/>
         <attribute name="accidentValueImpact" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>

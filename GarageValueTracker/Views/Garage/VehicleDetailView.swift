@@ -9,11 +9,11 @@ struct VehicleDetailView: View {
     @State private var selectedCostEntry: CostEntryEntity?
     @State private var showingReceiptImage = false
     @State private var showingTrimComparison = false
-    @State private var showingQualityDetails = false
+    @State private var showingDashboardScoreDetails = false
     @State private var showingMaintenanceInsights = false
     @State private var showingInsuranceTracking = false
     @State private var showingMaintenanceScheduler = false
-    @State private var qualityScore: QualityScoreResult?
+    @State private var dashboardScore: DashboardScore?
     
     // Fetch cost entries for this vehicle
     @FetchRequest var costEntries: FetchedResults<CostEntryEntity>
@@ -36,6 +36,24 @@ struct VehicleDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                // Vehicle Photo
+                if let imageData = vehicle.imageData,
+                   let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 250)
+                        .clipped()
+                        .overlay(
+                            LinearGradient(
+                                gradient: Gradient(colors: [.clear, .black.opacity(0.4)]),
+                                startPoint: .center,
+                                endPoint: .bottom
+                            )
+                        )
+                }
+                
                 // Vehicle Header
                 VStack(spacing: 8) {
                     Text("\(vehicle.year) \(vehicle.make) \(vehicle.model)")
@@ -50,118 +68,70 @@ struct VehicleDetailView: View {
                 }
                 .padding()
                 
-                // Quality Score Card
-                if let score = qualityScore {
+                // Dashboard Score Card
+                if let score = dashboardScore {
                     Button(action: {
-                        showingQualityDetails = true
+                        showingDashboardScoreDetails = true
                     }) {
-                        VStack(spacing: 12) {
+                        VStack(spacing: 16) {
                             HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Quality Score")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .textCase(.uppercase)
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Your Dashboard Score")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
                                     
-                                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                        Text("\(score.totalScore)")
-                                            .font(.system(size: 48, weight: .bold))
-                                            .foregroundColor(gradeColor(score.grade))
-                                        
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(score.grade.emoji)
-                                                .font(.title2)
-                                            Text(score.grade.rawValue)
-                                                .font(.subheadline)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                        }
-                                    }
+                                    Text(score.message)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.leading)
                                 }
                                 
                                 Spacer()
                                 
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Divider()
-                            
-                            HStack {
-                                Image(systemName: "info.circle")
-                                    .foregroundColor(.blue)
-                                Text("Tap to see detailed breakdown")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                
-                // Trim Information Card
-                if let trimName = vehicle.trim {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Trim Level")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .textCase(.uppercase)
-                                
-                                Text(trimName)
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                            }
-                            
-                            Spacer()
-                            
-                            if vehicle.trimMSRP > 0 {
-                                VStack(alignment: .trailing, spacing: 4) {
-                                    Text("MSRP")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .textCase(.uppercase)
+                                // Circular Progress
+                                ZStack {
+                                    Circle()
+                                        .stroke(Color.gray.opacity(0.2), lineWidth: 10)
+                                        .frame(width: 80, height: 80)
                                     
-                                    Text("$\(Int(vehicle.trimMSRP))")
+                                    Circle()
+                                        .trim(from: 0, to: CGFloat(score.percentage) / 100)
+                                        .stroke(dashboardScoreColor(score.percentage), lineWidth: 10)
+                                        .frame(width: 80, height: 80)
+                                        .rotationEffect(.degrees(-90))
+                                        .animation(.easeInOut, value: score.percentage)
+                                    
+                                    Text("\(score.percentage)%")
                                         .font(.title3)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(.blue)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(dashboardScoreColor(score.percentage))
                                 }
                             }
-                        }
-                        
-                        // Compare trims button
-                        if TrimDatabaseService.shared.hasTrimsAvailable(
-                            make: vehicle.make,
-                            model: vehicle.model,
-                            year: Int(vehicle.year)
-                        ) {
-                            Button(action: {
-                                showingTrimComparison = true
-                            }) {
+                            
+                            if score.percentage < 100 {
+                                Divider()
+                                
                                 HStack {
-                                    Image(systemName: "arrow.left.arrow.right")
-                                    Text("Compare with other trims")
+                                    Image(systemName: "arrow.right.circle.fill")
+                                        .foregroundColor(.blue)
+                                    Text("Improve Your Score")
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.blue)
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                         .font(.caption)
+                                        .foregroundColor(.secondary)
                                 }
-                                .font(.subheadline)
-                                .foregroundColor(.blue)
-                                .padding(.vertical, 8)
                             }
                         }
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                        .padding(.horizontal)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                    .padding(.horizontal)
+                    .buttonStyle(PlainButtonStyle())
                 }
                 
                 // Cost Summary Card
@@ -179,8 +149,45 @@ struct VehicleDetailView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
+                .background(.ultraThinMaterial)
+                .cornerRadius(16)
+                .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                .padding(.horizontal)
+                
+                // Dashboard Button (Featured)
+                NavigationLink(destination: VehicleDashboardView(vehicle: vehicle)) {
+                    HStack {
+                        Image(systemName: "gauge.medium")
+                            .font(.title2)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("View Dashboard")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Text("Service reminders, fuel tracking & more")
+                                .font(.caption)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        ZStack {
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.blue, Color.blue.opacity(0.8)]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                            .blur(radius: 0.5)
+                            
+                            Color.white.opacity(0.15)
+                        }
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(16)
+                    .shadow(color: .blue.opacity(0.3), radius: 15, x: 0, y: 5)
+                }
+                .buttonStyle(PlainButtonStyle())
                 .padding(.horizontal)
                 
                 // Action Buttons Row 1
@@ -193,9 +200,15 @@ struct VehicleDetailView: View {
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(
+                                ZStack {
+                                    Color.blue.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
                             .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .cornerRadius(16)
+                            .shadow(color: .blue.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                     
                     Button(action: {
@@ -206,9 +219,15 @@ struct VehicleDetailView: View {
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.green)
+                            .background(
+                                ZStack {
+                                    Color.green.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
                             .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .cornerRadius(16)
+                            .shadow(color: .green.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                 }
                 .padding(.horizontal)
@@ -223,9 +242,15 @@ struct VehicleDetailView: View {
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.purple)
+                            .background(
+                                ZStack {
+                                    Color.purple.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
                             .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .cornerRadius(16)
+                            .shadow(color: .purple.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                     
                     Button(action: {
@@ -236,9 +261,15 @@ struct VehicleDetailView: View {
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.orange)
+                            .background(
+                                ZStack {
+                                    Color.orange.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
                             .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .cornerRadius(16)
+                            .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                 }
                 .padding(.horizontal)
@@ -295,9 +326,9 @@ struct VehicleDetailView: View {
         .sheet(isPresented: $showingTrimComparison) {
             TrimComparisonView(vehicle: vehicle)
         }
-        .sheet(isPresented: $showingQualityDetails) {
-            if let score = qualityScore {
-                QualityScoreDetailView(score: score, vehicle: vehicle)
+        .sheet(isPresented: $showingDashboardScoreDetails) {
+            if let score = dashboardScore {
+                DashboardScoreDetailView(score: score)
             }
         }
         .sheet(isPresented: $showingMaintenanceInsights) {
@@ -312,28 +343,23 @@ struct VehicleDetailView: View {
                 .environment(\.managedObjectContext, viewContext)
         }
         .onAppear {
-            calculateQualityScore()
+            calculateDashboardScore()
         }
-        .onChange(of: costEntries.count) { _ in
-            calculateQualityScore()
+        .onChange(of: costEntries.count) {
+            calculateDashboardScore()
         }
     }
     
-    private func calculateQualityScore() {
-        let entries = Array(costEntries)
-        qualityScore = VehicleQualityScorer.shared.calculateQualityScore(
-            for: vehicle,
-            costEntries: entries
-        )
+    private func calculateDashboardScore() {
+        dashboardScore = DashboardScoreService.shared.calculateDashboardScore(for: vehicle)
     }
     
-    private func gradeColor(_ grade: QualityGrade) -> Color {
-        switch grade {
-        case .excellent: return .green
-        case .veryGood: return .blue
-        case .good: return .cyan
-        case .fair: return .yellow
-        case .poor: return .orange
+    private func dashboardScoreColor(_ percentage: Int) -> Color {
+        switch percentage {
+        case 80...100: return .green
+        case 60..<80: return .blue
+        case 40..<60: return .orange
+        default: return .red
         }
     }
 }
@@ -391,9 +417,9 @@ struct CostEntryRow: View {
                 .foregroundColor(.primary)
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .background(.ultraThinMaterial)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
 }
 
