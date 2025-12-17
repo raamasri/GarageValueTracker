@@ -1,0 +1,167 @@
+{
+  "averages": [
+    {
+      "make": "Toyota",
+      "averageAnnual": 1200,
+      "range": "900-1800",
+      "factors": ["Reliability", "Safety ratings", "Theft rates"]
+    },
+    {
+      "make": "Honda",
+      "averageAnnual": 1250,
+      "range": "950-1850",
+      "factors": ["Reliability", "Safety ratings", "Repair costs"]
+    },
+    {
+      "make": "Ford",
+      "averageAnnual": 1400,
+      "range": "1100-2100",
+      "factors": ["Vehicle type", "Repair costs", "Safety ratings"]
+    },
+    {
+      "make": "Chevrolet",
+      "averageAnnual": 1450,
+      "range": "1150-2200",
+      "factors": ["Vehicle type", "Repair costs", "Safety features"]
+    },
+    {
+      "make": "BMW",
+      "averageAnnual": 2200,
+      "range": "1800-3200",
+      "factors": ["Luxury vehicle", "Repair costs", "Theft rates"]
+    },
+    {
+      "make": "Mercedes-Benz",
+      "averageAnnual": 2400,
+      "range": "2000-3500",
+      "factors": ["Luxury vehicle", "High repair costs", "Theft rates"]
+    },
+    {
+      "make": "Audi",
+      "averageAnnual": 2100,
+      "range": "1700-3000",
+      "factors": ["Luxury vehicle", "Repair costs", "Safety features"]
+    },
+    {
+      "make": "Lexus",
+      "averageAnnual": 1800,
+      "range": "1400-2600",
+      "factors": ["Luxury vehicle", "Reliability", "Safety ratings"]
+    },
+    {
+      "make": "Tesla",
+      "averageAnnual": 2500,
+      "range": "2000-3600",
+      "factors": ["Electric vehicle", "Repair costs", "Technology features"]
+    },
+    {
+      "make": "Subaru",
+      "averageAnnual": 1300,
+      "range": "1000-1900",
+      "factors": ["Safety ratings", "AWD vehicles", "Reliability"]
+    },
+    {
+      "make": "Mazda",
+      "averageAnnual": 1150,
+      "range": "900-1700",
+      "factors": ["Reliability", "Affordable repairs", "Safety ratings"]
+    },
+    {
+      "make": "Hyundai",
+      "averageAnnual": 1100,
+      "range": "850-1650",
+      "factors": ["Affordable vehicle", "Good safety ratings", "Low theft rates"]
+    },
+    {
+      "make": "Kia",
+      "averageAnnual": 1050,
+      "range": "800-1600",
+      "factors": ["Affordable vehicle", "Safety features", "Low theft rates"]
+    },
+    {
+      "make": "Nissan",
+      "averageAnnual": 1300,
+      "range": "1000-1950",
+      "factors": ["Moderate repair costs", "Safety ratings", "Vehicle type"]
+    },
+    {
+      "make": "Volkswagen",
+      "averageAnnual": 1600,
+      "range": "1300-2400",
+      "factors": ["European vehicle", "Repair costs", "Safety features"]
+    },
+    {
+      "make": "Jeep",
+      "averageAnnual": 1550,
+      "range": "1250-2350",
+      "factors": ["SUV/Off-road", "Repair costs", "Theft rates"]
+    },
+    {
+      "make": "RAM",
+      "averageAnnual": 1500,
+      "range": "1200-2250",
+      "factors": ["Truck", "Size", "Usage type"]
+    },
+    {
+      "make": "GMC",
+      "averageAnnual": 1480,
+      "range": "1180-2220",
+      "factors": ["Truck/SUV", "Size", "Repair costs"]
+    },
+    {
+      "make": "Dodge",
+      "averageAnnual": 1650,
+      "range": "1350-2500",
+      "factors": ["Performance vehicles", "Repair costs", "Theft rates"]
+    },
+    {
+      "make": "Porsche",
+      "averageAnnual": 2800,
+      "range": "2300-4200",
+      "factors": ["Luxury sports", "Very high repair costs", "Theft rates"]
+    }
+  ],
+  "regionalFactors": [
+    {
+      "state": "California",
+      "multiplier": 1.25,
+      "reason": "High cost of living, urban density"
+    },
+    {
+      "state": "New York",
+      "multiplier": 1.30,
+      "reason": "Urban density, high theft rates"
+    },
+    {
+      "state": "Texas",
+      "multiplier": 1.10,
+      "reason": "Large state, moderate costs"
+    },
+    {
+      "state": "Florida",
+      "multiplier": 1.20,
+      "reason": "High accident rates, weather events"
+    },
+    {
+      "state": "Michigan",
+      "multiplier": 1.40,
+      "reason": "Highest insurance costs in US"
+    },
+    {
+      "state": "Ohio",
+      "multiplier": 0.90,
+      "reason": "Below average costs"
+    },
+    {
+      "state": "Idaho",
+      "multiplier": 0.80,
+      "reason": "Low population density, low costs"
+    },
+    {
+      "state": "Montana",
+      "multiplier": 0.85,
+      "reason": "Rural state, lower costs"
+    }
+  ]
+}
+

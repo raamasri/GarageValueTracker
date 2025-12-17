@@ -30,19 +30,55 @@
         <attribute name="source" attributeType="String" defaultValueString="Manual"/>
         <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
+    <entity name="TrimEntity" representedClassName="TrimEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="features" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="make" attributeType="String"/>
+        <attribute name="marketValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="model" attributeType="String"/>
+        <attribute name="msrp" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="trimLevel" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="year" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="DealAnalysisEntity" representedClassName="DealAnalysisEntity" syncable="YES">
+        <attribute name="conditionScore" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasAccidentHistory" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="insights" optional="YES" attributeType="String"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="marketScore" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="mileageScore" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="overallScore" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="priceScore" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="recommendation" optional="YES" attributeType="String"/>
+        <attribute name="vehicleID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
     <entity name="VehicleEntity" representedClassName="VehicleEntity" syncable="YES">
+        <attribute name="accidentDetails" optional="YES" attributeType="String"/>
+        <attribute name="accidentValueImpact" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="coverageLevel" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="currentValue" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="hasAccidentHistory" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="insurancePremium" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="insuranceProvider" optional="YES" attributeType="String"/>
+        <attribute name="insuranceRenewalDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastValuationUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
         <attribute name="make" attributeType="String"/>
         <attribute name="mileage" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="model" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="purchaseDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="purchasePrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="selectedTrimID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="trim" optional="YES" attributeType="String"/>
+        <attribute name="trimMSRP" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="vin" optional="YES" attributeType="String"/>
         <attribute name="year" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>

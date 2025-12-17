@@ -198,3 +198,4 @@ Used macOS's built-in `sips` tool to resize `icon.png` to all required sizes
 *Version: v1.0.1*
 *Status: ✅ Ready for App Store*
 
+

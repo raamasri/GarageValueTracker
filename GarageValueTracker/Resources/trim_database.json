@@ -1,0 +1,197 @@
+{
+  "trims": [
+    {
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2024,
+      "trimLevel": "LE",
+      "msrp": 28400,
+      "features": ["Cloth Seats", "8\" Touchscreen", "Apple CarPlay", "Android Auto", "Adaptive Cruise Control"]
+    },
+    {
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2024,
+      "trimLevel": "SE",
+      "msrp": 30400,
+      "features": ["Sport Suspension", "18\" Wheels", "Sport Seats", "8\" Touchscreen", "Apple CarPlay", "Android Auto"]
+    },
+    {
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2024,
+      "trimLevel": "XLE",
+      "msrp": 34000,
+      "features": ["Leather Seats", "Power Moonroof", "Wireless Charging", "9\" Touchscreen", "Premium Audio"]
+    },
+    {
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2024,
+      "trimLevel": "XSE",
+      "msrp": 36000,
+      "features": ["Sport Leather Seats", "Power Moonroof", "19\" Wheels", "Premium Audio", "Paddle Shifters"]
+    },
+    {
+      "make": "Honda",
+      "model": "Accord",
+      "year": 2024,
+      "trimLevel": "LX",
+      "msrp": 28095,
+      "features": ["Cloth Seats", "Honda Sensing", "Apple CarPlay", "Android Auto", "LED Headlights"]
+    },
+    {
+      "make": "Honda",
+      "model": "Accord",
+      "year": 2024,
+      "trimLevel": "Sport",
+      "msrp": 30795,
+      "features": ["Sport Seats", "19\" Wheels", "Sport Styling", "Honda Sensing", "Wireless Charging"]
+    },
+    {
+      "make": "Honda",
+      "model": "Accord",
+      "year": 2024,
+      "trimLevel": "EX-L",
+      "msrp": 34990,
+      "features": ["Leather Seats", "Power Moonroof", "Heated Seats", "Premium Audio", "Power Driver Seat"]
+    },
+    {
+      "make": "Honda",
+      "model": "Accord",
+      "year": 2024,
+      "trimLevel": "Touring",
+      "msrp": 39890,
+      "features": ["Leather Seats", "Navigation", "Head-Up Display", "Bose Audio", "Heated/Ventilated Seats"]
+    },
+    {
+      "make": "Lexus",
+      "model": "ES",
+      "year": 2024,
+      "trimLevel": "ES 250",
+      "msrp": 43190,
+      "features": ["Leather Seats", "8\" Display", "Lexus Safety System+", "Power Moonroof", "Premium Audio"]
+    },
+    {
+      "make": "Lexus",
+      "model": "ES",
+      "year": 2024,
+      "trimLevel": "ES 350",
+      "msrp": 46190,
+      "features": ["V6 Engine", "Leather Seats", "12.3\" Display", "Mark Levinson Audio", "Power Moonroof"]
+    },
+    {
+      "make": "Lexus",
+      "model": "ES",
+      "year": 2024,
+      "trimLevel": "ES 350 F Sport",
+      "msrp": 51690,
+      "features": ["Sport Suspension", "19\" Wheels", "Sport Seats", "F Sport Styling", "Adaptive Variable Suspension"]
+    },
+    {
+      "make": "Ford",
+      "model": "F-150",
+      "year": 2024,
+      "trimLevel": "XL",
+      "msrp": 36575,
+      "features": ["Vinyl Seats", "8\" Touchscreen", "Ford Co-Pilot360", "Trailer Sway Control"]
+    },
+    {
+      "make": "Ford",
+      "model": "F-150",
+      "year": 2024,
+      "trimLevel": "XLT",
+      "msrp": 44575,
+      "features": ["Cloth Seats", "Power Equipment Group", "Remote Start", "18\" Wheels"]
+    },
+    {
+      "make": "Ford",
+      "model": "F-150",
+      "year": 2024,
+      "trimLevel": "Lariat",
+      "msrp": 55575,
+      "features": ["Leather Seats", "12\" Touchscreen", "Bang & Olufsen Audio", "Power Running Boards", "Heated/Cooled Seats"]
+    },
+    {
+      "make": "Ford",
+      "model": "F-150",
+      "year": 2024,
+      "trimLevel": "King Ranch",
+      "msrp": 65575,
+      "features": ["Premium Leather", "King Ranch Styling", "Panoramic Roof", "Advanced Towing", "Massaging Seats"]
+    },
+    {
+      "make": "BMW",
+      "model": "3 Series",
+      "year": 2024,
+      "trimLevel": "330i",
+      "msrp": 43800,
+      "features": ["Leather Seats", "10.25\" Display", "Apple CarPlay", "Active Driving Assistant", "LED Headlights"]
+    },
+    {
+      "make": "BMW",
+      "model": "3 Series",
+      "year": 2024,
+      "trimLevel": "M340i",
+      "msrp": 59800,
+      "features": ["M Sport Suspension", "Harman Kardon Audio", "Head-Up Display", "19\" Wheels", "Adaptive M Suspension"]
+    },
+    {
+      "make": "Tesla",
+      "model": "Model 3",
+      "year": 2024,
+      "trimLevel": "RWD",
+      "msrp": 40240,
+      "features": ["Standard Range", "Autopilot", "15\" Touchscreen", "Over-the-Air Updates", "Vegan Leather"]
+    },
+    {
+      "make": "Tesla",
+      "model": "Model 3",
+      "year": 2024,
+      "trimLevel": "Long Range",
+      "msrp": 47240,
+      "features": ["Extended Range", "Dual Motor AWD", "Premium Interior", "Enhanced Autopilot Ready", "19\" Wheels"]
+    },
+    {
+      "make": "Tesla",
+      "model": "Model 3",
+      "year": 2024,
+      "trimLevel": "Performance",
+      "msrp": 53240,
+      "features": ["Track Mode", "Carbon Fiber Spoiler", "Performance Brakes", "20\" Wheels", "Lowered Suspension"]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Silverado 1500",
+      "year": 2024,
+      "trimLevel": "WT",
+      "msrp": 36800,
+      "features": ["Vinyl Seats", "7\" Touchscreen", "Teen Driver", "HD Rear Vision Camera"]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Silverado 1500",
+      "year": 2024,
+      "trimLevel": "LT",
+      "msrp": 46300,
+      "features": ["Cloth Seats", "8\" Touchscreen", "Power Windows", "Remote Start", "18\" Wheels"]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Silverado 1500",
+      "year": 2024,
+      "trimLevel": "RST",
+      "msrp": 51300,
+      "features": ["Sport Styling", "20\" Wheels", "Bed Liner", "LED Lighting", "Wireless Charging"]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Silverado 1500",
+      "year": 2024,
+      "trimLevel": "High Country",
+      "msrp": 62300,
+      "features": ["Premium Leather", "Bose Audio", "Panoramic Sunroof", "Adaptive Cruise", "22\" Wheels"]
+    }
+  ]
+}
+

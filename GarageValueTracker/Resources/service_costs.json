@@ -1,0 +1,269 @@
+{
+  "services": [
+    {
+      "category": "Routine Maintenance",
+      "services": [
+        {
+          "name": "Oil Change",
+          "baseCost": 60,
+          "costRange": "40-80",
+          "frequency": "Every 5,000-7,500 miles",
+          "factors": ["Vehicle size", "Oil type (synthetic vs conventional)"]
+        },
+        {
+          "name": "Tire Rotation",
+          "baseCost": 35,
+          "costRange": "20-50",
+          "frequency": "Every 6,000-8,000 miles",
+          "factors": ["Number of tires", "Shop location"]
+        },
+        {
+          "name": "Air Filter Replacement",
+          "baseCost": 45,
+          "costRange": "25-75",
+          "frequency": "Every 15,000-30,000 miles",
+          "factors": ["Filter type", "Vehicle make"]
+        },
+        {
+          "name": "Cabin Air Filter",
+          "baseCost": 40,
+          "costRange": "25-60",
+          "frequency": "Every 15,000-25,000 miles",
+          "factors": ["Filter quality", "Accessibility"]
+        },
+        {
+          "name": "Battery Replacement",
+          "baseCost": 180,
+          "costRange": "100-300",
+          "frequency": "Every 3-5 years",
+          "factors": ["Battery type", "Vehicle electrical system"]
+        },
+        {
+          "name": "Spark Plugs",
+          "baseCost": 200,
+          "costRange": "100-400",
+          "frequency": "Every 30,000-100,000 miles",
+          "factors": ["Number of cylinders", "Plug type", "Labor accessibility"]
+        }
+      ]
+    },
+    {
+      "category": "Brakes",
+      "services": [
+        {
+          "name": "Brake Pad Replacement",
+          "baseCost": 250,
+          "costRange": "150-400",
+          "frequency": "Every 30,000-70,000 miles",
+          "factors": ["Pad quality", "Vehicle size", "Front vs rear"]
+        },
+        {
+          "name": "Brake Rotor Replacement",
+          "baseCost": 400,
+          "costRange": "250-650",
+          "frequency": "Every 50,000-70,000 miles",
+          "factors": ["Rotor quality", "Vehicle weight", "Performance requirements"]
+        },
+        {
+          "name": "Brake Fluid Flush",
+          "baseCost": 100,
+          "costRange": "70-150",
+          "frequency": "Every 2-3 years",
+          "factors": ["Fluid type", "System complexity"]
+        },
+        {
+          "name": "Complete Brake Service",
+          "baseCost": 600,
+          "costRange": "400-1000",
+          "frequency": "As needed",
+          "factors": ["Pads, rotors, calipers", "Vehicle type"]
+        }
+      ]
+    },
+    {
+      "category": "Tires",
+      "services": [
+        {
+          "name": "New Tires (Set of 4)",
+          "baseCost": 600,
+          "costRange": "400-1200",
+          "frequency": "Every 40,000-80,000 miles",
+          "factors": ["Tire brand", "Size", "Performance rating"]
+        },
+        {
+          "name": "Wheel Alignment",
+          "baseCost": 100,
+          "costRange": "75-150",
+          "frequency": "Annually or as needed",
+          "factors": ["2-wheel vs 4-wheel", "Adjustment complexity"]
+        },
+        {
+          "name": "Tire Balancing",
+          "baseCost": 60,
+          "costRange": "40-80",
+          "frequency": "With new tires or as needed",
+          "factors": ["Number of wheels", "Shop rates"]
+        }
+      ]
+    },
+    {
+      "category": "Fluids",
+      "services": [
+        {
+          "name": "Transmission Fluid Change",
+          "baseCost": 200,
+          "costRange": "150-300",
+          "frequency": "Every 30,000-60,000 miles",
+          "factors": ["Automatic vs manual", "Fluid type", "Flush vs drain"]
+        },
+        {
+          "name": "Coolant Flush",
+          "baseCost": 150,
+          "costRange": "100-200",
+          "frequency": "Every 30,000 miles",
+          "factors": ["Coolant type", "System size"]
+        },
+        {
+          "name": "Power Steering Flush",
+          "baseCost": 100,
+          "costRange": "75-150",
+          "frequency": "Every 50,000 miles",
+          "factors": ["Fluid type", "System condition"]
+        },
+        {
+          "name": "Differential Fluid",
+          "baseCost": 120,
+          "costRange": "80-180",
+          "frequency": "Every 30,000-50,000 miles",
+          "factors": ["AWD/4WD vs 2WD", "Fluid type"]
+        }
+      ]
+    },
+    {
+      "category": "Suspension",
+      "services": [
+        {
+          "name": "Shocks/Struts Replacement",
+          "baseCost": 700,
+          "costRange": "400-1200",
+          "frequency": "Every 50,000-100,000 miles",
+          "factors": ["Part quality", "Number needed", "Labor complexity"]
+        },
+        {
+          "name": "Control Arm Replacement",
+          "baseCost": 350,
+          "costRange": "200-600",
+          "frequency": "As needed",
+          "factors": ["Front vs rear", "Bushings included"]
+        },
+        {
+          "name": "Ball Joint Replacement",
+          "baseCost": 300,
+          "costRange": "150-500",
+          "frequency": "As needed",
+          "factors": ["Upper vs lower", "Labor accessibility"]
+        }
+      ]
+    },
+    {
+      "category": "Cosmetic",
+      "services": [
+        {
+          "name": "Full Paint Job",
+          "baseCost": 5000,
+          "costRange": "3000-10000",
+          "frequency": "As desired",
+          "factors": ["Paint quality", "Prep work", "Color changes", "Shop reputation"]
+        },
+        {
+          "name": "Panel Painting",
+          "baseCost": 800,
+          "costRange": "400-1500",
+          "frequency": "As needed",
+          "factors": ["Panel size", "Paint matching", "Repair needed"]
+        },
+        {
+          "name": "Full Detail",
+          "baseCost": 250,
+          "costRange": "150-400",
+          "frequency": "As desired",
+          "factors": ["Interior/exterior/both", "Vehicle size", "Condition"]
+        },
+        {
+          "name": "Basic Wash & Wax",
+          "baseCost": 60,
+          "costRange": "30-100",
+          "frequency": "Monthly",
+          "factors": ["Vehicle size", "Wax type"]
+        },
+        {
+          "name": "Ceramic Coating",
+          "baseCost": 1200,
+          "costRange": "600-2000",
+          "frequency": "Every 2-5 years",
+          "factors": ["Coating quality", "Prep work", "Vehicle size"]
+        }
+      ]
+    },
+    {
+      "category": "Major Services",
+      "services": [
+        {
+          "name": "30k Mile Service",
+          "baseCost": 400,
+          "costRange": "300-600",
+          "frequency": "At 30,000 miles",
+          "factors": ["Vehicle make", "Service package", "Additional needs"]
+        },
+        {
+          "name": "60k Mile Service",
+          "baseCost": 900,
+          "costRange": "700-1500",
+          "frequency": "At 60,000 miles",
+          "factors": ["Vehicle make", "Major components", "Dealer vs independent"]
+        },
+        {
+          "name": "90k Mile Service",
+          "baseCost": 1400,
+          "costRange": "1000-2000",
+          "frequency": "At 90,000 miles",
+          "factors": ["Vehicle make", "Comprehensive service", "Timing belt if needed"]
+        },
+        {
+          "name": "Timing Belt Replacement",
+          "baseCost": 800,
+          "costRange": "500-1500",
+          "frequency": "Every 60,000-100,000 miles",
+          "factors": ["Engine type", "Water pump included", "Labor hours"]
+        }
+      ]
+    },
+    {
+      "category": "Electrical",
+      "services": [
+        {
+          "name": "Alternator Replacement",
+          "baseCost": 500,
+          "costRange": "300-800",
+          "frequency": "As needed",
+          "factors": ["Part quality", "Labor accessibility", "Vehicle make"]
+        },
+        {
+          "name": "Starter Replacement",
+          "baseCost": 450,
+          "costRange": "250-700",
+          "frequency": "As needed",
+          "factors": ["Part quality", "Labor accessibility"]
+        },
+        {
+          "name": "Headlight Bulb Replacement",
+          "baseCost": 40,
+          "costRange": "15-100",
+          "frequency": "As needed",
+          "factors": ["Bulb type (halogen/LED/HID)", "Accessibility"]
+        }
+      ]
+    }
+  ]
+}
+
