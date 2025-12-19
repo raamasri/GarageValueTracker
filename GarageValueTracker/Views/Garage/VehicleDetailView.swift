@@ -13,6 +13,7 @@ struct VehicleDetailView: View {
     @State private var showingMaintenanceInsights = false
     @State private var showingInsuranceTracking = false
     @State private var showingMaintenanceScheduler = false
+    @State private var showingFuelTracker = false
     @State private var dashboardScore: DashboardScore?
     
     // Fetch cost entries for this vehicle
@@ -234,6 +235,27 @@ struct VehicleDetailView: View {
                             .foregroundColor(.white)
                             .cornerRadius(16)
                             .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                }
+                .padding(.horizontal)
+                
+                // Action Buttons Row 3
+                HStack(spacing: 12) {
+                    NavigationLink(destination: FuelTrackerView(vehicle: vehicle)) {
+                        Label("Fuel Tracker", systemImage: "fuelpump.fill")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                ZStack {
+                                    Color.cyan.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
                 }
                 .padding(.horizontal)
