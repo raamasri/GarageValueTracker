@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import PhotosUI
 
 struct VehicleDashboardView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -296,7 +297,8 @@ struct VehicleDashboardView: View {
             calculateDashboardScore()
         }
         .sheet(isPresented: $showingScoreDetails) {
-            DashboardScoreDetailView(score: dashboardScore ?? DashboardScore(percentage: 0, completedItems: 0, totalItems: 12, missingItems: [], message: ""))
+            DashboardScoreDetailView(score: dashboardScore ?? DashboardScore(percentage: 0, completedItems: 0, totalItems: 12, missingItems: [], message: ""), vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
         }
     }
     
@@ -434,7 +436,21 @@ struct ServiceReminderRow: View {
 // Dashboard Score Detail View
 struct DashboardScoreDetailView: View {
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
     let score: DashboardScore
+    let vehicle: VehicleEntity
+    
+    // Navigation states for different actions
+    @State private var showingPhotoEdit = false
+    @State private var showingVINEdit = false
+    @State private var showingMileageEdit = false
+    @State private var showingLocationEdit = false
+    @State private var showingTrimSelection = false
+    @State private var showingInsuranceEdit = false
+    @State private var showingValueUpdate = false
+    @State private var showingNotesEdit = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var selectedPhotoData: Data?
     
     var body: some View {
         NavigationView {
@@ -458,13 +474,32 @@ struct DashboardScoreDetailView: View {
                 }
                 
                 if !score.missingItems.isEmpty {
-                    Section(header: Text("Missing Information")) {
+                    Section(header: Text("Improve Your Score")) {
                         ForEach(score.missingItems, id: \.self) { item in
-                            HStack {
-                                Image(systemName: "circle")
-                                    .foregroundColor(.orange)
-                                Text(item)
-                                    .font(.subheadline)
+                            Button(action: {
+                                handleItemAction(item)
+                            }) {
+                                HStack {
+                                    Image(systemName: iconForItem(item))
+                                        .foregroundColor(.orange)
+                                        .frame(width: 30)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(item)
+                                            .font(.subheadline)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text("Tap to add")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     }
@@ -479,6 +514,38 @@ struct DashboardScoreDetailView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showingPhotoEdit) {
+                VehiclePhotoEditView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingVINEdit) {
+                VehicleVINEditView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingMileageEdit) {
+                VehicleMileageEditView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingLocationEdit) {
+                VehicleLocationEditView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingTrimSelection) {
+                VehicleTrimEditView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingInsuranceEdit) {
+                InsuranceTrackingView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingValueUpdate) {
+                VehicleValueUpdateView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingNotesEdit) {
+                VehicleNotesEditView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+            }
         }
     }
     
@@ -488,6 +555,500 @@ struct DashboardScoreDetailView: View {
         case 60..<80: return .blue
         case 40..<60: return .orange
         default: return .red
+        }
+    }
+    
+    private func iconForItem(_ item: String) -> String {
+        if item.contains("photo") {
+            return "camera.fill"
+        } else if item.contains("VIN") {
+            return "barcode.viewfinder"
+        } else if item.contains("mileage") {
+            return "gauge"
+        } else if item.contains("location") {
+            return "location.fill"
+        } else if item.contains("trim") {
+            return "list.bullet.rectangle"
+        } else if item.contains("insurance") {
+            return "shield.checkered"
+        } else if item.contains("premium") {
+            return "dollarsign.circle"
+        } else if item.contains("value") {
+            return "chart.line.uptrend.xyaxis"
+        } else if item.contains("notes") || item.contains("documentation") {
+            return "doc.text"
+        } else {
+            return "circle"
+        }
+    }
+    
+    private func handleItemAction(_ item: String) {
+        if item.contains("photo") {
+            showingPhotoEdit = true
+        } else if item.contains("VIN") {
+            showingVINEdit = true
+        } else if item.contains("mileage") {
+            showingMileageEdit = true
+        } else if item.contains("location") {
+            showingLocationEdit = true
+        } else if item.contains("trim") {
+            showingTrimSelection = true
+        } else if item.contains("insurance information") || item.contains("insurance premium") {
+            showingInsuranceEdit = true
+        } else if item.contains("value") {
+            showingValueUpdate = true
+        } else if item.contains("notes") || item.contains("documentation") {
+            showingNotesEdit = true
+        }
+    }
+}
+
+// MARK: - Helper Edit Views
+
+// Vehicle Photo Edit View
+struct VehiclePhotoEditView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var selectedPhotoData: Data?
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 24) {
+                Text("Add Vehicle Photo")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.top)
+                
+                if let photoData = selectedPhotoData ?? vehicle.imageData,
+                   let uiImage = UIImage(data: photoData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 250)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(radius: 10)
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.opacity(0.1))
+                            .frame(height: 250)
+                        
+                        VStack(spacing: 12) {
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gray)
+                            Text("No Photo")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                
+                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                    Label("Choose Photo", systemImage: "photo.on.rectangle")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .onChange(of: selectedPhotoItem) {
+                    Task {
+                        if let item = selectedPhotoItem,
+                           let data = try? await item.loadTransferable(type: Data.self) {
+                            selectedPhotoData = compressImage(data)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                if selectedPhotoData != nil {
+                    Button(action: savePhoto) {
+                        Text("Save Photo")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func savePhoto() {
+        vehicle.imageData = selectedPhotoData
+        vehicle.updatedAt = Date()
+        
+        do {
+            try viewContext.save()
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Error saving photo: \(error)")
+        }
+    }
+    
+    private func compressImage(_ data: Data) -> Data? {
+        guard let image = UIImage(data: data) else { return nil }
+        return image.jpegData(compressionQuality: 0.7)
+    }
+}
+
+// Vehicle VIN Edit View
+struct VehicleVINEditView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var vin: String
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _vin = State(initialValue: vehicle.vin ?? "")
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Vehicle Identification Number")) {
+                    TextField("Enter VIN", text: $vin)
+                        .textInputAutocapitalization(.characters)
+                        .autocorrectionDisabled()
+                    
+                    Text("VIN is 17 characters")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Section {
+                    Button(action: saveVIN) {
+                        Text("Save VIN")
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(vin.count == 17 ? .blue : .gray)
+                    }
+                    .disabled(vin.count != 17)
+                }
+            }
+            .navigationTitle("Add VIN")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func saveVIN() {
+        vehicle.vin = vin.uppercased()
+        vehicle.updatedAt = Date()
+        
+        do {
+            try viewContext.save()
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Error saving VIN: \(error)")
+        }
+    }
+}
+
+// Vehicle Mileage Edit View
+struct VehicleMileageEditView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var mileage: String
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _mileage = State(initialValue: vehicle.mileage > 0 ? "\(vehicle.mileage)" : "")
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Current Mileage")) {
+                    TextField("Enter mileage", text: $mileage)
+                        .keyboardType(.numberPad)
+                    
+                    Text("Enter the current odometer reading")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Section {
+                    Button(action: saveMileage) {
+                        Text("Save Mileage")
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(!mileage.isEmpty ? .blue : .gray)
+                    }
+                    .disabled(mileage.isEmpty)
+                }
+            }
+            .navigationTitle("Update Mileage")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func saveMileage() {
+        if let miles = Int32(mileage) {
+            vehicle.mileage = miles
+            vehicle.updatedAt = Date()
+            
+            do {
+                try viewContext.save()
+                presentationMode.wrappedValue.dismiss()
+            } catch {
+                print("Error saving mileage: \(error)")
+            }
+        }
+    }
+}
+
+// Vehicle Location Edit View
+struct VehicleLocationEditView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var location: String
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _location = State(initialValue: vehicle.location ?? "")
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Vehicle Location")) {
+                    TextField("City, State", text: $location)
+                        .textInputAutocapitalization(.words)
+                    
+                    Text("e.g., Los Angeles, CA")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Section {
+                    Button(action: saveLocation) {
+                        Text("Save Location")
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(!location.isEmpty ? .blue : .gray)
+                    }
+                    .disabled(location.isEmpty)
+                }
+            }
+            .navigationTitle("Set Location")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func saveLocation() {
+        vehicle.location = location
+        vehicle.updatedAt = Date()
+        
+        do {
+            try viewContext.save()
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Error saving location: \(error)")
+        }
+    }
+}
+
+// Vehicle Value Update View
+struct VehicleValueUpdateView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var value: String
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _value = State(initialValue: vehicle.currentValue > 0 ? String(format: "%.0f", vehicle.currentValue) : "")
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Current Market Value")) {
+                    HStack {
+                        Text("$")
+                            .foregroundColor(.secondary)
+                        TextField("Enter value", text: $value)
+                            .keyboardType(.numberPad)
+                    }
+                    
+                    Text("Estimate your vehicle's current market value")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Section {
+                    Button(action: saveValue) {
+                        Text("Save Value")
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(!value.isEmpty ? .blue : .gray)
+                    }
+                    .disabled(value.isEmpty)
+                }
+            }
+            .navigationTitle("Update Value")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func saveValue() {
+        if let newValue = Double(value) {
+            vehicle.currentValue = newValue
+            vehicle.lastValuationUpdate = Date()
+            vehicle.updatedAt = Date()
+            
+            do {
+                try viewContext.save()
+                presentationMode.wrappedValue.dismiss()
+            } catch {
+                print("Error saving value: \(error)")
+            }
+        }
+    }
+}
+
+// Vehicle Trim Edit View (wrapper for TrimSelectionView)
+struct VehicleTrimEditView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var selectedTrimData: TrimData?
+    
+    var body: some View {
+        TrimSelectionView(
+            make: vehicle.make,
+            model: vehicle.model,
+            year: Int(vehicle.year),
+            selectedTrim: $selectedTrimData
+        )
+        .onChange(of: selectedTrimData) {
+            if let trimData = selectedTrimData {
+                vehicle.trim = trimData.trimLevel
+                vehicle.trimMSRP = trimData.msrp
+                vehicle.updatedAt = Date()
+                
+                // Try to get or create TrimEntity for the selected trim
+                if let trimEntity = TrimDatabaseService.shared.getOrCreateTrimEntity(from: trimData) {
+                    vehicle.selectedTrimID = trimEntity.id
+                }
+                
+                do {
+                    try viewContext.save()
+                    presentationMode.wrappedValue.dismiss()
+                } catch {
+                    print("Error saving trim: \(error)")
+                }
+            }
+        }
+    }
+}
+
+// Vehicle Notes Edit View
+struct VehicleNotesEditView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    
+    @State private var notes: String
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _notes = State(initialValue: vehicle.notes ?? "")
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Vehicle Notes")) {
+                    TextEditor(text: $notes)
+                        .frame(minHeight: 150)
+                    
+                    Text("Add notes, modifications, or other details about your vehicle")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Section {
+                    Button(action: saveNotes) {
+                        Text("Save Notes")
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(!notes.isEmpty ? .blue : .gray)
+                    }
+                    .disabled(notes.isEmpty)
+                }
+            }
+            .navigationTitle("Add Notes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func saveNotes() {
+        vehicle.notes = notes
+        vehicle.updatedAt = Date()
+        
+        do {
+            try viewContext.save()
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Error saving notes: \(error)")
         }
     }
 }

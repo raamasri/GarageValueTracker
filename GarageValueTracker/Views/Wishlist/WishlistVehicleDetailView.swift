@@ -61,60 +61,97 @@ struct WishlistVehicleDetailView: View {
                 .padding()
                 
                 // Current Price Card
-                VStack(spacing: 16) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Current Price")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("$\(Int(vehicle.currentPrice))")
-                                .font(.system(size: 48, weight: .bold))
-                                .foregroundColor(.blue)
-                        }
-                        
-                        Spacer()
-                        
-                        if let stats = priceStats {
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("Since Added")
+                if vehicle.currentPrice > 0 {
+                    VStack(spacing: 16) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Current Price")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
-                                
-                                HStack(spacing: 4) {
-                                    Image(systemName: stats.trend.icon)
-                                    Text(stats.priceChangeSinceAdded > 0 ? "+$\(Int(abs(stats.priceChangeSinceAdded)))" : "-$\(Int(abs(stats.priceChangeSinceAdded)))")
-                                        .fontWeight(.semibold)
+                                Text("$\(Int(vehicle.currentPrice))")
+                                    .font(.system(size: 48, weight: .bold))
+                                    .foregroundColor(.blue)
+                            }
+                            
+                            Spacer()
+                            
+                            if let stats = priceStats {
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    Text("Since Added")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    
+                                    HStack(spacing: 4) {
+                                        Image(systemName: stats.trend.icon)
+                                        Text(stats.priceChangeSinceAdded > 0 ? "+$\(Int(abs(stats.priceChangeSinceAdded)))" : "-$\(Int(abs(stats.priceChangeSinceAdded)))")
+                                            .fontWeight(.semibold)
+                                    }
+                                    .font(.title3)
+                                    .foregroundColor(stats.trend == .decreasing ? .green : (stats.trend == .increasing ? .red : .gray))
                                 }
-                                .font(.title3)
-                                .foregroundColor(stats.trend == .decreasing ? .green : (stats.trend == .increasing ? .red : .gray))
                             }
                         }
+                        
+                        if let lastUpdate = vehicle.lastPriceUpdate {
+                            Text("Last updated: \(lastUpdate, style: .relative) ago")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Button(action: {
+                            showingUpdatePrice = true
+                        }) {
+                            Label("Update Price", systemImage: "dollarsign.circle.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(12)
+                        }
                     }
-                    
-                    if let lastUpdate = vehicle.lastPriceUpdate {
-                        Text("Last updated: \(lastUpdate, style: .relative) ago")
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .overlay(RoundedRectangle(cornerRadius: 16).fill(Color.white.opacity(0.15)))
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    .padding(.horizontal)
+                } else {
+                    // No price set - show add price option
+                    VStack(spacing: 12) {
+                        Image(systemName: "dollarsign.circle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.secondary)
+                        
+                        Text("No Price Set")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("Track this vehicle's price to get notified when it drops")
                             .font(.caption)
                             .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        
+                        Button(action: {
+                            showingUpdatePrice = true
+                        }) {
+                            Label("Add Price", systemImage: "plus.circle.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(12)
+                        }
                     }
-                    
-                    Button(action: {
-                        showingUpdatePrice = true
-                    }) {
-                        Label("Update Price", systemImage: "dollarsign.circle.fill")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
-                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .overlay(RoundedRectangle(cornerRadius: 16).fill(Color.white.opacity(0.15)))
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    .padding(.horizontal)
                 }
-                .padding()
-                .background(.ultraThinMaterial)
-                .overlay(RoundedRectangle(cornerRadius: 16).fill(Color.white.opacity(0.15)))
-                .cornerRadius(16)
-                .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
-                .padding(.horizontal)
                 
                 // Target Price Card
                 if vehicle.targetPrice > 0 {
@@ -390,22 +427,37 @@ struct UpdatePriceView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section("Current Price") {
-                    Text("$\(Int(vehicle.currentPrice))")
-                        .font(.title2)
-                        .fontWeight(.bold)
+                if vehicle.currentPrice > 0 {
+                    Section("Current Price") {
+                        Text("$\(Int(vehicle.currentPrice))")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
                 }
                 
                 Section("New Price") {
                     HStack {
                         Text("$")
                             .foregroundColor(.secondary)
-                        TextField("Enter new price", text: $newPrice)
+                        TextField("Enter price", text: $newPrice)
                             .keyboardType(.decimalPad)
                     }
                 }
+                
+                if vehicle.targetPrice > 0 {
+                    Section {
+                        HStack {
+                            Text("Target Price")
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("$\(Int(vehicle.targetPrice))")
+                                .foregroundColor(.green)
+                                .fontWeight(.semibold)
+                        }
+                    }
+                }
             }
-            .navigationTitle("Update Price")
+            .navigationTitle(vehicle.currentPrice > 0 ? "Update Price" : "Add Price")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

@@ -36,6 +36,12 @@ class AppSettingsManager: ObservableObject {
         }
     }
     
+    @Published var garageViewMode: GarageViewMode {
+        didSet {
+            UserDefaults.standard.set(garageViewMode.rawValue, forKey: "garageViewMode")
+        }
+    }
+    
     // MARK: - Initialization
     private init() {
         // Load appearance mode
@@ -67,6 +73,14 @@ class AppSettingsManager: ObservableObject {
         
         // Load currency
         self.currencySymbol = UserDefaults.standard.string(forKey: "currencySymbol") ?? "$"
+        
+        // Load garage view mode
+        if let savedMode = UserDefaults.standard.string(forKey: "garageViewMode"),
+           let mode = GarageViewMode(rawValue: savedMode) {
+            self.garageViewMode = mode
+        } else {
+            self.garageViewMode = .card
+        }
     }
     
     // MARK: - Color Scheme
@@ -88,6 +102,7 @@ class AppSettingsManager: ObservableObject {
         showVehiclePhotos = true
         distanceUnit = .miles
         currencySymbol = "$"
+        garageViewMode = .card
     }
 }
 
@@ -151,5 +166,20 @@ enum AccentColorOption: String, CaseIterable {
 enum DistanceUnit: String, CaseIterable {
     case miles = "Miles"
     case kilometers = "Kilometers"
+}
+
+// MARK: - Garage View Mode
+enum GarageViewMode: String, CaseIterable {
+    case card = "Card"
+    case list = "List"
+    
+    var icon: String {
+        switch self {
+        case .card:
+            return "square.stack.3d.up"
+        case .list:
+            return "list.bullet"
+        }
+    }
 }
 

@@ -3,6 +3,7 @@ import CoreData
 
 struct GarageListView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var appSettings = AppSettingsManager.shared
     
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \VehicleEntity.year, ascending: false)],
@@ -24,63 +25,94 @@ struct GarageListView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Tab Selector
-            HStack(spacing: 0) {
-                Button(action: { selectedTab = .myGarage }) {
-                    VStack(spacing: 8) {
-                        Text("My Garage")
-                            .font(.headline)
-                            .fontWeight(selectedTab == .myGarage ? .bold : .regular)
-                        
-                        if selectedTab == .myGarage {
-                            Capsule()
-                                .fill(Color.blue)
-                                .frame(height: 3)
-                        } else {
-                            Capsule()
-                                .fill(Color.clear)
-                                .frame(height: 3)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(selectedTab == .myGarage ? .primary : .secondary)
-                }
-                
-                Button(action: { selectedTab = .wishlist }) {
-                    VStack(spacing: 8) {
-                        HStack(spacing: 4) {
-                            Text("Wishlist")
+            // Tab Selector and View Toggle
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Button(action: { selectedTab = .myGarage }) {
+                        VStack(spacing: 8) {
+                            Text("My Garage")
                                 .font(.headline)
-                                .fontWeight(selectedTab == .wishlist ? .bold : .regular)
+                                .fontWeight(selectedTab == .myGarage ? .bold : .regular)
                             
-                            if wishlistVehicles.count > 0 {
-                                Text("\(wishlistVehicles.count)")
-                                    .font(.caption)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(Color.blue)
-                                    .clipShape(Capsule())
+                            if selectedTab == .myGarage {
+                                Capsule()
+                                    .fill(Color.blue)
+                                    .frame(height: 3)
+                            } else {
+                                Capsule()
+                                    .fill(Color.clear)
+                                    .frame(height: 3)
                             }
                         }
-                        
-                        if selectedTab == .wishlist {
-                            Capsule()
-                                .fill(Color.blue)
-                                .frame(height: 3)
-                        } else {
-                            Capsule()
-                                .fill(Color.clear)
-                                .frame(height: 3)
-                        }
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(selectedTab == .myGarage ? .primary : .secondary)
                     }
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(selectedTab == .wishlist ? .primary : .secondary)
+                    
+                    Button(action: { selectedTab = .wishlist }) {
+                        VStack(spacing: 8) {
+                            HStack(spacing: 4) {
+                                Text("Wishlist")
+                                    .font(.headline)
+                                    .fontWeight(selectedTab == .wishlist ? .bold : .regular)
+                                
+                                if wishlistVehicles.count > 0 {
+                                    Text("\(wishlistVehicles.count)")
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.blue)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                            
+                            if selectedTab == .wishlist {
+                                Capsule()
+                                    .fill(Color.blue)
+                                    .frame(height: 3)
+                            } else {
+                                Capsule()
+                                    .fill(Color.clear)
+                                    .frame(height: 3)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(selectedTab == .wishlist ? .primary : .secondary)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 10)
+                
+                // View mode toggle (only show for My Garage tab)
+                if selectedTab == .myGarage && vehicles.count > 0 {
+                    HStack {
+                        Spacer()
+                        
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3)) {
+                                appSettings.garageViewMode = appSettings.garageViewMode == .card ? .list : .card
+                            }
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: appSettings.garageViewMode == .card ? "list.bullet" : "square.stack.3d.up")
+                                    .font(.subheadline)
+                                Text(appSettings.garageViewMode == .card ? "List View" : "Card View")
+                                    .font(.caption)
+                                    .fontWeight(.medium)
+                            }
+                            .foregroundColor(.blue)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.blue.opacity(0.1))
+                            .clipShape(Capsule())
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
+                    }
                 }
             }
-            .padding(.horizontal)
-            .padding(.top, 10)
             .background(Color(.systemBackground))
             
             // Content
@@ -95,6 +127,16 @@ struct GarageListView: View {
     }
     
     private var myGarageView: some View {
+        Group {
+            if appSettings.garageViewMode == .card {
+                cardView
+            } else {
+                listView
+            }
+        }
+    }
+    
+    private var cardView: some View {
         VStack(spacing: 0) {
             // Page indicator at top
             if vehicles.count > 1 {
@@ -120,6 +162,17 @@ struct GarageListView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+        }
+    }
+    
+    private var listView: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(vehicles, id: \.id) { vehicle in
+                    VehicleListRow(vehicle: vehicle)
+                }
+            }
+            .padding()
         }
     }
     
@@ -305,6 +358,106 @@ struct VehicleCard: View {
     }
 }
 
+// MARK: - Vehicle List Row Component (Compact View)
+struct VehicleListRow: View {
+    let vehicle: VehicleEntity
+    
+    @FetchRequest private var costEntries: FetchedResults<CostEntryEntity>
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        
+        _costEntries = FetchRequest<CostEntryEntity>(
+            sortDescriptors: [],
+            predicate: NSPredicate(format: "vehicleID == %@", vehicle.id as CVarArg),
+            animation: .default
+        )
+    }
+    
+    private var totalCosts: Double {
+        costEntries.reduce(0) { $0 + $1.amount }
+    }
+    
+    var body: some View {
+        NavigationLink(destination: VehicleDetailView(vehicle: vehicle)) {
+            HStack(spacing: 12) {
+                // Vehicle thumbnail
+                Group {
+                    if let imageData = vehicle.imageData,
+                       let uiImage = UIImage(data: imageData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        ZStack {
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.blue.opacity(0.6),
+                                    Color.purple.opacity(0.6)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                            
+                            Image(systemName: "car.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+                .frame(width: 80, height: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                
+                // Vehicle info
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("\(String(vehicle.year)) \(vehicle.make)")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    
+                    Text(vehicle.model)
+                        .font(.subheadline)
+                        .foregroundColor(.primary)
+                    
+                    if let trim = vehicle.trim {
+                        Text(trim)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack(spacing: 12) {
+                        // Mileage
+                        HStack(spacing: 4) {
+                            Image(systemName: "gauge")
+                                .font(.caption2)
+                            Text("\(vehicle.mileage)")
+                                .font(.caption)
+                        }
+                        .foregroundColor(.secondary)
+                        
+                        // Value
+                        Text("$\(Int(vehicle.currentValue))")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.green)
+                    }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
 // MARK: - Wishlist Vehicle Card Component
 struct WishlistVehicleCard: View {
     let vehicle: WishlistVehicleEntity
@@ -369,25 +522,34 @@ struct WishlistVehicleCard: View {
                         
                         HStack(spacing: 12) {
                             // Current Price
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Current")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                Text("$\(Int(vehicle.currentPrice))")
-                                    .font(.headline)
-                                    .fontWeight(.bold)
-                            }
-                            
-                            // Price Trend
-                            if let stats = priceStats {
-                                HStack(spacing: 4) {
-                                    Image(systemName: stats.trend.icon)
-                                        .font(.caption)
-                                    Text(stats.priceChangeSinceAdded > 0 ? "+$\(Int(abs(stats.priceChangeSinceAdded)))" : "-$\(Int(abs(stats.priceChangeSinceAdded)))")
-                                        .font(.caption)
-                                        .fontWeight(.semibold)
+                            if vehicle.currentPrice > 0 {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Current")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    Text("$\(Int(vehicle.currentPrice))")
+                                        .font(.headline)
+                                        .fontWeight(.bold)
                                 }
-                                .foregroundColor(stats.trend == .decreasing ? .green : (stats.trend == .increasing ? .red : .gray))
+                                
+                                // Price Trend
+                                if let stats = priceStats {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: stats.trend.icon)
+                                            .font(.caption)
+                                        Text(stats.priceChangeSinceAdded > 0 ? "+$\(Int(abs(stats.priceChangeSinceAdded)))" : "-$\(Int(abs(stats.priceChangeSinceAdded)))")
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                    }
+                                    .foregroundColor(stats.trend == .decreasing ? .green : (stats.trend == .increasing ? .red : .gray))
+                                }
+                            } else {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("No price set")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .italic()
+                                }
                             }
                             
                             Spacer()
@@ -407,6 +569,16 @@ struct WishlistVehicleCard: View {
                                     .padding(.vertical, 4)
                                     .background(Color.green.opacity(0.15))
                                     .clipShape(Capsule())
+                                } else {
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text("Target")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                        Text("$\(Int(vehicle.targetPrice))")
+                                            .font(.caption)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.green)
+                                    }
                                 }
                             }
                         }

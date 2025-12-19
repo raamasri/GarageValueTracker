@@ -292,7 +292,8 @@ struct VehicleDetailView: View {
         }
         .sheet(isPresented: $showingDashboardScoreDetails) {
             if let score = dashboardScore {
-                DashboardScoreDetailView(score: score)
+                DashboardScoreDetailView(score: score, vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
             }
         }
         .sheet(isPresented: $showingMaintenanceInsights) {

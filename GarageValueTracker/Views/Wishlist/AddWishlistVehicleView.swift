@@ -87,11 +87,11 @@ struct AddWishlistVehicleView: View {
     }
     
     private var pricingSection: some View {
-        Section("Pricing") {
+        Section {
             HStack {
                 Text("$")
                     .foregroundColor(.secondary)
-                TextField("Current Price", text: $currentPrice)
+                TextField("Current Price (Optional)", text: $currentPrice)
                     .keyboardType(.decimalPad)
             }
             
@@ -102,6 +102,11 @@ struct AddWishlistVehicleView: View {
                     .keyboardType(.decimalPad)
             }
             .foregroundColor(.green)
+        } header: {
+            Text("Pricing")
+        } footer: {
+            Text("Add a target price to track when it drops to your ideal price")
+                .font(.caption)
         }
     }
     
@@ -205,13 +210,26 @@ struct AddWishlistVehicleView: View {
         let finalModel = selectedModel == "Custom" ? customModel : selectedModel
         let finalYear = selectedYear == "Custom" ? customYear : selectedYear
         
+        // Only require make, model, and year
         guard !finalMake.isEmpty,
               !finalModel.isEmpty,
               !finalYear.isEmpty,
-              let _ = Int16(finalYear),
-              let priceValue = Double(currentPrice),
-              priceValue > 0 else {
+              let _ = Int16(finalYear) else {
             return false
+        }
+        
+        // If price is provided, validate it's a valid number
+        if !currentPrice.isEmpty {
+            guard let priceValue = Double(currentPrice), priceValue > 0 else {
+                return false
+            }
+        }
+        
+        // If target price is provided, validate it's a valid number
+        if !targetPrice.isEmpty {
+            guard let targetValue = Double(targetPrice), targetValue > 0 else {
+                return false
+            }
         }
         
         return true
@@ -222,9 +240,10 @@ struct AddWishlistVehicleView: View {
         let finalModel = selectedModel == "Custom" ? customModel : selectedModel
         let finalYear = selectedYear == "Custom" ? customYear : selectedYear
         
-        guard let yearValue = Int16(finalYear),
-              let priceValue = Double(currentPrice) else { return }
+        guard let yearValue = Int16(finalYear) else { return }
         
+        // Parse price values - default to 0 if not provided
+        let priceValue = Double(currentPrice) ?? 0
         let targetPriceValue = Double(targetPrice) ?? 0
         let mileageValue = Int32(mileage) ?? 0
         
