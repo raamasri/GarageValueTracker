@@ -300,6 +300,12 @@ struct VehicleDashboardView: View {
             DashboardScoreDetailView(score: dashboardScore ?? DashboardScore(percentage: 0, completedItems: 0, totalItems: 12, missingItems: [], message: ""), vehicle: vehicle)
                 .environment(\.managedObjectContext, viewContext)
         }
+        .sheet(isPresented: $showingAddReminder) {
+            DashboardAddServiceReminderView(vehicle: vehicle, onSave: {
+                calculateDashboardScore()
+            })
+            .environment(\.managedObjectContext, viewContext)
+        }
     }
     
     private func calculateDashboardScore() {
@@ -1049,6 +1055,139 @@ struct VehicleNotesEditView: View {
             presentationMode.wrappedValue.dismiss()
         } catch {
             print("Error saving notes: \(error)")
+        }
+    }
+}
+
+// MARK: - Dashboard Add Service Reminder View
+struct DashboardAddServiceReminderView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) private var viewContext
+    let vehicle: VehicleEntity
+    let onSave: () -> Void
+    
+    @State private var serviceType = ""
+    @State private var dueDate = Date().addingTimeInterval(30 * 24 * 60 * 60) // 30 days from now
+    @State private var dueMileage = ""
+    @State private var intervalMonths = ""
+    @State private var intervalMileage = ""
+    @State private var notes = ""
+    @State private var selectedIcon = "wrench.and.screwdriver"
+    
+    private let serviceIcons = [
+        "wrench.and.screwdriver", "drop.fill", "car.fill",
+        "fanblades.fill", "battery.100", "brake.signal",
+        "engine.combustion", "fuelpump.fill", "sparkles"
+    ]
+    
+    private var isValid: Bool {
+        !serviceType.isEmpty
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Service Details")) {
+                    TextField("Service Type (e.g., Oil Change)", text: $serviceType)
+                    
+                    // Icon Picker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Icon")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(serviceIcons, id: \.self) { icon in
+                                    Button(action: {
+                                        selectedIcon = icon
+                                    }) {
+                                        Image(systemName: icon)
+                                            .font(.title2)
+                                            .foregroundColor(selectedIcon == icon ? .blue : .gray)
+                                            .frame(width: 44, height: 44)
+                                            .background(selectedIcon == icon ? Color.blue.opacity(0.1) : Color.clear)
+                                            .cornerRadius(8)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Section(header: Text("Due Date & Mileage")) {
+                    DatePicker("Due Date", selection: $dueDate, displayedComponents: [.date])
+                    
+                    TextField("Due at Mileage (Optional)", text: $dueMileage)
+                        .keyboardType(.numberPad)
+                }
+                
+                Section(header: Text("Service Interval (Optional)")) {
+                    HStack {
+                        TextField("Months", text: $intervalMonths)
+                            .keyboardType(.numberPad)
+                        Text("months")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        TextField("Miles", text: $intervalMileage)
+                            .keyboardType(.numberPad)
+                        Text("miles")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Section(header: Text("Notes (Optional)")) {
+                    TextEditor(text: $notes)
+                        .frame(minHeight: 80)
+                }
+            }
+            .navigationTitle("Add Service Reminder")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        saveReminder()
+                    }
+                    .disabled(!isValid)
+                }
+            }
+        }
+    }
+    
+    private func saveReminder() {
+        let mileageValue = Int(dueMileage) ?? 0
+        let intervalMonthsValue = Int(intervalMonths) ?? 0
+        let intervalMileageValue = Int(intervalMileage) ?? 0
+        
+        let reminder = ServiceReminderEntity(
+            context: viewContext,
+            vehicleID: vehicle.id,
+            serviceType: serviceType,
+            iconName: selectedIcon,
+            dueDate: dueDate,
+            dueMileage: mileageValue,
+            intervalMonths: intervalMonthsValue,
+            intervalMileage: intervalMileageValue
+        )
+        
+        if !notes.isEmpty {
+            reminder.notes = notes
+        }
+        
+        do {
+            try viewContext.save()
+            onSave()
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Error saving service reminder: \(error)")
         }
     }
 }

@@ -13,7 +13,6 @@ struct VehicleDetailView: View {
     @State private var showingMaintenanceInsights = false
     @State private var showingInsuranceTracking = false
     @State private var showingMaintenanceScheduler = false
-    @State private var showingFuelTracker = false
     @State private var dashboardScore: DashboardScore?
     
     // Fetch cost entries for this vehicle

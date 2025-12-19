@@ -3,12 +3,41 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var settingsManager = AppSettingsManager.shared
     @State private var showingResetAlert = false
+    @State private var showingDealChecker = false
+    @State private var showingServiceEstimator = false
     
     var body: some View {
         NavigationView {
             Form {
-                // MARK: - Appearance Section
-                Section(header: Text("Appearance")) {
+                appearanceSection
+                unitsSection
+                toolsSection
+                dataSection
+                notificationsSection
+                aboutSection
+                resetSection
+            }
+            .navigationTitle("Settings")
+            .alert("Reset Settings", isPresented: $showingResetAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {
+                    settingsManager.resetToDefaults()
+                }
+            } message: {
+                Text("This will reset all settings to their default values. This action cannot be undone.")
+            }
+            .sheet(isPresented: $showingDealChecker) {
+                DealCheckerView()
+            }
+            .sheet(isPresented: $showingServiceEstimator) {
+                ServiceEstimatorView(vehicle: nil)
+            }
+        }
+    }
+    
+    // MARK: - Appearance Section
+    private var appearanceSection: some View {
+        Section(header: Text("Appearance")) {
                     // Dark Mode Picker
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Dark Mode", systemImage: "paintbrush.fill")
@@ -93,11 +122,13 @@ struct SettingsView: View {
                     // Show Vehicle Photos Toggle
                     Toggle(isOn: $settingsManager.showVehiclePhotos) {
                         Label("Show Vehicle Photos", systemImage: "photo")
-                    }
-                }
-                
-                // MARK: - Units & Format Section
-                Section(header: Text("Units & Format")) {
+            }
+        }
+    }
+    
+    // MARK: - Units Section
+    private var unitsSection: some View {
+        Section(header: Text("Units & Format")) {
                     // Distance Unit
                     Picker(selection: $settingsManager.distanceUnit) {
                         ForEach(DistanceUnit.allCases, id: \.self) { unit in
@@ -114,10 +145,31 @@ struct SettingsView: View {
                         Text(settingsManager.currencySymbol)
                             .foregroundColor(.secondary)
                     }
-                }
-                
-                // MARK: - Data Section
-                Section(header: Text("Data Management")) {
+        }
+    }
+    
+    // MARK: - Tools Section
+    private var toolsSection: some View {
+        Section(header: Text("Tools")) {
+                    Button(action: {
+                        showingDealChecker = true
+                    }) {
+                        Label("Deal Checker", systemImage: "checkmark.seal.fill")
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Button(action: {
+                        showingServiceEstimator = true
+                    }) {
+                        Label("Service Cost Estimator", systemImage: "wrench.and.screwdriver.fill")
+                            .foregroundColor(.primary)
+                    }
+        }
+    }
+    
+    // MARK: - Data Section
+    private var dataSection: some View {
+        Section(header: Text("Data Management")) {
                     NavigationLink(destination: Text("Coming Soon")) {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                     }
@@ -129,10 +181,12 @@ struct SettingsView: View {
                     NavigationLink(destination: Text("Coming Soon")) {
                         Label("Backup & Sync", systemImage: "icloud")
                     }
-                }
-                
-                // MARK: - Notifications Section
-                Section(header: Text("Notifications")) {
+        }
+    }
+    
+    // MARK: - Notifications Section
+    private var notificationsSection: some View {
+        Section(header: Text("Notifications")) {
                     NavigationLink(destination: Text("Coming Soon")) {
                         Label("Service Reminders", systemImage: "bell.badge")
                     }
@@ -140,10 +194,12 @@ struct SettingsView: View {
                     NavigationLink(destination: Text("Coming Soon")) {
                         Label("Insurance Renewal", systemImage: "bell.circle")
                     }
-                }
-                
-                // MARK: - About Section
-                Section(header: Text("About")) {
+        }
+    }
+    
+    // MARK: - About Section
+    private var aboutSection: some View {
+        Section(header: Text("About")) {
                     HStack {
                         Text("Version")
                         Spacer()
@@ -180,30 +236,21 @@ struct SettingsView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+        }
+    }
+    
+    // MARK: - Reset Section
+    private var resetSection: some View {
+        Section {
+            Button(action: {
+                showingResetAlert = true
+            }) {
+                HStack {
+                    Spacer()
+                    Label("Reset All Settings", systemImage: "arrow.counterclockwise")
+                        .foregroundColor(.red)
+                    Spacer()
                 }
-                
-                // MARK: - Reset Section
-                Section {
-                    Button(action: {
-                        showingResetAlert = true
-                    }) {
-                        HStack {
-                            Spacer()
-                            Label("Reset All Settings", systemImage: "arrow.counterclockwise")
-                                .foregroundColor(.red)
-                            Spacer()
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Settings")
-            .alert("Reset Settings", isPresented: $showingResetAlert) {
-                Button("Cancel", role: .cancel) { }
-                Button("Reset", role: .destructive) {
-                    settingsManager.resetToDefaults()
-                }
-            } message: {
-                Text("This will reset all settings to their default values. This action cannot be undone.")
             }
         }
     }
