@@ -19,6 +19,8 @@ struct VehicleDetailView: View {
     @State private var showingKnownIssues = false
     @State private var showingTCO = false
     @State private var showingDepreciationChart = false
+    @State private var showingLoanTracker = false
+    @State private var showingSellAdvisor = false
     @State private var dashboardScore: DashboardScore?
     @State private var knownIssueCount: Int = 0
     
@@ -199,6 +201,44 @@ struct VehicleDetailView: View {
                 }
                 .padding(.horizontal)
                 
+                // Loan & Sell Advisor Row
+                HStack(spacing: 12) {
+                    Button(action: {
+                        showingLoanTracker = true
+                    }) {
+                        Label("Loan Tracker", systemImage: "banknote")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(colors: [.indigo.opacity(0.8), .blue.opacity(0.8)],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .indigo.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+
+                    Button(action: {
+                        showingSellAdvisor = true
+                    }) {
+                        Label("Sell Advisor", systemImage: "tag.fill")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(colors: [.orange.opacity(0.8), .red.opacity(0.7)],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                }
+                .padding(.horizontal)
+
                 // Action Buttons Row 1
                 HStack(spacing: 12) {
                     Button(action: {
@@ -488,6 +528,14 @@ struct VehicleDetailView: View {
         }
         .sheet(isPresented: $showingDepreciationChart) {
             DepreciationChartView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingLoanTracker) {
+            LoanTrackerView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingSellAdvisor) {
+            SellAdvisorView(vehicle: vehicle)
                 .environment(\.managedObjectContext, viewContext)
         }
         .onAppear {

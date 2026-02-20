@@ -15,6 +15,8 @@ struct VehicleDashboardView: View {
     @State private var recallCount: Int?
     @State private var showingRegistrationInspection = false
     @State private var showingShopFinder = false
+    @State private var showingLoanTracker = false
+    @State private var showingSellAdvisor = false
     
     // Fetch service reminders
     @FetchRequest var serviceReminders: FetchedResults<ServiceReminderEntity>
@@ -404,6 +406,62 @@ struct VehicleDashboardView: View {
                 .buttonStyle(PlainButtonStyle())
                 .padding(.horizontal)
                 
+                // Loan & Sell Advisor Cards
+                HStack(spacing: 12) {
+                    Button(action: { showingLoanTracker = true }) {
+                        HStack {
+                            Image(systemName: "banknote")
+                                .font(.title3)
+                                .foregroundColor(.indigo)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Loan Tracker")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                Text("Payments & Equity")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+
+                    Button(action: { showingSellAdvisor = true }) {
+                        HStack {
+                            Image(systemName: "tag.fill")
+                                .font(.title3)
+                                .foregroundColor(.orange)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Sell Advisor")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                Text("Best time to sell?")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding(.horizontal)
+
                 // Fuel Tracker Card (if has fuel data)
                 if !fuelEntries.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
@@ -484,6 +542,14 @@ struct VehicleDashboardView: View {
         }
         .sheet(isPresented: $showingShopFinder) {
             ServiceShopFinderView(vehicle: vehicle)
+        }
+        .sheet(isPresented: $showingLoanTracker) {
+            LoanTrackerView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingSellAdvisor) {
+            SellAdvisorView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
         }
     }
     
