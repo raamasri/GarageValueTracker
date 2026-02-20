@@ -17,6 +17,8 @@ struct VehicleDetailView: View {
     @State private var showingRegistrationInspection = false
     @State private var showingAccidentHistory = false
     @State private var showingKnownIssues = false
+    @State private var showingTCO = false
+    @State private var showingDepreciationChart = false
     @State private var dashboardScore: DashboardScore?
     @State private var knownIssueCount: Int = 0
     
@@ -157,6 +159,44 @@ struct VehicleDetailView: View {
                 .background(.ultraThinMaterial)
                 .cornerRadius(16)
                 .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                .padding(.horizontal)
+                
+                // TCO & Depreciation Row
+                HStack(spacing: 12) {
+                    Button(action: {
+                        showingTCO = true
+                    }) {
+                        Label("Ownership Cost", systemImage: "chart.pie.fill")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(colors: [.blue.opacity(0.8), .purple.opacity(0.8)],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .purple.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                    
+                    Button(action: {
+                        showingDepreciationChart = true
+                    }) {
+                        Label("Value Chart", systemImage: "chart.xyaxis.line")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(colors: [.green.opacity(0.8), .teal.opacity(0.8)],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .green.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                }
                 .padding(.horizontal)
                 
                 // Action Buttons Row 1
@@ -441,6 +481,14 @@ struct VehicleDetailView: View {
         }
         .sheet(isPresented: $showingKnownIssues) {
             KnownIssuesView(make: vehicle.make, model: vehicle.model, year: Int(vehicle.year))
+        }
+        .sheet(isPresented: $showingTCO) {
+            TotalCostOfOwnershipView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingDepreciationChart) {
+            DepreciationChartView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
         }
         .onAppear {
             calculateDashboardScore()

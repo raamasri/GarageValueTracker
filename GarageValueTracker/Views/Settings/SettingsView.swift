@@ -181,7 +181,7 @@ struct SettingsView: View {
     // MARK: - Data Section
     private var dataSection: some View {
         Section(header: Text("Data Management")) {
-                    NavigationLink(destination: Text("Coming Soon")) {
+                    NavigationLink(destination: ExportDataView()) {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                     }
                     
