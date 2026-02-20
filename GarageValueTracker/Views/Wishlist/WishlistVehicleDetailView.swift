@@ -9,7 +9,9 @@ struct WishlistVehicleDetailView: View {
     @State private var priceStats: PriceStatistics?
     @State private var showingUpdatePrice = false
     @State private var showingMoveToGarage = false
+    @State private var showingKnownIssues = false
     @State private var newPrice = ""
+    @State private var knownIssueCount: Int = 0
     
     var body: some View {
         ScrollView {
@@ -191,6 +193,17 @@ struct WishlistVehicleDetailView: View {
                                 }
                             }
                         }
+                        
+                        Divider()
+                        
+                        HStack {
+                            Image(systemName: "bell.fill")
+                                .foregroundColor(.orange)
+                            Text("You'll be notified when the price hits your target")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                        }
                     }
                     .padding()
                     .background(.ultraThinMaterial)
@@ -283,8 +296,10 @@ struct WishlistVehicleDetailView: View {
                             WishlistDetailRow(icon: "number", title: "VIN", value: vin)
                         }
                         
-                        if let url = vehicle.listingURL {
-                            Link(destination: URL(string: url)!) {
+                        if let urlString = vehicle.listingURL,
+                           let url = URL(string: urlString),
+                           url.scheme != nil {
+                            Link(destination: url) {
                                 HStack {
                                     Image(systemName: "link")
                                     Text("View Listing")
@@ -326,6 +341,40 @@ struct WishlistVehicleDetailView: View {
                     .padding(.horizontal)
                 }
                 
+                // Known Issues Card
+                if knownIssueCount > 0 {
+                    Button(action: {
+                        showingKnownIssues = true
+                    }) {
+                        HStack {
+                            Image(systemName: "exclamationmark.bubble.fill")
+                                .font(.title2)
+                                .foregroundColor(.orange)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Community Reports")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                                Text("\(knownIssueCount) known issue\(knownIssueCount == 1 ? "" : "s") reported")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color.orange.opacity(0.08))
+                        .cornerRadius(16)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.horizontal)
+                }
+                
                 // Move to Garage Button
                 Button(action: {
                     showingMoveToGarage = true
@@ -345,12 +394,18 @@ struct WishlistVehicleDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             loadData()
+            knownIssueCount = KnownIssuesService.shared.getIssues(
+                make: vehicle.make, model: vehicle.model, year: Int(vehicle.year)
+            ).count
         }
         .sheet(isPresented: $showingUpdatePrice) {
             UpdatePriceView(vehicle: vehicle)
         }
         .sheet(isPresented: $showingMoveToGarage) {
             MoveToGarageView(wishlistVehicle: vehicle)
+        }
+        .sheet(isPresented: $showingKnownIssues) {
+            KnownIssuesView(make: vehicle.make, model: vehicle.model, year: Int(vehicle.year))
         }
     }
     

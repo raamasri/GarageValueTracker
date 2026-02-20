@@ -174,6 +174,7 @@ struct InsuranceTrackingView: View {
         
         do {
             try viewContext.save()
+            NotificationService.shared.scheduleInsuranceRenewal(vehicleID: vehicle.id, vehicleName: vehicle.displayName, renewalDate: renewalDate)
             presentationMode.wrappedValue.dismiss()
         } catch {
             print("Error saving insurance: \(error.localizedDescription)")

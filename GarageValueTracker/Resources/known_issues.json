@@ -1,0 +1,361 @@
+{
+  "vehicles": [
+    {
+      "make": "Toyota",
+      "model": "Camry",
+      "yearRange": [2018, 2024],
+      "issues": [
+        {
+          "title": "Transmission Hesitation",
+          "severity": "moderate",
+          "affectedYears": [2018, 2019, 2020],
+          "description": "Some owners report hesitation when accelerating from a stop, particularly in the 8-speed automatic transmission.",
+          "commonFix": "Software update from dealer, transmission fluid change",
+          "estimatedCost": "$0-$300",
+          "source": "NHTSA complaints, owner forums"
+        },
+        {
+          "title": "Dashboard Rattle",
+          "severity": "minor",
+          "affectedYears": [2018, 2019, 2020, 2021],
+          "description": "Rattling noise from the dashboard area, especially on rough roads.",
+          "commonFix": "Dealer can apply foam padding behind dashboard panels",
+          "estimatedCost": "$0-$150",
+          "source": "Owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Toyota",
+      "model": "RAV4",
+      "yearRange": [2019, 2024],
+      "issues": [
+        {
+          "title": "Fuel Pump Recall",
+          "severity": "critical",
+          "affectedYears": [2019, 2020],
+          "description": "Fuel pump impeller may deform, causing engine stalling.",
+          "commonFix": "Free fuel pump replacement under recall",
+          "estimatedCost": "$0 (recall)",
+          "source": "NHTSA Recall"
+        },
+        {
+          "title": "Unintended Acceleration Reports",
+          "severity": "moderate",
+          "affectedYears": [2019, 2020, 2021],
+          "description": "Some RAV4 Prime and Hybrid owners report brief unintended acceleration surges.",
+          "commonFix": "ECU software update",
+          "estimatedCost": "$0-$200",
+          "source": "NHTSA complaints"
+        }
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "Civic",
+      "yearRange": [2016, 2024],
+      "issues": [
+        {
+          "title": "AC Condenser Failure",
+          "severity": "moderate",
+          "affectedYears": [2016, 2017, 2018, 2019, 2020],
+          "description": "AC condenser prone to developing leaks from road debris due to thin construction.",
+          "commonFix": "Replace AC condenser, often covered under extended warranty",
+          "estimatedCost": "$500-$1,200",
+          "source": "Owner forums, class action"
+        },
+        {
+          "title": "Oil Dilution (1.5T)",
+          "severity": "moderate",
+          "affectedYears": [2016, 2017, 2018, 2019],
+          "description": "1.5L turbo engine can experience oil dilution from fuel in cold climates.",
+          "commonFix": "More frequent oil changes, software update",
+          "estimatedCost": "$0-$100",
+          "source": "TSB, owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Honda",
+      "model": "CR-V",
+      "yearRange": [2017, 2024],
+      "issues": [
+        {
+          "title": "Oil Dilution (1.5T)",
+          "severity": "moderate",
+          "affectedYears": [2017, 2018, 2019],
+          "description": "1.5L turbo engine prone to fuel mixing with oil, especially in cold weather short trips.",
+          "commonFix": "Software update, frequent oil changes",
+          "estimatedCost": "$0-$100",
+          "source": "TSB, owner forums"
+        },
+        {
+          "title": "Infotainment Freezing",
+          "severity": "minor",
+          "affectedYears": [2017, 2018, 2019, 2020],
+          "description": "Touchscreen may freeze or become unresponsive, requiring vehicle restart.",
+          "commonFix": "Software update from dealer",
+          "estimatedCost": "$0",
+          "source": "Owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Ford",
+      "model": "F-150",
+      "yearRange": [2015, 2024],
+      "issues": [
+        {
+          "title": "10-Speed Transmission Shift Issues",
+          "severity": "moderate",
+          "affectedYears": [2017, 2018, 2019, 2020, 2021],
+          "description": "Harsh shifting, clunking, or hesitation in the 10R80 10-speed automatic.",
+          "commonFix": "Adaptive learning reset, transmission software update",
+          "estimatedCost": "$0-$500",
+          "source": "NHTSA complaints, TSBs"
+        },
+        {
+          "title": "Cam Phaser Tick",
+          "severity": "moderate",
+          "affectedYears": [2018, 2019, 2020, 2021],
+          "description": "Ticking noise on cold start from cam phaser wear in 5.0L V8.",
+          "commonFix": "Cam phaser replacement",
+          "estimatedCost": "$1,500-$3,000",
+          "source": "Owner forums, TSB"
+        }
+      ]
+    },
+    {
+      "make": "Chevrolet",
+      "model": "Silverado",
+      "yearRange": [2019, 2024],
+      "issues": [
+        {
+          "title": "AFM/DFM Lifter Failure",
+          "severity": "severe",
+          "affectedYears": [2019, 2020, 2021, 2022],
+          "description": "Active Fuel Management / Dynamic Fuel Management lifter collapse causing misfires.",
+          "commonFix": "Lifter replacement, AFM/DFM delete kit",
+          "estimatedCost": "$2,000-$5,000",
+          "source": "NHTSA complaints, class action"
+        },
+        {
+          "title": "Transmission Shudder",
+          "severity": "moderate",
+          "affectedYears": [2019, 2020, 2021],
+          "description": "Torque converter shudder in 8-speed automatic, especially at low speeds.",
+          "commonFix": "Transmission fluid flush, torque converter replacement",
+          "estimatedCost": "$300-$2,500",
+          "source": "TSBs, owner forums"
+        }
+      ]
+    },
+    {
+      "make": "BMW",
+      "model": "3 Series",
+      "yearRange": [2019, 2024],
+      "issues": [
+        {
+          "title": "B48 Timing Chain",
+          "severity": "moderate",
+          "affectedYears": [2019, 2020, 2021],
+          "description": "Early timing chain stretch in B48 2.0L turbo engines with high mileage.",
+          "commonFix": "Timing chain replacement",
+          "estimatedCost": "$2,000-$4,000",
+          "source": "Owner forums, specialist reports"
+        },
+        {
+          "title": "iDrive Software Glitches",
+          "severity": "minor",
+          "affectedYears": [2019, 2020, 2021, 2022, 2023],
+          "description": "Intermittent iDrive screen freezes, Bluetooth connectivity issues.",
+          "commonFix": "Software update at dealer",
+          "estimatedCost": "$0-$200",
+          "source": "Owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Tesla",
+      "model": "Model 3",
+      "yearRange": [2017, 2024],
+      "issues": [
+        {
+          "title": "Panel Gap Inconsistency",
+          "severity": "minor",
+          "affectedYears": [2017, 2018, 2019, 2020, 2021],
+          "description": "Uneven panel gaps between body panels, varying quality control.",
+          "commonFix": "Service center adjustment (free under warranty)",
+          "estimatedCost": "$0",
+          "source": "Owner forums, reviews"
+        },
+        {
+          "title": "Suspension Noise",
+          "severity": "moderate",
+          "affectedYears": [2018, 2019, 2020, 2021],
+          "description": "Clunking or squeaking from front suspension over bumps.",
+          "commonFix": "Control arm bushing or ball joint replacement",
+          "estimatedCost": "$300-$1,000",
+          "source": "Owner forums"
+        },
+        {
+          "title": "Phantom Braking",
+          "severity": "moderate",
+          "affectedYears": [2021, 2022, 2023],
+          "description": "Unexpected automatic braking on highways, especially with vision-only Autopilot.",
+          "commonFix": "Software updates (ongoing improvement)",
+          "estimatedCost": "$0",
+          "source": "NHTSA complaints, owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Tesla",
+      "model": "Model Y",
+      "yearRange": [2020, 2024],
+      "issues": [
+        {
+          "title": "Heat Pump Failures",
+          "severity": "moderate",
+          "affectedYears": [2020, 2021, 2022],
+          "description": "Heat pump may fail in extreme cold, resulting in reduced heating and range.",
+          "commonFix": "Heat pump replacement under warranty",
+          "estimatedCost": "$0-$2,000",
+          "source": "Owner forums, service reports"
+        },
+        {
+          "title": "Rear Seat Belt Alert",
+          "severity": "minor",
+          "affectedYears": [2021, 2022, 2023],
+          "description": "False rear seat belt unbuckled alerts, especially with items on rear seats.",
+          "commonFix": "Seat pressure sensor adjustment",
+          "estimatedCost": "$0-$300",
+          "source": "Owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Hyundai",
+      "model": "Tucson",
+      "yearRange": [2016, 2024],
+      "issues": [
+        {
+          "title": "Engine Seizure (Theta II)",
+          "severity": "critical",
+          "affectedYears": [2016, 2017, 2018, 2019],
+          "description": "Theta II engine prone to connecting rod bearing failure, causing engine seizure.",
+          "commonFix": "Engine replacement under extended warranty/recall",
+          "estimatedCost": "$0 (recall/warranty)",
+          "source": "NHTSA Recall, class action"
+        }
+      ]
+    },
+    {
+      "make": "Subaru",
+      "model": "Outback",
+      "yearRange": [2015, 2024],
+      "issues": [
+        {
+          "title": "CVT Hesitation",
+          "severity": "moderate",
+          "affectedYears": [2015, 2016, 2017, 2018, 2019, 2020],
+          "description": "Lineartronic CVT may exhibit hesitation, juddering, or delayed response.",
+          "commonFix": "CVT software update, valve body replacement",
+          "estimatedCost": "$0-$2,000",
+          "source": "Owner forums, TSBs"
+        },
+        {
+          "title": "Windshield Cracking",
+          "severity": "minor",
+          "affectedYears": [2020, 2021, 2022, 2023],
+          "description": "Higher-than-normal rate of spontaneous windshield cracking.",
+          "commonFix": "Windshield replacement",
+          "estimatedCost": "$300-$600",
+          "source": "Owner forums, class action petition"
+        }
+      ]
+    },
+    {
+      "make": "Jeep",
+      "model": "Wrangler",
+      "yearRange": [2018, 2024],
+      "issues": [
+        {
+          "title": "Death Wobble",
+          "severity": "severe",
+          "affectedYears": [2018, 2019, 2020, 2021],
+          "description": "Violent front-end shaking at highway speeds, often after hitting a bump.",
+          "commonFix": "Steering stabilizer upgrade, track bar replacement",
+          "estimatedCost": "$200-$1,500",
+          "source": "NHTSA complaints, owner forums"
+        },
+        {
+          "title": "eTorque Mild Hybrid Issues",
+          "severity": "moderate",
+          "affectedYears": [2018, 2019, 2020, 2021],
+          "description": "eTorque system may cause start-stop hesitation or battery drain.",
+          "commonFix": "Software update, 48V battery replacement",
+          "estimatedCost": "$0-$800",
+          "source": "TSBs, owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Lexus",
+      "model": "RX",
+      "yearRange": [2016, 2024],
+      "issues": [
+        {
+          "title": "Dashboard Reflection",
+          "severity": "minor",
+          "affectedYears": [2016, 2017, 2018, 2019, 2020, 2021, 2022],
+          "description": "Dashboard reflection on windshield in bright sunlight conditions.",
+          "commonFix": "Dashboard cover or anti-reflective treatment",
+          "estimatedCost": "$20-$100",
+          "source": "Owner forums"
+        }
+      ]
+    },
+    {
+      "make": "Kia",
+      "model": "Telluride",
+      "yearRange": [2020, 2024],
+      "issues": [
+        {
+          "title": "Oil Leak at Oil Filter Housing",
+          "severity": "moderate",
+          "affectedYears": [2020, 2021],
+          "description": "Oil leak from oil filter housing gasket on 3.8L V6.",
+          "commonFix": "Oil filter housing gasket replacement",
+          "estimatedCost": "$200-$500",
+          "source": "Owner forums, TSB"
+        }
+      ]
+    },
+    {
+      "make": "Mercedes-Benz",
+      "model": "C-Class",
+      "yearRange": [2015, 2024],
+      "issues": [
+        {
+          "title": "Air Suspension Failure (C43/C63)",
+          "severity": "severe",
+          "affectedYears": [2015, 2016, 2017, 2018, 2019, 2020, 2021],
+          "description": "AIRMATIC suspension struts may develop leaks, especially in cold climates.",
+          "commonFix": "Strut replacement",
+          "estimatedCost": "$1,500-$4,000",
+          "source": "Owner forums, specialist reports"
+        },
+        {
+          "title": "48V System Glitches",
+          "severity": "minor",
+          "affectedYears": [2022, 2023, 2024],
+          "description": "EQ Boost 48V mild hybrid system may throw error codes or cause restart-stop issues.",
+          "commonFix": "Software update",
+          "estimatedCost": "$0-$300",
+          "source": "Owner forums"
+        }
+      ]
+    }
+  ]
+}

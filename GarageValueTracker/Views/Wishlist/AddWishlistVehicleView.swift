@@ -27,6 +27,10 @@ struct AddWishlistVehicleView: View {
     @State private var customModel = ""
     @State private var customYear = ""
     
+    // Auto-fetch price
+    @State private var estimatedMarketValue: MarketValue?
+    @State private var isFetchingPrice = false
+    
     // Photo picker
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedPhotoData: Data?
@@ -88,6 +92,55 @@ struct AddWishlistVehicleView: View {
     
     private var pricingSection: some View {
         Section {
+            if let marketValue = estimatedMarketValue {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .foregroundColor(.blue)
+                        Text("Estimated Market Value")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                    
+                    HStack(spacing: 16) {
+                        VStack(alignment: .leading) {
+                            Text("Average")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text("$\(Int(marketValue.averagePrice))")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .foregroundColor(.blue)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Range")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text("$\(Int(marketValue.lowPrice)) - $\(Int(marketValue.highPrice))")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    if currentPrice.isEmpty {
+                        Button("Use Estimated Price") {
+                            currentPrice = String(Int(marketValue.averagePrice))
+                        }
+                        .font(.caption)
+                    }
+                }
+                .padding(.vertical, 4)
+            } else if isFetchingPrice {
+                HStack {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("Fetching market value...")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
             HStack {
                 Text("$")
                     .foregroundColor(.secondary)
@@ -105,7 +158,7 @@ struct AddWishlistVehicleView: View {
         } header: {
             Text("Pricing")
         } footer: {
-            Text("Add a target price to track when it drops to your ideal price")
+            Text("Price is auto-estimated from make/model/year. Add a target price to get notified when it drops.")
                 .font(.caption)
         }
     }
@@ -202,6 +255,8 @@ struct AddWishlistVehicleView: View {
         .onChange(of: customMake) { handleCustomMakeChange() }
         .onChange(of: selectedModel) { handleModelChange() }
         .onChange(of: customModel) { handleCustomModelChange() }
+        .onChange(of: selectedYear) { fetchEstimatedPrice() }
+        .onChange(of: customYear) { fetchEstimatedPrice() }
         .onAppear { loadInitialData() }
     }
     
@@ -242,8 +297,8 @@ struct AddWishlistVehicleView: View {
         
         guard let yearValue = Int16(finalYear) else { return }
         
-        // Parse price values - default to 0 if not provided
-        let priceValue = Double(currentPrice) ?? 0
+        // Use estimated market value if user didn't enter a price
+        let priceValue = Double(currentPrice) ?? estimatedMarketValue?.averagePrice ?? 0
         let targetPriceValue = Double(targetPrice) ?? 0
         let mileageValue = Int32(mileage) ?? 0
         
@@ -318,15 +373,49 @@ struct AddWishlistVehicleView: View {
             availableYears = VehicleDatabaseService.shared.getAvailableYears()
         }
         selectedYear = ""
+        estimatedMarketValue = nil
     }
     
     private func handleCustomModelChange() {
         selectedYear = ""
+        estimatedMarketValue = nil
     }
     
     private func loadInitialData() {
         availableMakes = VehicleDatabaseService.shared.getAllMakes()
         availableYears = VehicleDatabaseService.shared.getAvailableYears()
+    }
+    
+    private func fetchEstimatedPrice() {
+        let finalMake = selectedMake == "Custom" ? customMake : selectedMake
+        let finalModel = selectedModel == "Custom" ? customModel : selectedModel
+        let finalYear = selectedYear == "Custom" ? customYear : selectedYear
+        
+        guard !finalMake.isEmpty,
+              !finalModel.isEmpty,
+              let yearInt = Int(finalYear) else { return }
+        
+        isFetchingPrice = true
+        estimatedMarketValue = nil
+        
+        let mileageInt = Int(mileage) ?? 0
+        let trimValue = trim.isEmpty ? nil : trim
+        
+        MarketAPIService.shared.getMarketValue(
+            make: finalMake,
+            model: finalModel,
+            year: yearInt,
+            mileage: mileageInt,
+            trim: trimValue
+        ) { result in
+            isFetchingPrice = false
+            switch result {
+            case .success(let marketValue):
+                estimatedMarketValue = marketValue
+            case .failure:
+                break
+            }
+        }
     }
 }
 

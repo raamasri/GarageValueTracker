@@ -109,6 +109,11 @@
         <attribute name="trim" optional="YES" attributeType="String"/>
         <attribute name="trimMSRP" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="inspectionDueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="inspectionState" optional="YES" attributeType="String"/>
+        <attribute name="licensePlate" optional="YES" attributeType="String"/>
+        <attribute name="licensePlateState" optional="YES" attributeType="String"/>
+        <attribute name="registrationRenewalDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="vin" optional="YES" attributeType="String"/>
         <attribute name="year" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>

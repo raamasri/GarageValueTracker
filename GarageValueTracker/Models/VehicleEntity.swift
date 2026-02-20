@@ -26,6 +26,11 @@ public class VehicleEntity: NSManagedObject, Identifiable {
     @NSManaged public var insurancePremium: Double
     @NSManaged public var insuranceRenewalDate: Date?
     @NSManaged public var coverageLevel: String?
+    @NSManaged public var registrationRenewalDate: Date?
+    @NSManaged public var inspectionDueDate: Date?
+    @NSManaged public var inspectionState: String?
+    @NSManaged public var licensePlate: String?
+    @NSManaged public var licensePlateState: String?
     @NSManaged public var createdAt: Date
     @NSManaged public var updatedAt: Date
 }

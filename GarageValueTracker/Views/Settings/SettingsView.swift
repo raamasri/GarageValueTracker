@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var showingResetAlert = false
     @State private var showingDealChecker = false
     @State private var showingServiceEstimator = false
+    @State private var showingShopFinder = false
     
     var body: some View {
         NavigationView {
@@ -31,6 +32,9 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingServiceEstimator) {
                 ServiceEstimatorView(vehicle: nil)
+            }
+            .sheet(isPresented: $showingShopFinder) {
+                ServiceShopFinderView(vehicle: nil)
             }
         }
     }
@@ -164,6 +168,13 @@ struct SettingsView: View {
                         Label("Service Cost Estimator", systemImage: "wrench.and.screwdriver.fill")
                             .foregroundColor(.primary)
                     }
+                    
+                    Button(action: {
+                        showingShopFinder = true
+                    }) {
+                        Label("Find Service Shops", systemImage: "mappin.and.ellipse")
+                            .foregroundColor(.primary)
+                    }
         }
     }
     
@@ -186,14 +197,50 @@ struct SettingsView: View {
     
     // MARK: - Notifications Section
     private var notificationsSection: some View {
-        Section(header: Text("Notifications")) {
-                    NavigationLink(destination: Text("Coming Soon")) {
-                        Label("Service Reminders", systemImage: "bell.badge")
-                    }
-                    
-                    NavigationLink(destination: Text("Coming Soon")) {
-                        Label("Insurance Renewal", systemImage: "bell.circle")
-                    }
+        Section {
+            HStack {
+                Label("Service Reminders", systemImage: "bell.badge")
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+            }
+            
+            HStack {
+                Label("Insurance Renewal", systemImage: "bell.circle")
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+            }
+            
+            HStack {
+                Label("Registration Renewal", systemImage: "doc.text.fill")
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+            }
+            
+            HStack {
+                Label("Inspection Reminders", systemImage: "checkmark.shield.fill")
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+            }
+            
+            HStack {
+                Label("Recall Alerts", systemImage: "exclamationmark.shield.fill")
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+            }
+        } header: {
+            Text("Notifications")
+        } footer: {
+            Text("Notifications are managed per vehicle. Set dates in each vehicle's dashboard to receive reminders.")
         }
     }
     
@@ -203,7 +250,7 @@ struct SettingsView: View {
                     HStack {
                         Text("Version")
                         Spacer()
-                        Text("1.0.3")
+                        Text("1.1.0")
                             .foregroundColor(.secondary)
                     }
                     

@@ -1,0 +1,88 @@
+{
+  "regions": [
+    {
+      "name": "Northeast",
+      "states": ["CT", "ME", "MA", "NH", "NJ", "NY", "PA", "RI", "VT"],
+      "demandMultipliers": {
+        "sedan": 1.0,
+        "suv": 1.05,
+        "truck": 0.95,
+        "sports": 0.95,
+        "ev": 1.15,
+        "luxury": 1.10,
+        "default": 1.0
+      },
+      "costOfLivingMultiplier": 1.12
+    },
+    {
+      "name": "Southeast",
+      "states": ["AL", "FL", "GA", "KY", "MS", "NC", "SC", "TN", "VA", "WV"],
+      "demandMultipliers": {
+        "sedan": 0.95,
+        "suv": 1.05,
+        "truck": 1.15,
+        "sports": 1.05,
+        "ev": 0.90,
+        "luxury": 0.95,
+        "default": 1.0
+      },
+      "costOfLivingMultiplier": 0.92
+    },
+    {
+      "name": "Midwest",
+      "states": ["IL", "IN", "IA", "KS", "MI", "MN", "MO", "NE", "ND", "OH", "SD", "WI"],
+      "demandMultipliers": {
+        "sedan": 0.95,
+        "suv": 1.10,
+        "truck": 1.10,
+        "sports": 0.90,
+        "ev": 0.85,
+        "luxury": 0.90,
+        "default": 0.98
+      },
+      "costOfLivingMultiplier": 0.90
+    },
+    {
+      "name": "Southwest",
+      "states": ["AZ", "NM", "OK", "TX"],
+      "demandMultipliers": {
+        "sedan": 0.95,
+        "suv": 1.10,
+        "truck": 1.20,
+        "sports": 1.05,
+        "ev": 0.90,
+        "luxury": 0.95,
+        "default": 1.0
+      },
+      "costOfLivingMultiplier": 0.95
+    },
+    {
+      "name": "West",
+      "states": ["CO", "ID", "MT", "NV", "UT", "WY"],
+      "demandMultipliers": {
+        "sedan": 0.90,
+        "suv": 1.15,
+        "truck": 1.15,
+        "sports": 1.0,
+        "ev": 1.05,
+        "luxury": 0.95,
+        "default": 1.02
+      },
+      "costOfLivingMultiplier": 1.0
+    },
+    {
+      "name": "Pacific",
+      "states": ["CA", "OR", "WA", "HI", "AK"],
+      "demandMultipliers": {
+        "sedan": 1.05,
+        "suv": 1.05,
+        "truck": 1.0,
+        "sports": 1.10,
+        "ev": 1.25,
+        "luxury": 1.15,
+        "default": 1.08
+      },
+      "costOfLivingMultiplier": 1.18
+    }
+  ]
+}

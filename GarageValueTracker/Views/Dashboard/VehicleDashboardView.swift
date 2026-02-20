@@ -9,6 +9,12 @@ struct VehicleDashboardView: View {
     @State private var dashboardScore: DashboardScore?
     @State private var showingScoreDetails = false
     @State private var showingAddReminder = false
+    @State private var showingMileageEdit = false
+    @State private var showingValueUpdate = false
+    @State private var showingRecalls = false
+    @State private var recallCount: Int?
+    @State private var showingRegistrationInspection = false
+    @State private var showingShopFinder = false
     
     // Fetch service reminders
     @FetchRequest var serviceReminders: FetchedResults<ServiceReminderEntity>
@@ -16,10 +22,12 @@ struct VehicleDashboardView: View {
     // Fetch fuel entries
     @FetchRequest var fuelEntries: FetchedResults<FuelEntryEntity>
     
+    // Fetch cost entries for score calculation
+    @FetchRequest var costEntries: FetchedResults<CostEntryEntity>
+    
     init(vehicle: VehicleEntity) {
         self.vehicle = vehicle
         
-        // Initialize fetch requests
         _serviceReminders = FetchRequest<ServiceReminderEntity>(
             sortDescriptors: [NSSortDescriptor(keyPath: \ServiceReminderEntity.dueDate, ascending: true)],
             predicate: NSPredicate(format: "vehicleID == %@ AND isCompleted == NO", vehicle.id as CVarArg),
@@ -28,6 +36,12 @@ struct VehicleDashboardView: View {
         
         _fuelEntries = FetchRequest<FuelEntryEntity>(
             sortDescriptors: [NSSortDescriptor(keyPath: \FuelEntryEntity.date, ascending: false)],
+            predicate: NSPredicate(format: "vehicleID == %@", vehicle.id as CVarArg),
+            animation: .default
+        )
+        
+        _costEntries = FetchRequest<CostEntryEntity>(
+            sortDescriptors: [NSSortDescriptor(keyPath: \CostEntryEntity.date, ascending: false)],
             predicate: NSPredicate(format: "vehicleID == %@", vehicle.id as CVarArg),
             animation: .default
         )
@@ -76,7 +90,7 @@ struct VehicleDashboardView: View {
                             .foregroundColor(.blue)
                         
                         Button(action: {
-                            // Edit mileage
+                            showingMileageEdit = true
                         }) {
                             Image(systemName: "pencil")
                                 .font(.subheadline)
@@ -174,7 +188,7 @@ struct VehicleDashboardView: View {
                         Spacer()
                         
                         Button(action: {
-                            // Get cash offer action
+                            showingValueUpdate = true
                         }) {
                             Text("Update Value")
                                 .font(.caption)
@@ -244,6 +258,152 @@ struct VehicleDashboardView: View {
                 .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
                 .padding(.horizontal)
                 
+                // Safety Recalls Card
+                Button(action: { showingRecalls = true }) {
+                    HStack {
+                        Image(systemName: "exclamationmark.shield.fill")
+                            .font(.title2)
+                            .foregroundColor(recallCount ?? 0 > 0 ? .red : .green)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Safety Recalls")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            
+                            if let count = recallCount {
+                                Text(count == 0 ? "No Recalls Found" : "\(count) Recall\(count == 1 ? "" : "s") Found")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(count > 0 ? .red : .primary)
+                            } else {
+                                Text("Tap to check NHTSA")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal)
+                
+                // Registration & Inspection Card
+                Button(action: { showingRegistrationInspection = true }) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: "doc.text.fill")
+                                .font(.title2)
+                                .foregroundColor(.indigo)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Registration & Inspection")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .textCase(.uppercase)
+                                
+                                if let regDate = vehicle.registrationRenewalDate {
+                                    let days = Calendar.current.dateComponents([.day], from: Date(), to: regDate).day ?? 0
+                                    if days < 0 {
+                                        Text("Registration Overdue")
+                                            .font(.headline)
+                                            .foregroundColor(.red)
+                                    } else if days <= 30 {
+                                        Text("Registration due in \(days) days")
+                                            .font(.headline)
+                                            .foregroundColor(.orange)
+                                    } else {
+                                        Text("Registration: \(formatDate(regDate))")
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                    }
+                                } else if let inspDate = vehicle.inspectionDueDate {
+                                    let days = Calendar.current.dateComponents([.day], from: Date(), to: inspDate).day ?? 0
+                                    if days < 0 {
+                                        Text("Inspection Overdue")
+                                            .font(.headline)
+                                            .foregroundColor(.red)
+                                    } else if days <= 30 {
+                                        Text("Inspection due in \(days) days")
+                                            .font(.headline)
+                                            .foregroundColor(.orange)
+                                    } else {
+                                        Text("Inspection: \(formatDate(inspDate))")
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                    }
+                                } else {
+                                    Text("Tap to set dates")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        if vehicle.registrationRenewalDate != nil && vehicle.inspectionDueDate != nil {
+                            let inspDays = Calendar.current.dateComponents([.day], from: Date(), to: vehicle.inspectionDueDate!).day ?? 0
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.shield.fill")
+                                    .font(.caption)
+                                    .foregroundColor(inspDays < 0 ? .red : (inspDays <= 30 ? .orange : .green))
+                                Text("Inspection: \(formatDate(vehicle.inspectionDueDate!))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal)
+                
+                // Find Service Shops Card
+                Button(action: { showingShopFinder = true }) {
+                    HStack {
+                        Image(systemName: "mappin.and.ellipse")
+                            .font(.title2)
+                            .foregroundColor(.teal)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Service Shops")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            
+                            Text("Find Nearby Shops")
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal)
+                
                 // Fuel Tracker Card (if has fuel data)
                 if !fuelEntries.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
@@ -295,9 +455,10 @@ struct VehicleDashboardView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             calculateDashboardScore()
+            checkRecalls()
         }
         .sheet(isPresented: $showingScoreDetails) {
-            DashboardScoreDetailView(score: dashboardScore ?? DashboardScore(percentage: 0, completedItems: 0, totalItems: 12, missingItems: [], message: ""), vehicle: vehicle)
+            DashboardScoreDetailView(score: dashboardScore ?? DashboardScore(percentage: 0, completedItems: 0, totalItems: 11, missingItems: [], message: ""), vehicle: vehicle)
                 .environment(\.managedObjectContext, viewContext)
         }
         .sheet(isPresented: $showingAddReminder) {
@@ -306,10 +467,43 @@ struct VehicleDashboardView: View {
             })
             .environment(\.managedObjectContext, viewContext)
         }
+        .sheet(isPresented: $showingMileageEdit) {
+            VehicleMileageEditView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingValueUpdate) {
+            VehicleValueUpdateView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingRecalls) {
+            RecallsView(vehicle: vehicle)
+        }
+        .sheet(isPresented: $showingRegistrationInspection) {
+            RegistrationInspectionView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingShopFinder) {
+            ServiceShopFinderView(vehicle: vehicle)
+        }
     }
     
     private func calculateDashboardScore() {
-        dashboardScore = DashboardScoreService.shared.calculateDashboardScore(for: vehicle)
+        dashboardScore = DashboardScoreService.shared.calculateDashboardScore(for: vehicle, costEntryCount: costEntries.count)
+    }
+    
+    private func checkRecalls() {
+        RecallsAPIService.shared.getRecalls(
+            make: vehicle.make,
+            model: vehicle.model,
+            modelYear: Int(vehicle.year)
+        ) { result in
+            if case .success(let recalls) = result {
+                recallCount = recalls.count
+                if recalls.count > 0 {
+                    NotificationService.shared.sendRecallAlert(vehicleName: vehicle.displayName, recallCount: recalls.count)
+                }
+            }
+        }
     }
     
     private func scoreColor(_ percentage: Int) -> Color {
@@ -418,7 +612,7 @@ struct ServiceReminderRow: View {
         let months = reminder.monthsRemaining
         let weeks = reminder.weeksRemaining
         
-        if months >= 2 {
+        if months >= 1 {
             return months == 1 ? "Month Left" : "Months Left"
         } else if weeks > 0 {
             return weeks == 1 ? "Week Left" : "Weeks Left"
@@ -717,13 +911,16 @@ struct VehiclePhotoEditView: View {
     }
 }
 
-// Vehicle VIN Edit View
+// Vehicle VIN Edit View with NHTSA decode
 struct VehicleVINEditView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) private var viewContext
     let vehicle: VehicleEntity
     
     @State private var vin: String
+    @State private var isDecoding = false
+    @State private var decodeResult: VINDecodeResult?
+    @State private var decodeError: String?
     
     init(vehicle: VehicleEntity) {
         self.vehicle = vehicle
@@ -734,13 +931,74 @@ struct VehicleVINEditView: View {
         NavigationView {
             Form {
                 Section(header: Text("Vehicle Identification Number")) {
-                    TextField("Enter VIN", text: $vin)
+                    TextField("Enter 17-character VIN", text: $vin)
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
+                        .onChange(of: vin) {
+                            decodeResult = nil
+                            decodeError = nil
+                        }
                     
-                    Text("VIN is 17 characters")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    if vin.count == 17 {
+                        Button(action: decodeVIN) {
+                            HStack {
+                                if isDecoding {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "magnifyingglass")
+                                }
+                                Text(isDecoding ? "Looking up VIN..." : "Decode VIN")
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .disabled(isDecoding)
+                    } else {
+                        Text("\(vin.count)/17 characters")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                if let result = decodeResult {
+                    Section(header: Text("Decoded Vehicle Info")) {
+                        VINInfoRow(label: "Make", value: result.make)
+                        VINInfoRow(label: "Model", value: result.model)
+                        VINInfoRow(label: "Year", value: "\(result.year)")
+                        if let trim = result.trim {
+                            VINInfoRow(label: "Trim", value: trim)
+                        }
+                        if let body = result.bodyClass {
+                            VINInfoRow(label: "Body", value: body)
+                        }
+                        if let engine = result.engineDescription {
+                            VINInfoRow(label: "Engine", value: engine)
+                        }
+                        if let drive = result.driveType {
+                            VINInfoRow(label: "Drive", value: drive)
+                        }
+                        if let fuel = result.fuelType {
+                            VINInfoRow(label: "Fuel", value: fuel)
+                        }
+                        if let trans = result.transmission {
+                            VINInfoRow(label: "Transmission", value: trans)
+                        }
+                        if let plant = result.plantCity, let country = result.plantCountry {
+                            VINInfoRow(label: "Built In", value: "\(plant), \(country)")
+                        }
+                    }
+                }
+                
+                if let error = decodeError {
+                    Section {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.orange)
+                            Text(error)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
                 
                 Section {
@@ -764,15 +1022,54 @@ struct VehicleVINEditView: View {
         }
     }
     
+    private func decodeVIN() {
+        isDecoding = true
+        decodeError = nil
+        decodeResult = nil
+        
+        VehicleAPIService.shared.decodeVIN(vin) { result in
+            isDecoding = false
+            switch result {
+            case .success(let decoded):
+                decodeResult = decoded
+            case .failure(let error):
+                decodeError = error.localizedDescription
+            }
+        }
+    }
+    
     private func saveVIN() {
         vehicle.vin = vin.uppercased()
         vehicle.updatedAt = Date()
+        
+        if let result = decodeResult {
+            if let trim = result.trim, vehicle.trim == nil {
+                vehicle.trim = trim
+            }
+        }
         
         do {
             try viewContext.save()
             presentationMode.wrappedValue.dismiss()
         } catch {
             print("Error saving VIN: \(error)")
+        }
+    }
+}
+
+struct VINInfoRow: View {
+    let label: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.medium)
         }
     }
 }
@@ -897,13 +1194,15 @@ struct VehicleLocationEditView: View {
     }
 }
 
-// Vehicle Value Update View
+// Vehicle Value Update View with market estimate
 struct VehicleValueUpdateView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) private var viewContext
     let vehicle: VehicleEntity
     
     @State private var value: String
+    @State private var isEstimating = false
+    @State private var estimate: MarketValue?
     
     init(vehicle: VehicleEntity) {
         self.vehicle = vehicle
@@ -913,7 +1212,61 @@ struct VehicleValueUpdateView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Current Market Value")) {
+                Section(header: Text("Market Estimate")) {
+                    if isEstimating {
+                        HStack {
+                            ProgressView()
+                            Text("Calculating estimate...")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    } else if let est = estimate {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Estimated Value")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(formatCurrency(est.averagePrice))
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.green)
+                            }
+                            HStack {
+                                Text("Range")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text("\(formatCurrency(est.lowPrice)) – \(formatCurrency(est.highPrice))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Button(action: {
+                                value = String(format: "%.0f", est.averagePrice)
+                            }) {
+                                Text("Use This Estimate")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                        
+                        Text("Based on \(vehicle.year) \(vehicle.make) \(vehicle.model) depreciation, \(formatMileage(Int(vehicle.mileage))) mileage, and MSRP data.")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    } else {
+                        Button(action: fetchEstimate) {
+                            HStack {
+                                Image(systemName: "chart.line.uptrend.xyaxis")
+                                Text("Get Market Estimate")
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+                
+                Section(header: Text("Your Value")) {
                     HStack {
                         Text("$")
                             .foregroundColor(.secondary)
@@ -921,7 +1274,7 @@ struct VehicleValueUpdateView: View {
                             .keyboardType(.numberPad)
                     }
                     
-                    Text("Estimate your vehicle's current market value")
+                    Text("Enter manually or use the estimate above")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -944,6 +1297,24 @@ struct VehicleValueUpdateView: View {
                     }
                 }
             }
+            .onAppear { fetchEstimate() }
+        }
+    }
+    
+    private func fetchEstimate() {
+        isEstimating = true
+        MarketAPIService.shared.getMarketValue(
+            make: vehicle.make,
+            model: vehicle.model,
+            year: Int(vehicle.year),
+            mileage: Int(vehicle.mileage),
+            trim: vehicle.trim,
+            msrp: vehicle.trimMSRP > 0 ? vehicle.trimMSRP : nil
+        ) { result in
+            isEstimating = false
+            if case .success(let marketValue) = result {
+                estimate = marketValue
+            }
         }
     }
     
@@ -960,6 +1331,19 @@ struct VehicleValueUpdateView: View {
                 print("Error saving value: \(error)")
             }
         }
+    }
+    
+    private func formatCurrency(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "$\(Int(amount))"
+    }
+    
+    private func formatMileage(_ mileage: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return (formatter.string(from: NSNumber(value: mileage)) ?? "\(mileage)") + " mi"
     }
 }
 
@@ -1184,6 +1568,7 @@ struct DashboardAddServiceReminderView: View {
         
         do {
             try viewContext.save()
+            NotificationService.shared.scheduleServiceReminder(reminder, vehicleName: vehicle.displayName)
             onSave()
             presentationMode.wrappedValue.dismiss()
         } catch {

@@ -36,9 +36,93 @@ struct AddVehicleView: View {
     @State private var selectedPhotoData: Data?
     @State private var showingImagePicker = false
     
+    // License plate lookup states
+    @State private var licensePlate: String = ""
+    @State private var licensePlateState: String = ""
+    @State private var isLookingUpPlate = false
+    @State private var plateLookupError: String?
+    @State private var showVINFallback = false
+    @State private var plateVIN: String = ""
+    @State private var isDecodingPlateVIN = false
+    
     var body: some View {
         NavigationView {
             Form {
+                // License Plate Lookup Section
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Quick Add by License Plate", systemImage: "car.rear.and.tire.marks")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        HStack(spacing: 10) {
+                            Picker("State", selection: $licensePlateState) {
+                                Text("State").tag("")
+                                ForEach(LicensePlateService.usStates, id: \.code) { state in
+                                    Text(state.code).tag(state.code)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .frame(width: 90)
+                            
+                            TextField("Plate Number", text: $licensePlate)
+                                .textInputAutocapitalization(.characters)
+                                .autocorrectionDisabled()
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            
+                            Button(action: lookupPlate) {
+                                if isLookingUpPlate {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "magnifyingglass")
+                                }
+                            }
+                            .disabled(licensePlate.isEmpty || licensePlateState.isEmpty || isLookingUpPlate)
+                        }
+                        
+                        if let error = plateLookupError {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                        
+                        if showVINFallback {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Enter VIN to auto-fill vehicle details:")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                HStack {
+                                    TextField("17-character VIN", text: $plateVIN)
+                                        .textInputAutocapitalization(.characters)
+                                        .autocorrectionDisabled()
+                                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    
+                                    Button(action: decodeVINFromPlate) {
+                                        if isDecodingPlateVIN {
+                                            ProgressView()
+                                                .scaleEffect(0.8)
+                                        } else {
+                                            Text("Decode")
+                                                .font(.caption)
+                                                .fontWeight(.medium)
+                                        }
+                                    }
+                                    .disabled(plateVIN.count != 17 || isDecodingPlateVIN)
+                                    .buttonStyle(.borderedProminent)
+                                    .controlSize(.small)
+                                }
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
+                } header: {
+                    Text("Quick Lookup")
+                } footer: {
+                    Text("Look up your vehicle by plate or VIN to auto-fill details below.")
+                }
+                
                 // Photo Section
                 Section(header: Text("Vehicle Photo")) {
                     VStack(spacing: 12) {
@@ -350,6 +434,11 @@ struct AddVehicleView: View {
             vehicle.notes = notes
         }
         
+        if !licensePlate.isEmpty {
+            vehicle.licensePlate = licensePlate.uppercased()
+            vehicle.licensePlateState = licensePlateState
+        }
+        
         // Save photo if selected
         if let photoData = selectedPhotoData {
             vehicle.imageData = photoData
@@ -360,6 +449,85 @@ struct AddVehicleView: View {
             presentationMode.wrappedValue.dismiss()
         } catch {
             print("Error saving vehicle: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - License Plate Lookup
+    
+    private func lookupPlate() {
+        isLookingUpPlate = true
+        plateLookupError = nil
+        showVINFallback = false
+        
+        LicensePlateService.shared.lookupPlate(licensePlate, state: licensePlateState) { result in
+            isLookingUpPlate = false
+            switch result {
+            case .success(let plateResult):
+                vin = plateResult.vin
+                if let resultMake = plateResult.make { make = resultMake }
+                if let resultModel = plateResult.model { model = resultModel }
+                if let resultYear = plateResult.year { year = String(resultYear) }
+            case .failure:
+                plateLookupError = "Plate lookup unavailable. Try entering your VIN instead."
+                showVINFallback = true
+            }
+        }
+    }
+    
+    private func decodeVINFromPlate() {
+        isDecodingPlateVIN = true
+        plateLookupError = nil
+        
+        VehicleAPIService.shared.decodeVIN(plateVIN) { result in
+            isDecodingPlateVIN = false
+            switch result {
+            case .success(let decoded):
+                vin = decoded.vin
+                
+                if let matchingMake = availableMakes.first(where: { $0.lowercased() == decoded.make.lowercased() }) {
+                    selectedMake = matchingMake
+                    make = matchingMake
+                    updateAvailableModels()
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if let matchingModel = availableModels.first(where: { $0.lowercased() == decoded.model.lowercased() }) {
+                            selectedModel = matchingModel
+                            model = matchingModel
+                        } else {
+                            selectedModel = "Custom"
+                            customModel = decoded.model
+                            model = decoded.model
+                        }
+                    }
+                } else {
+                    selectedMake = "Custom"
+                    customMake = decoded.make
+                    make = decoded.make
+                    selectedModel = "Custom"
+                    customModel = decoded.model
+                    model = decoded.model
+                }
+                
+                let yearStr = String(decoded.year)
+                if availableYears.contains(yearStr) {
+                    selectedYear = yearStr
+                } else {
+                    selectedYear = "Custom"
+                    customYear = yearStr
+                }
+                year = yearStr
+                
+                if let decodedTrim = decoded.trim {
+                    trim = decodedTrim
+                }
+                
+                checkTrimsAvailability()
+                showVINFallback = false
+                plateLookupError = nil
+                
+            case .failure(let error):
+                plateLookupError = "VIN decode failed: \(error.localizedDescription)"
+            }
         }
     }
     

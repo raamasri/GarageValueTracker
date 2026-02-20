@@ -13,7 +13,12 @@ struct VehicleDetailView: View {
     @State private var showingMaintenanceInsights = false
     @State private var showingInsuranceTracking = false
     @State private var showingMaintenanceScheduler = false
+    @State private var showingShopFinder = false
+    @State private var showingRegistrationInspection = false
+    @State private var showingAccidentHistory = false
+    @State private var showingKnownIssues = false
     @State private var dashboardScore: DashboardScore?
+    @State private var knownIssueCount: Int = 0
     
     // Fetch cost entries for this vehicle
     @FetchRequest var costEntries: FetchedResults<CostEntryEntity>
@@ -256,8 +261,103 @@ struct VehicleDetailView: View {
                             .cornerRadius(16)
                             .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
                     }
+                    
+                    Button(action: {
+                        showingRegistrationInspection = true
+                    }) {
+                        Label("Registration", systemImage: "doc.text.fill")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                ZStack {
+                                    Color.indigo.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .indigo.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
                 }
                 .padding(.horizontal)
+                
+                // Action Buttons Row 4
+                HStack(spacing: 12) {
+                    Button(action: {
+                        showingShopFinder = true
+                    }) {
+                        Label("Find Shops", systemImage: "mappin.and.ellipse")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                ZStack {
+                                    Color.teal.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .teal.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                    
+                    Button(action: {
+                        showingAccidentHistory = true
+                    }) {
+                        Label("Accidents", systemImage: "exclamationmark.triangle.fill")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                ZStack {
+                                    Color.red.opacity(0.8)
+                                    Color.white.opacity(0.15)
+                                }
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .red.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                }
+                .padding(.horizontal)
+                
+                // Known Issues Card
+                if knownIssueCount > 0 {
+                    Button(action: {
+                        showingKnownIssues = true
+                    }) {
+                        HStack {
+                            Image(systemName: "exclamationmark.bubble.fill")
+                                .font(.title2)
+                                .foregroundColor(.orange)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Community Reports")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                                Text("\(knownIssueCount) known issue\(knownIssueCount == 1 ? "" : "s") reported for this vehicle")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color.orange.opacity(0.08))
+                        .cornerRadius(16)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.horizontal)
+                }
                 
                 // Cost Entries List
                 VStack(alignment: .leading, spacing: 12) {
@@ -328,8 +428,25 @@ struct VehicleDetailView: View {
             MaintenanceSchedulerView(vehicle: vehicle)
                 .environment(\.managedObjectContext, viewContext)
         }
+        .sheet(isPresented: $showingShopFinder) {
+            ServiceShopFinderView(vehicle: vehicle)
+        }
+        .sheet(isPresented: $showingRegistrationInspection) {
+            RegistrationInspectionView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingAccidentHistory) {
+            AccidentHistoryView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingKnownIssues) {
+            KnownIssuesView(make: vehicle.make, model: vehicle.model, year: Int(vehicle.year))
+        }
         .onAppear {
             calculateDashboardScore()
+            knownIssueCount = KnownIssuesService.shared.getIssues(
+                make: vehicle.make, model: vehicle.model, year: Int(vehicle.year)
+            ).count
         }
         .onChange(of: costEntries.count) {
             calculateDashboardScore()
@@ -337,7 +454,7 @@ struct VehicleDetailView: View {
     }
     
     private func calculateDashboardScore() {
-        dashboardScore = DashboardScoreService.shared.calculateDashboardScore(for: vehicle)
+        dashboardScore = DashboardScoreService.shared.calculateDashboardScore(for: vehicle, costEntryCount: costEntries.count)
     }
     
     private func dashboardScoreColor(_ percentage: Int) -> Color {

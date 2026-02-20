@@ -6,15 +6,32 @@ struct MaintenanceSchedulerView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     
-    @State private var upcomingServices: [ScheduledService] = []
-    @State private var completedServices: [ScheduledService] = []
+    @FetchRequest var savedReminders: FetchedResults<ServiceReminderEntity>
+    
+    @State private var generatedServices: [ScheduledService] = []
     @State private var showingAddService = false
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _savedReminders = FetchRequest<ServiceReminderEntity>(
+            sortDescriptors: [NSSortDescriptor(keyPath: \ServiceReminderEntity.dueDate, ascending: true)],
+            predicate: NSPredicate(format: "vehicleID == %@", vehicle.id as CVarArg),
+            animation: .default
+        )
+    }
+    
+    private var upcomingReminders: [ServiceReminderEntity] {
+        savedReminders.filter { !$0.isCompleted }
+    }
+    
+    private var completedReminders: [ServiceReminderEntity] {
+        savedReminders.filter { $0.isCompleted }.sorted { ($0.completedDate ?? .distantPast) > ($1.completedDate ?? .distantPast) }
+    }
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Header
                     VStack(spacing: 12) {
                         Image(systemName: "calendar.badge.clock")
                             .font(.system(size: 60))
@@ -34,7 +51,6 @@ struct MaintenanceSchedulerView: View {
                     }
                     .padding()
                     
-                    // Add Service Button
                     Button(action: {
                         showingAddService = true
                     }) {
@@ -48,8 +64,7 @@ struct MaintenanceSchedulerView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Upcoming Services
-                    if !upcomingServices.isEmpty {
+                    if !upcomingReminders.isEmpty || !generatedServices.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Image(systemName: "clock.fill")
@@ -60,16 +75,22 @@ struct MaintenanceSchedulerView: View {
                             }
                             .padding(.horizontal)
                             
-                            ForEach(upcomingServices) { service in
+                            ForEach(upcomingReminders) { reminder in
+                                SavedReminderRow(
+                                    reminder: reminder,
+                                    currentMileage: Int(vehicle.mileage),
+                                    onComplete: { markReminderComplete(reminder) },
+                                    onDelete: { deleteReminder(reminder) }
+                                )
+                            }
+                            .padding(.horizontal)
+                            
+                            ForEach(generatedServices) { service in
                                 ScheduledServiceRow(
                                     service: service,
                                     currentMileage: Int(vehicle.mileage),
-                                    onComplete: {
-                                        markComplete(service)
-                                    },
-                                    onDelete: {
-                                        deleteService(service)
-                                    }
+                                    onComplete: { saveGeneratedAsCompleted(service) },
+                                    onDelete: { generatedServices.removeAll { $0.id == service.id } }
                                 )
                             }
                             .padding(.horizontal)
@@ -83,8 +104,7 @@ struct MaintenanceSchedulerView: View {
                         .padding()
                     }
                     
-                    // Recently Completed
-                    if !completedServices.isEmpty {
+                    if !completedReminders.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
@@ -95,8 +115,8 @@ struct MaintenanceSchedulerView: View {
                             }
                             .padding(.horizontal)
                             
-                            ForEach(completedServices.prefix(5)) { service in
-                                CompletedServiceRow(service: service)
+                            ForEach(Array(completedReminders.prefix(5))) { reminder in
+                                CompletedReminderRow(reminder: reminder)
                             }
                             .padding(.horizontal)
                         }
@@ -114,58 +134,78 @@ struct MaintenanceSchedulerView: View {
                 }
             }
             .sheet(isPresented: $showingAddService) {
-                AddServiceReminderView(vehicle: vehicle) {
-                    loadServices()
-                }
+                AddServiceReminderView(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
             }
             .onAppear {
-                loadServices()
+                loadGeneratedServices()
             }
         }
     }
     
-    private func loadServices() {
-        // Load from MaintenanceInsightService
+    private func loadGeneratedServices() {
         let insights = MaintenanceInsightService.shared.generateInsights(for: vehicle, costEntries: [])
         
-        // Convert upcoming maintenance to scheduled services
-        upcomingServices = insights.upcomingMaintenance.map { item in
-            ScheduledService(
-                id: UUID(),
-                serviceName: item.service,
-                dueAtMileage: item.dueAtMileage,
-                dueDate: nil,
-                estimatedCost: item.estimatedCost,
-                priority: item.priority,
-                notes: nil,
-                isCompleted: false,
-                completedDate: nil
-            )
-        }
+        let savedTypes = Set(savedReminders.map { $0.serviceType.lowercased() })
         
-        // Sort by due mileage
-        upcomingServices.sort { $0.dueAtMileage < $1.dueAtMileage }
-        
-        // Filter completed
-        completedServices = upcomingServices.filter { $0.isCompleted }
-            .sorted { $0.completedDate ?? Date() > $1.completedDate ?? Date() }
-        
-        upcomingServices = upcomingServices.filter { !$0.isCompleted }
+        generatedServices = insights.upcomingMaintenance
+            .filter { !savedTypes.contains($0.service.lowercased()) }
+            .map { item in
+                ScheduledService(
+                    id: UUID(),
+                    serviceName: item.service,
+                    dueAtMileage: item.dueAtMileage,
+                    dueDate: nil,
+                    estimatedCost: item.estimatedCost,
+                    priority: item.priority,
+                    notes: nil,
+                    isCompleted: false,
+                    completedDate: nil
+                )
+            }
+            .sorted { $0.dueAtMileage < $1.dueAtMileage }
     }
     
-    private func markComplete(_ service: ScheduledService) {
-        if let index = upcomingServices.firstIndex(where: { $0.id == service.id }) {
-            upcomingServices[index].isCompleted = true
-            upcomingServices[index].completedDate = Date()
-            
-            // Move to completed
-            completedServices.insert(upcomingServices[index], at: 0)
-            upcomingServices.remove(at: index)
+    private func markReminderComplete(_ reminder: ServiceReminderEntity) {
+        reminder.isCompleted = true
+        reminder.completedDate = Date()
+        reminder.updatedAt = Date()
+        
+        do {
+            try viewContext.save()
+        } catch {
+            print("Error completing reminder: \(error)")
         }
     }
     
-    private func deleteService(_ service: ScheduledService) {
-        upcomingServices.removeAll { $0.id == service.id }
+    private func deleteReminder(_ reminder: ServiceReminderEntity) {
+        viewContext.delete(reminder)
+        
+        do {
+            try viewContext.save()
+        } catch {
+            print("Error deleting reminder: \(error)")
+        }
+    }
+    
+    private func saveGeneratedAsCompleted(_ service: ScheduledService) {
+        let reminder = ServiceReminderEntity(
+            context: viewContext,
+            vehicleID: vehicle.id,
+            serviceType: service.serviceName,
+            iconName: "wrench.and.screwdriver",
+            dueDate: Date(),
+            dueMileage: service.dueAtMileage
+        )
+        reminder.isCompleted = true
+        reminder.completedDate = Date()
+        
+        do {
+            try viewContext.save()
+            generatedServices.removeAll { $0.id == service.id }
+        } catch {
+            print("Error saving completed service: \(error)")
+        }
     }
     
     private func formatMileage(_ mileage: Int) -> String {
@@ -303,7 +343,7 @@ struct ScheduledServiceRow: View {
     }
 }
 
-// MARK: - Completed Service Row
+// MARK: - Completed Service Row (for generated ScheduledService)
 struct CompletedServiceRow: View {
     let service: ScheduledService
     
@@ -343,17 +383,135 @@ struct CompletedServiceRow: View {
     }
 }
 
+// MARK: - Saved Reminder Row (Core Data backed)
+struct SavedReminderRow: View {
+    let reminder: ServiceReminderEntity
+    let currentMileage: Int
+    let onComplete: () -> Void
+    let onDelete: () -> Void
+    
+    private var milesRemaining: Int {
+        guard reminder.dueMileage > 0 else { return 0 }
+        return Int(reminder.dueMileage) - currentMileage
+    }
+    
+    private var isDueSoon: Bool {
+        return (reminder.dueMileage > 0 && milesRemaining <= 500 && milesRemaining >= 0) || (reminder.daysRemaining <= 7 && reminder.daysRemaining >= 0)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: reminder.iconName)
+                    .foregroundColor(reminder.isOverdue ? .red : (isDueSoon ? .orange : .blue))
+                    .frame(width: 24)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(reminder.serviceType)
+                        .font(.headline)
+                    
+                    if reminder.dueMileage > 0 {
+                        Text("Due at \(formatMileage(Int(reminder.dueMileage)))")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    if reminder.isOverdue {
+                        Text("OVERDUE")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.red)
+                    } else {
+                        Text("Due \(reminder.dueDate, style: .date)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+            }
+            
+            HStack(spacing: 12) {
+                Button(action: onComplete) {
+                    Label("Complete", systemImage: "checkmark.circle")
+                        .font(.caption)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                
+                Button(action: onDelete) {
+                    Label("Remove", systemImage: "trash")
+                        .font(.caption)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+            }
+        }
+        .padding()
+        .background(reminder.isOverdue ? Color.red.opacity(0.1) : (isDueSoon ? Color.orange.opacity(0.1) : Color(.systemBackground)))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+    
+    private func formatMileage(_ mileage: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return (formatter.string(from: NSNumber(value: abs(mileage))) ?? "\(abs(mileage))") + " mi"
+    }
+}
+
+// MARK: - Completed Reminder Row (Core Data backed)
+struct CompletedReminderRow: View {
+    let reminder: ServiceReminderEntity
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+                .frame(width: 24)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(reminder.serviceType)
+                    .font(.subheadline)
+                
+                if let completedDate = reminder.completedDate {
+                    Text("Completed \(completedDate, style: .date)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+    }
+}
+
 // MARK: - Add Service Reminder View
 struct AddServiceReminderView: View {
     let vehicle: VehicleEntity
-    let onSave: () -> Void
+    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     
     @State private var serviceName = ""
     @State private var dueAtMileage = ""
+    @State private var dueDate = Date().addingTimeInterval(90 * 24 * 60 * 60)
     @State private var estimatedCost = ""
-    @State private var priority: MaintenancePriority = .recommended
     @State private var notes = ""
+    @State private var selectedIcon = "wrench.and.screwdriver"
+    
+    private let serviceIcons = [
+        "wrench.and.screwdriver", "drop.fill", "car.fill",
+        "fanblades.fill", "battery.100", "fuelpump.fill"
+    ]
     
     var body: some View {
         NavigationView {
@@ -361,21 +519,33 @@ struct AddServiceReminderView: View {
                 Section(header: Text("Service Details")) {
                     TextField("Service Name (e.g., Oil Change)", text: $serviceName)
                     
-                    TextField("Due at Mileage", text: $dueAtMileage)
-                        .keyboardType(.numberPad)
-                    
-                    HStack {
-                        Text("$")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Icon")
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
-                        TextField("Estimated Cost", text: $estimatedCost)
-                            .keyboardType(.decimalPad)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(serviceIcons, id: \.self) { icon in
+                                    Button(action: { selectedIcon = icon }) {
+                                        Image(systemName: icon)
+                                            .font(.title2)
+                                            .foregroundColor(selectedIcon == icon ? .blue : .gray)
+                                            .frame(width: 44, height: 44)
+                                            .background(selectedIcon == icon ? Color.blue.opacity(0.1) : Color.clear)
+                                            .cornerRadius(8)
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
+                
+                Section(header: Text("Due Date & Mileage")) {
+                    DatePicker("Due Date", selection: $dueDate, displayedComponents: [.date])
                     
-                    Picker("Priority", selection: $priority) {
-                        Text("Critical").tag(MaintenancePriority.critical)
-                        Text("Recommended").tag(MaintenancePriority.recommended)
-                        Text("Optional").tag(MaintenancePriority.optional)
-                    }
+                    TextField("Due at Mileage (Optional)", text: $dueAtMileage)
+                        .keyboardType(.numberPad)
                 }
                 
                 Section(header: Text("Notes (Optional)")) {
@@ -394,12 +564,36 @@ struct AddServiceReminderView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        onSave()
-                        presentationMode.wrappedValue.dismiss()
+                        saveReminder()
                     }
-                    .disabled(serviceName.isEmpty || dueAtMileage.isEmpty)
+                    .disabled(serviceName.isEmpty)
                 }
             }
+        }
+    }
+    
+    private func saveReminder() {
+        let mileageValue = Int(dueAtMileage) ?? 0
+        
+        let reminder = ServiceReminderEntity(
+            context: viewContext,
+            vehicleID: vehicle.id,
+            serviceType: serviceName,
+            iconName: selectedIcon,
+            dueDate: dueDate,
+            dueMileage: mileageValue
+        )
+        
+        if !notes.isEmpty {
+            reminder.notes = notes
+        }
+        
+        do {
+            try viewContext.save()
+            NotificationService.shared.scheduleServiceReminder(reminder, vehicleName: vehicle.displayName)
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            print("Error saving service reminder: \(error)")
         }
     }
 }

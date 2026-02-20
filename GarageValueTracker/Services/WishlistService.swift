@@ -106,6 +106,28 @@ class WishlistService {
                 )
                 
                 try context.save()
+                
+                // Check target price and send notification
+                if vehicle.targetPrice > 0 {
+                    if newPrice <= vehicle.targetPrice {
+                        NotificationService.shared.sendPriceTargetAlert(
+                            vehicleName: vehicle.displayName,
+                            currentPrice: newPrice,
+                            targetPrice: vehicle.targetPrice
+                        )
+                    } else {
+                        let percentAway = ((newPrice - vehicle.targetPrice) / vehicle.targetPrice) * 100
+                        if percentAway <= 10 {
+                            NotificationService.shared.sendPriceDropAlert(
+                                vehicleName: vehicle.displayName,
+                                currentPrice: newPrice,
+                                targetPrice: vehicle.targetPrice,
+                                percentAway: percentAway
+                            )
+                        }
+                    }
+                }
+                
                 print("✅ Updated price for \(vehicle.displayName): $\(newPrice)")
                 return true
             }

@@ -170,22 +170,24 @@ class MaintenanceInsightService {
         return max(min(confidence, 0.95), 0.40)
     }
     
-    // MARK: - Upcoming Maintenance
+    // MARK: - Upcoming Maintenance (make-specific intervals)
     
     private func getUpcomingMaintenance(vehicle: VehicleEntity) -> [UpcomingMaintenanceItem] {
         let mileage = Int(vehicle.mileage)
+        let schedule = maintenanceSchedule(for: vehicle.make)
         var items: [UpcomingMaintenanceItem] = []
         
-        // Standard maintenance intervals
-        let nextOilChange = ((mileage / 5000) + 1) * 5000
-        items.append(UpcomingMaintenanceItem(
-            service: "Oil Change",
-            dueAtMileage: nextOilChange,
-            estimatedCost: 60,
-            priority: nextOilChange - mileage <= 500 ? .critical : .recommended
-        ))
+        if schedule.oilChangeInterval > 0 {
+            let nextOilChange = ((mileage / schedule.oilChangeInterval) + 1) * schedule.oilChangeInterval
+            items.append(UpcomingMaintenanceItem(
+                service: "Oil Change",
+                dueAtMileage: nextOilChange,
+                estimatedCost: schedule.oilChangeCost,
+                priority: nextOilChange - mileage <= 500 ? .critical : .recommended
+            ))
+        }
         
-        let nextTireRotation = ((mileage / 7500) + 1) * 7500
+        let nextTireRotation = ((mileage / schedule.tireRotationInterval) + 1) * schedule.tireRotationInterval
         items.append(UpcomingMaintenanceItem(
             service: "Tire Rotation",
             dueAtMileage: nextTireRotation,
@@ -193,32 +195,106 @@ class MaintenanceInsightService {
             priority: .recommended
         ))
         
-        // Major services
-        if mileage < 30000 {
-            items.append(UpcomingMaintenanceItem(
-                service: "30k Service",
-                dueAtMileage: 30000,
-                estimatedCost: 500,
-                priority: .recommended
-            ))
-        } else if mileage < 60000 {
-            items.append(UpcomingMaintenanceItem(
-                service: "60k Service",
-                dueAtMileage: 60000,
-                estimatedCost: 1000,
-                priority: .recommended
-            ))
-        } else if mileage < 90000 {
-            items.append(UpcomingMaintenanceItem(
-                service: "90k Service",
-                dueAtMileage: 90000,
-                estimatedCost: 1500,
-                priority: .recommended
-            ))
+        if schedule.brakeFluidInterval > 0 {
+            let nextBrakeFluid = ((mileage / schedule.brakeFluidInterval) + 1) * schedule.brakeFluidInterval
+            if nextBrakeFluid - mileage <= 15000 {
+                items.append(UpcomingMaintenanceItem(
+                    service: "Brake Fluid Change",
+                    dueAtMileage: nextBrakeFluid,
+                    estimatedCost: 120,
+                    priority: .recommended
+                ))
+            }
         }
         
-        // Sort by due mileage
+        if schedule.transmissionFluidInterval > 0 {
+            let nextTrans = ((mileage / schedule.transmissionFluidInterval) + 1) * schedule.transmissionFluidInterval
+            if nextTrans - mileage <= 15000 {
+                items.append(UpcomingMaintenanceItem(
+                    service: "Transmission Fluid",
+                    dueAtMileage: nextTrans,
+                    estimatedCost: schedule.transmissionFluidCost,
+                    priority: .recommended
+                ))
+            }
+        }
+        
+        if schedule.sparkPlugInterval > 0 {
+            let nextSpark = ((mileage / schedule.sparkPlugInterval) + 1) * schedule.sparkPlugInterval
+            if nextSpark - mileage <= 15000 {
+                items.append(UpcomingMaintenanceItem(
+                    service: "Spark Plug Replacement",
+                    dueAtMileage: nextSpark,
+                    estimatedCost: schedule.sparkPlugCost,
+                    priority: .recommended
+                ))
+            }
+        }
+        
+        let majorIntervals: [(Int, String, Double)] = [
+            (30000, "30k Service", schedule.majorServiceCost30k),
+            (60000, "60k Service", schedule.majorServiceCost60k),
+            (90000, "90k Service", schedule.majorServiceCost90k),
+            (120000, "120k Service", schedule.majorServiceCost90k * 1.3),
+        ]
+        for (milestone, name, cost) in majorIntervals {
+            if mileage < milestone && milestone - mileage <= 15000 {
+                items.append(UpcomingMaintenanceItem(
+                    service: name,
+                    dueAtMileage: milestone,
+                    estimatedCost: cost,
+                    priority: .recommended
+                ))
+                break
+            }
+        }
+        
         return items.sorted { $0.dueAtMileage < $1.dueAtMileage }
+    }
+    
+    // MARK: - Make-Specific Maintenance Schedules
+    
+    private struct MakeSchedule {
+        let oilChangeInterval: Int
+        let oilChangeCost: Double
+        let tireRotationInterval: Int
+        let brakeFluidInterval: Int
+        let transmissionFluidInterval: Int
+        let transmissionFluidCost: Double
+        let sparkPlugInterval: Int
+        let sparkPlugCost: Double
+        let majorServiceCost30k: Double
+        let majorServiceCost60k: Double
+        let majorServiceCost90k: Double
+    }
+    
+    private func maintenanceSchedule(for make: String) -> MakeSchedule {
+        switch make.uppercased() {
+        case "TOYOTA", "LEXUS":
+            return MakeSchedule(oilChangeInterval: 10000, oilChangeCost: 65, tireRotationInterval: 5000, brakeFluidInterval: 30000, transmissionFluidInterval: 60000, transmissionFluidCost: 180, sparkPlugInterval: 60000, sparkPlugCost: 200, majorServiceCost30k: 400, majorServiceCost60k: 800, majorServiceCost90k: 1200)
+        case "HONDA", "ACURA":
+            return MakeSchedule(oilChangeInterval: 7500, oilChangeCost: 55, tireRotationInterval: 7500, brakeFluidInterval: 30000, transmissionFluidInterval: 30000, transmissionFluidCost: 160, sparkPlugInterval: 60000, sparkPlugCost: 180, majorServiceCost30k: 350, majorServiceCost60k: 750, majorServiceCost90k: 1100)
+        case "BMW":
+            return MakeSchedule(oilChangeInterval: 10000, oilChangeCost: 120, tireRotationInterval: 5000, brakeFluidInterval: 20000, transmissionFluidInterval: 50000, transmissionFluidCost: 350, sparkPlugInterval: 60000, sparkPlugCost: 450, majorServiceCost30k: 600, majorServiceCost60k: 1500, majorServiceCost90k: 2200)
+        case "MERCEDES-BENZ":
+            return MakeSchedule(oilChangeInterval: 10000, oilChangeCost: 130, tireRotationInterval: 5000, brakeFluidInterval: 20000, transmissionFluidInterval: 40000, transmissionFluidCost: 400, sparkPlugInterval: 60000, sparkPlugCost: 500, majorServiceCost30k: 650, majorServiceCost60k: 1600, majorServiceCost90k: 2500)
+        case "AUDI":
+            return MakeSchedule(oilChangeInterval: 10000, oilChangeCost: 110, tireRotationInterval: 5000, brakeFluidInterval: 20000, transmissionFluidInterval: 40000, transmissionFluidCost: 350, sparkPlugInterval: 60000, sparkPlugCost: 400, majorServiceCost30k: 550, majorServiceCost60k: 1400, majorServiceCost90k: 2100)
+        case "FORD":
+            return MakeSchedule(oilChangeInterval: 7500, oilChangeCost: 60, tireRotationInterval: 7500, brakeFluidInterval: 30000, transmissionFluidInterval: 60000, transmissionFluidCost: 200, sparkPlugInterval: 60000, sparkPlugCost: 250, majorServiceCost30k: 400, majorServiceCost60k: 900, majorServiceCost90k: 1400)
+        case "CHEVROLET", "GMC":
+            return MakeSchedule(oilChangeInterval: 7500, oilChangeCost: 60, tireRotationInterval: 7500, brakeFluidInterval: 30000, transmissionFluidInterval: 45000, transmissionFluidCost: 200, sparkPlugInterval: 60000, sparkPlugCost: 250, majorServiceCost30k: 400, majorServiceCost60k: 900, majorServiceCost90k: 1400)
+        case "HYUNDAI", "KIA", "GENESIS":
+            return MakeSchedule(oilChangeInterval: 7500, oilChangeCost: 55, tireRotationInterval: 7500, brakeFluidInterval: 30000, transmissionFluidInterval: 60000, transmissionFluidCost: 170, sparkPlugInterval: 45000, sparkPlugCost: 200, majorServiceCost30k: 350, majorServiceCost60k: 750, majorServiceCost90k: 1100)
+        case "SUBARU":
+            return MakeSchedule(oilChangeInterval: 6000, oilChangeCost: 60, tireRotationInterval: 7500, brakeFluidInterval: 30000, transmissionFluidInterval: 60000, transmissionFluidCost: 180, sparkPlugInterval: 60000, sparkPlugCost: 250, majorServiceCost30k: 400, majorServiceCost60k: 850, majorServiceCost90k: 1300)
+        case "TESLA":
+            return MakeSchedule(oilChangeInterval: 0, oilChangeCost: 0, tireRotationInterval: 6250, brakeFluidInterval: 25000, transmissionFluidInterval: 0, transmissionFluidCost: 0, sparkPlugInterval: 0, sparkPlugCost: 0, majorServiceCost30k: 200, majorServiceCost60k: 400, majorServiceCost90k: 600)
+        case "PORSCHE":
+            return MakeSchedule(oilChangeInterval: 10000, oilChangeCost: 180, tireRotationInterval: 5000, brakeFluidInterval: 20000, transmissionFluidInterval: 40000, transmissionFluidCost: 500, sparkPlugInterval: 40000, sparkPlugCost: 600, majorServiceCost30k: 800, majorServiceCost60k: 2000, majorServiceCost90k: 3000)
+        default:
+            return MakeSchedule(oilChangeInterval: 5000, oilChangeCost: 60, tireRotationInterval: 7500, brakeFluidInterval: 30000, transmissionFluidInterval: 60000, transmissionFluidCost: 200, sparkPlugInterval: 60000, sparkPlugCost: 220, majorServiceCost30k: 450, majorServiceCost60k: 900, majorServiceCost90k: 1400)
+        }
     }
     
     // MARK: - Analytics
@@ -235,10 +311,9 @@ class MaintenanceInsightService {
         }
         
         let totalCost = costEntries.reduce(0.0) { $0 + $1.amount }
-        let milesOwned = max(Int(vehicle.mileage) - Int(vehicle.purchasePrice * 0.001), 1) // Rough estimate
-        let costPerMile = totalCost / Double(milesOwned)
-        
         let monthsOwned = max(Calendar.current.dateComponents([.month], from: vehicle.purchaseDate, to: Date()).month ?? 1, 1)
+        let estimatedMilesDriven = max(monthsOwned * 1000, 1)
+        let costPerMile = totalCost / Double(estimatedMilesDriven)
         let costPerMonth = totalCost / Double(monthsOwned)
         
         // Find most expensive category
@@ -248,14 +323,14 @@ class MaintenanceInsightService {
         }
         let mostExpensive = categoryTotals.max { $0.value < $1.value }?.key ?? "N/A"
         
-        // Calculate trend (compare first half vs second half)
         let trend: CostTrend
         if costEntries.count >= 4 {
-            let midpoint = costEntries.count / 2
-            let firstHalf = costEntries[midpoint...].reduce(0.0) { $0 + $1.amount } / Double(midpoint)
-            let secondHalf = costEntries[..<midpoint].reduce(0.0) { $0 + $1.amount } / Double(midpoint)
+            let sorted = costEntries.sorted { $0.date < $1.date }
+            let midpoint = sorted.count / 2
+            let olderAvg = sorted[..<midpoint].reduce(0.0) { $0 + $1.amount } / Double(midpoint)
+            let newerAvg = sorted[midpoint...].reduce(0.0) { $0 + $1.amount } / Double(sorted.count - midpoint)
             
-            let difference = (secondHalf - firstHalf) / firstHalf
+            let difference = (newerAvg - olderAvg) / max(olderAvg, 1.0)
             if difference > 0.15 {
                 trend = .increasing
             } else if difference < -0.15 {

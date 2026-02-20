@@ -7,10 +7,9 @@ class DashboardScoreService {
     
     private init() {}
     
-    // Calculate completion percentage for a vehicle
-    func calculateDashboardScore(for vehicle: VehicleEntity) -> DashboardScore {
+    func calculateDashboardScore(for vehicle: VehicleEntity, costEntryCount: Int = -1, reminderCount: Int = -1) -> DashboardScore {
         var completedItems = 0
-        let totalItems = 12 // Total checkpoints
+        let totalItems = 11
         
         var missingItems: [String] = []
         
@@ -31,7 +30,7 @@ class DashboardScoreService {
             missingItems.append("Add VIN number")
         }
         
-        // 4. Current mileage (reasonable value)
+        // 4. Current mileage
         if vehicle.mileage > 0 {
             completedItems += 1
         } else {
@@ -73,22 +72,20 @@ class DashboardScoreService {
             missingItems.append("Update current market value")
         }
         
-        // 10. Has maintenance records (at least 1 cost entry)
-        // This will be checked via relationship
-        completedItems += 1 // We'll update this with actual check
+        // 10. Has maintenance records
+        if costEntryCount > 0 {
+            completedItems += 1
+        } else if costEntryCount == 0 {
+            missingItems.append("Add a maintenance or cost record")
+        } else {
+            missingItems.append("Add a maintenance or cost record")
+        }
         
         // 11. Notes/documentation
         if vehicle.notes != nil && !vehicle.notes!.isEmpty {
             completedItems += 1
         } else {
             missingItems.append("Add notes or documentation")
-        }
-        
-        // 12. Accident history documented
-        if vehicle.hasAccidentHistory {
-            completedItems += 1
-        } else {
-            completedItems += 1 // Not having accidents is good
         }
         
         let percentage = Int((Double(completedItems) / Double(totalItems)) * 100)

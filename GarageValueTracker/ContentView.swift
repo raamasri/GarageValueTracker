@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var showingAddWishlist = false
     @State private var showingSettings = false
     @State private var showingAddOptions = false
+    @State private var showingShareGarage = false
     @State private var selectedTab: GarageListView.GarageTab = .myGarage
     
     var body: some View {
@@ -85,20 +86,28 @@ struct ContentView: View {
                 
                 if !vehicles.isEmpty {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Menu {
+                        HStack(spacing: 16) {
                             Button(action: {
-                                showingAddVehicle = true
+                                showingShareGarage = true
                             }) {
-                                Label("Add to My Garage", systemImage: "car.fill")
+                                Image(systemName: "square.and.arrow.up")
                             }
                             
-                            Button(action: {
-                                showingAddWishlist = true
-                            }) {
-                                Label("Add to Wishlist", systemImage: "heart.fill")
+                            Menu {
+                                Button(action: {
+                                    showingAddVehicle = true
+                                }) {
+                                    Label("Add to My Garage", systemImage: "car.fill")
+                                }
+                                
+                                Button(action: {
+                                    showingAddWishlist = true
+                                }) {
+                                    Label("Add to Wishlist", systemImage: "heart.fill")
+                                }
+                            } label: {
+                                Image(systemName: "plus")
                             }
-                        } label: {
-                            Image(systemName: "plus")
                         }
                     }
                 }
@@ -113,6 +122,9 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView()
+            }
+            .sheet(isPresented: $showingShareGarage) {
+                ShareGarageView(vehicles: Array(vehicles))
             }
         }
     }
