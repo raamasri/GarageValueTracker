@@ -13,15 +13,23 @@ struct GarageValueTrackerApp: App {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environmentObject(settingsManager)
-                .preferredColorScheme(settingsManager.colorScheme)
-                .tint(settingsManager.accentColor.color)
+                .preferredColorScheme(.dark)
+                .tint(GIQ.accent)
                 .onAppear {
                     NotificationService.shared.requestPermission { _ in }
                     scheduleAllVehicleNotifications()
+                    BackgroundRefreshService.shared.scheduleRefresh()
+                    seedAPIKeysIfNeeded()
                 }
         }
     }
     
+    private func seedAPIKeysIfNeeded() {
+        if !APIKeyManager.shared.hasKey(for: .marketcheck) {
+            APIKeyManager.shared.setKey("xADTFMJ7oeDLMLygmWzBmLWNbGo4mHl4", for: .marketcheck)
+        }
+    }
+
     private func scheduleAllVehicleNotifications() {
         let context = persistenceController.container.viewContext
         let request = VehicleEntity.fetchRequest()

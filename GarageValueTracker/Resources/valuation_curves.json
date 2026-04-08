@@ -1,0 +1,161 @@
+{
+  "segments": {
+    "sports": {
+      "depreciationCurve": {
+        "year1": 0.12, "year2": 0.10, "year3": 0.09, "year4": 0.08,
+        "year5": 0.07, "year6": 0.06, "year7": 0.05, "year8": 0.04,
+        "year9": 0.03, "year10plus": 0.02
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.008, "perThousandUnder": 0.005,
+        "averageAnnualMiles": 8000, "highMileageThreshold": 80000
+      },
+      "seasonalFactors": {
+        "jan": 0.96, "feb": 0.97, "mar": 1.03, "apr": 1.05,
+        "may": 1.06, "jun": 1.04, "jul": 1.03, "aug": 1.02,
+        "sep": 1.00, "oct": 0.98, "nov": 0.95, "dec": 0.94
+      },
+      "conditionMultipliers": {
+        "concours": 1.40, "excellent": 1.15, "good": 1.00, "driver": 0.85, "project": 0.55
+      },
+      "averageDaysOnMarket": 35,
+      "volatilityBase": 65
+    },
+    "sedan": {
+      "depreciationCurve": {
+        "year1": 0.22, "year2": 0.14, "year3": 0.12, "year4": 0.10,
+        "year5": 0.09, "year6": 0.08, "year7": 0.07, "year8": 0.06,
+        "year9": 0.05, "year10plus": 0.04
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.006, "perThousandUnder": 0.003,
+        "averageAnnualMiles": 12000, "highMileageThreshold": 100000
+      },
+      "seasonalFactors": {
+        "jan": 0.98, "feb": 0.99, "mar": 1.01, "apr": 1.02,
+        "may": 1.01, "jun": 1.00, "jul": 1.00, "aug": 1.01,
+        "sep": 1.00, "oct": 0.99, "nov": 0.99, "dec": 0.98
+      },
+      "conditionMultipliers": {
+        "concours": 1.20, "excellent": 1.10, "good": 1.00, "driver": 0.88, "project": 0.50
+      },
+      "averageDaysOnMarket": 28,
+      "volatilityBase": 30
+    },
+    "suv": {
+      "depreciationCurve": {
+        "year1": 0.18, "year2": 0.12, "year3": 0.10, "year4": 0.09,
+        "year5": 0.08, "year6": 0.07, "year7": 0.06, "year8": 0.05,
+        "year9": 0.04, "year10plus": 0.03
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.005, "perThousandUnder": 0.003,
+        "averageAnnualMiles": 13000, "highMileageThreshold": 120000
+      },
+      "seasonalFactors": {
+        "jan": 1.02, "feb": 1.01, "mar": 1.00, "apr": 0.99,
+        "may": 0.98, "jun": 1.00, "jul": 1.01, "aug": 1.02,
+        "sep": 1.03, "oct": 1.02, "nov": 1.00, "dec": 0.99
+      },
+      "conditionMultipliers": {
+        "concours": 1.25, "excellent": 1.12, "good": 1.00, "driver": 0.87, "project": 0.52
+      },
+      "averageDaysOnMarket": 22,
+      "volatilityBase": 35
+    },
+    "truck": {
+      "depreciationCurve": {
+        "year1": 0.15, "year2": 0.10, "year3": 0.09, "year4": 0.08,
+        "year5": 0.07, "year6": 0.06, "year7": 0.05, "year8": 0.04,
+        "year9": 0.03, "year10plus": 0.03
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.004, "perThousandUnder": 0.002,
+        "averageAnnualMiles": 14000, "highMileageThreshold": 150000
+      },
+      "seasonalFactors": {
+        "jan": 0.97, "feb": 0.98, "mar": 1.02, "apr": 1.03,
+        "may": 1.04, "jun": 1.02, "jul": 1.01, "aug": 1.00,
+        "sep": 1.00, "oct": 0.99, "nov": 0.97, "dec": 0.96
+      },
+      "conditionMultipliers": {
+        "concours": 1.30, "excellent": 1.12, "good": 1.00, "driver": 0.85, "project": 0.55
+      },
+      "averageDaysOnMarket": 20,
+      "volatilityBase": 40
+    },
+    "ev": {
+      "depreciationCurve": {
+        "year1": 0.25, "year2": 0.15, "year3": 0.12, "year4": 0.10,
+        "year5": 0.08, "year6": 0.07, "year7": 0.06, "year8": 0.05,
+        "year9": 0.04, "year10plus": 0.03
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.007, "perThousandUnder": 0.004,
+        "averageAnnualMiles": 11000, "highMileageThreshold": 80000
+      },
+      "seasonalFactors": {
+        "jan": 0.98, "feb": 0.99, "mar": 1.02, "apr": 1.03,
+        "may": 1.02, "jun": 1.01, "jul": 1.00, "aug": 1.00,
+        "sep": 0.99, "oct": 0.98, "nov": 0.98, "dec": 0.97
+      },
+      "conditionMultipliers": {
+        "concours": 1.15, "excellent": 1.08, "good": 1.00, "driver": 0.85, "project": 0.45
+      },
+      "averageDaysOnMarket": 30,
+      "volatilityBase": 55
+    },
+    "luxury": {
+      "depreciationCurve": {
+        "year1": 0.28, "year2": 0.16, "year3": 0.13, "year4": 0.11,
+        "year5": 0.09, "year6": 0.08, "year7": 0.06, "year8": 0.05,
+        "year9": 0.04, "year10plus": 0.03
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.009, "perThousandUnder": 0.005,
+        "averageAnnualMiles": 10000, "highMileageThreshold": 80000
+      },
+      "seasonalFactors": {
+        "jan": 0.97, "feb": 0.98, "mar": 1.02, "apr": 1.03,
+        "may": 1.03, "jun": 1.02, "jul": 1.01, "aug": 1.00,
+        "sep": 0.99, "oct": 0.98, "nov": 0.97, "dec": 0.98
+      },
+      "conditionMultipliers": {
+        "concours": 1.35, "excellent": 1.15, "good": 1.00, "driver": 0.80, "project": 0.45
+      },
+      "averageDaysOnMarket": 40,
+      "volatilityBase": 50
+    },
+    "exotic": {
+      "depreciationCurve": {
+        "year1": 0.10, "year2": 0.08, "year3": 0.06, "year4": 0.05,
+        "year5": 0.04, "year6": 0.03, "year7": 0.02, "year8": 0.01,
+        "year9": 0.00, "year10plus": -0.02
+      },
+      "mileagePenalty": {
+        "perThousandOver": 0.015, "perThousandUnder": 0.008,
+        "averageAnnualMiles": 3000, "highMileageThreshold": 30000
+      },
+      "seasonalFactors": {
+        "jan": 0.95, "feb": 0.96, "mar": 1.04, "apr": 1.06,
+        "may": 1.07, "jun": 1.05, "jul": 1.03, "aug": 1.02,
+        "sep": 1.00, "oct": 0.97, "nov": 0.93, "dec": 0.92
+      },
+      "conditionMultipliers": {
+        "concours": 1.60, "excellent": 1.25, "good": 1.00, "driver": 0.75, "project": 0.40
+      },
+      "averageDaysOnMarket": 60,
+      "volatilityBase": 75
+    }
+  },
+  "holdValueModels": [
+    "Wrangler", "4Runner", "Tacoma", "Bronco", "G-Wagon", "911",
+    "GT-R", "Corvette", "Land Cruiser", "Defender", "GR86", "Miata", "Supra"
+  ],
+  "holdValueMultiplier": 0.70,
+  "depreciationCliffs": {
+    "mileageThresholds": [50000, 75000, 100000, 150000],
+    "warrantyExpiryYears": [3, 4, 5],
+    "modelYearRolloverMonths": [9, 10]
+  }
+}

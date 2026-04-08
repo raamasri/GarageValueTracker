@@ -21,6 +21,9 @@ struct VehicleDetailView: View {
     @State private var showingDepreciationChart = false
     @State private var showingLoanTracker = false
     @State private var showingSellAdvisor = false
+    @State private var showingMapTimeline = false
+    @State private var showingScenarioModel = false
+    @State private var showingAskAI = false
     @State private var dashboardScore: DashboardScore?
     @State private var knownIssueCount: Int = 0
     
@@ -76,6 +79,30 @@ struct VehicleDetailView: View {
                     }
                 }
                 .padding()
+                
+                // AI Signal + Market Range + Risk + Cost-to-Hold
+                VehicleDetailInlineSection(vehicle: vehicle)
+                    .environment(\.managedObjectContext, viewContext)
+                
+                // Ask AI Button
+                Button(action: { showingAskAI = true }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 14))
+                        Text("Ask AI about this vehicle")
+                            .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                    }
+                    .foregroundColor(Color(red: 0.83, green: 0.66, blue: 0.26))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color(red: 0.83, green: 0.66, blue: 0.26).opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(red: 0.83, green: 0.66, blue: 0.26).opacity(0.3), lineWidth: 1)
+                    )
+                }
+                .padding(.horizontal)
                 
                 // Dashboard Score Card
                 if let score = dashboardScore {
@@ -239,6 +266,46 @@ struct VehicleDetailView: View {
                 }
                 .padding(.horizontal)
 
+                // Market & Risk Row
+                HStack(spacing: 12) {
+                    NavigationLink(destination: VehicleMarketCardView(
+                        make: vehicle.make, model: vehicle.model,
+                        year: Int(vehicle.year), mileage: Int(vehicle.mileage),
+                        trim: vehicle.trim
+                    )) {
+                        Label("Market Card", systemImage: "chart.bar.fill")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(colors: [.teal.opacity(0.8), .cyan.opacity(0.8)],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .teal.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                    
+                    Button(action: {
+                        showingScenarioModel = true
+                    }) {
+                        Label("Scenario", systemImage: "wand.and.stars")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(colors: [.pink.opacity(0.8), .purple.opacity(0.7)],
+                                               startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                            .shadow(color: .pink.opacity(0.3), radius: 8, x: 0, y: 4)
+                    }
+                }
+                .padding(.horizontal)
+                
                 // Action Buttons Row 1
                 HStack(spacing: 12) {
                     Button(action: {
@@ -405,6 +472,44 @@ struct VehicleDetailView: View {
                 }
                 .padding(.horizontal)
                 
+                // Map Timeline Button
+                Button(action: {
+                    showingMapTimeline = true
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "map.fill")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .frame(width: 40, height: 40)
+                            .background(
+                                LinearGradient(colors: [.blue, .cyan], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            )
+                            .cornerRadius(10)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Map Timeline")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            Text("See where your car has been")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal)
+                
                 // Known Issues Card
                 if knownIssueCount > 0 {
                     Button(action: {
@@ -537,6 +642,17 @@ struct VehicleDetailView: View {
         .sheet(isPresented: $showingSellAdvisor) {
             SellAdvisorView(vehicle: vehicle)
                 .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingMapTimeline) {
+            MapTimelineView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingScenarioModel) {
+            ScenarioModelView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
+        .sheet(isPresented: $showingAskAI) {
+            AskAIView(vehicle: vehicle)
         }
         .onAppear {
             calculateDashboardScore()

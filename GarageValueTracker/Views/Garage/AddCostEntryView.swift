@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import CoreLocation
 
 struct AddCostEntryView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -18,6 +19,8 @@ struct AddCostEntryView: View {
     @StateObject private var scannerService = ReceiptScannerService()
     @State private var showingScanAlert = false
     @State private var scanAlertMessage = ""
+    @State private var selectedCoordinate: CLLocationCoordinate2D?
+    @State private var selectedAddress = ""
     
     var body: some View {
         NavigationView {
@@ -103,6 +106,13 @@ struct AddCostEntryView: View {
                     TextEditor(text: $notes)
                         .frame(minHeight: 100)
                 }
+                
+                Section(header: Text("Location (Optional)")) {
+                    LocationPickerView(
+                        selectedCoordinate: $selectedCoordinate,
+                        selectedAddress: $selectedAddress
+                    )
+                }
             }
             .navigationTitle("Add Cost")
             .navigationBarTitleDisplayMode(.inline)
@@ -184,7 +194,7 @@ struct AddCostEntryView: View {
     private func saveCostEntry() {
         guard let amountValue = Double(amount) else { return }
         
-        _ = CostEntryEntity(
+        let entry = CostEntryEntity(
             context: viewContext,
             vehicleID: vehicleID,
             date: date,
@@ -194,6 +204,19 @@ struct AddCostEntryView: View {
             notes: notes.isEmpty ? nil : notes,
             receiptImageData: receiptImageData
         )
+        
+        if let coord = selectedCoordinate {
+            LocationService.shared.createLocationEvent(
+                context: viewContext,
+                vehicleID: vehicleID,
+                date: date,
+                coordinate: coord,
+                address: selectedAddress.isEmpty ? merchantName : selectedAddress,
+                eventType: .cost,
+                title: "\(selectedCategory.rawValue)" + (merchantName.isEmpty ? "" : " - \(merchantName)"),
+                sourceEntityID: entry.id
+            )
+        }
         
         do {
             try viewContext.save()

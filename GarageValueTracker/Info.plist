@@ -4,5 +4,11 @@
 <dict>
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location is used to pin where you fill up gas, get serviced, and log trips on your vehicle's map timeline.</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.garageiq.valuation.refresh</string>
+	</array>
 </dict>
 </plist>

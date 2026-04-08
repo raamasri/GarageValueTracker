@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import CoreLocation
 
 struct MaintenanceSchedulerView: View {
     let vehicle: VehicleEntity
@@ -10,6 +11,11 @@ struct MaintenanceSchedulerView: View {
     
     @State private var generatedServices: [ScheduledService] = []
     @State private var showingAddService = false
+    @State private var showingCompleteLocation = false
+    @State private var completingReminder: ServiceReminderEntity?
+    @State private var completingService: ScheduledService?
+    @State private var completeCoordinate: CLLocationCoordinate2D?
+    @State private var completeAddress = ""
     
     init(vehicle: VehicleEntity) {
         self.vehicle = vehicle
@@ -79,7 +85,12 @@ struct MaintenanceSchedulerView: View {
                                 SavedReminderRow(
                                     reminder: reminder,
                                     currentMileage: Int(vehicle.mileage),
-                                    onComplete: { markReminderComplete(reminder) },
+                                    onComplete: {
+                                        completingReminder = reminder
+                                        completeCoordinate = nil
+                                        completeAddress = ""
+                                        showingCompleteLocation = true
+                                    },
                                     onDelete: { deleteReminder(reminder) }
                                 )
                             }
@@ -89,7 +100,12 @@ struct MaintenanceSchedulerView: View {
                                 ScheduledServiceRow(
                                     service: service,
                                     currentMileage: Int(vehicle.mileage),
-                                    onComplete: { saveGeneratedAsCompleted(service) },
+                                    onComplete: {
+                                        completingService = service
+                                        completeCoordinate = nil
+                                        completeAddress = ""
+                                        showingCompleteLocation = true
+                                    },
                                     onDelete: { generatedServices.removeAll { $0.id == service.id } }
                                 )
                             }
@@ -136,6 +152,32 @@ struct MaintenanceSchedulerView: View {
             .sheet(isPresented: $showingAddService) {
                 AddServiceReminderView(vehicle: vehicle)
                     .environment(\.managedObjectContext, viewContext)
+            }
+            .sheet(isPresented: $showingCompleteLocation) {
+                CompleteWithLocationView(
+                    coordinate: $completeCoordinate,
+                    address: $completeAddress,
+                    onSave: {
+                        if let reminder = completingReminder {
+                            markReminderCompleteWithLocation(reminder)
+                        } else if let service = completingService {
+                            saveGeneratedAsCompletedWithLocation(service)
+                        }
+                        showingCompleteLocation = false
+                        completingReminder = nil
+                        completingService = nil
+                    },
+                    onSkip: {
+                        if let reminder = completingReminder {
+                            markReminderComplete(reminder)
+                        } else if let service = completingService {
+                            saveGeneratedAsCompleted(service)
+                        }
+                        showingCompleteLocation = false
+                        completingReminder = nil
+                        completingService = nil
+                    }
+                )
             }
             .onAppear {
                 loadGeneratedServices()
@@ -208,10 +250,127 @@ struct MaintenanceSchedulerView: View {
         }
     }
     
+    private func markReminderCompleteWithLocation(_ reminder: ServiceReminderEntity) {
+        reminder.isCompleted = true
+        reminder.completedDate = Date()
+        reminder.updatedAt = Date()
+        
+        if let coord = completeCoordinate {
+            LocationService.shared.createLocationEvent(
+                context: viewContext,
+                vehicleID: vehicle.id,
+                date: Date(),
+                coordinate: coord,
+                address: completeAddress,
+                eventType: .service,
+                title: reminder.serviceType,
+                sourceEntityID: reminder.id
+            )
+        }
+        
+        do {
+            try viewContext.save()
+        } catch {
+            print("Error completing reminder: \(error)")
+        }
+    }
+    
+    private func saveGeneratedAsCompletedWithLocation(_ service: ScheduledService) {
+        let reminder = ServiceReminderEntity(
+            context: viewContext,
+            vehicleID: vehicle.id,
+            serviceType: service.serviceName,
+            iconName: "wrench.and.screwdriver",
+            dueDate: Date(),
+            dueMileage: service.dueAtMileage
+        )
+        reminder.isCompleted = true
+        reminder.completedDate = Date()
+        
+        if let coord = completeCoordinate {
+            LocationService.shared.createLocationEvent(
+                context: viewContext,
+                vehicleID: vehicle.id,
+                date: Date(),
+                coordinate: coord,
+                address: completeAddress,
+                eventType: .service,
+                title: service.serviceName,
+                sourceEntityID: reminder.id
+            )
+        }
+        
+        do {
+            try viewContext.save()
+            generatedServices.removeAll { $0.id == service.id }
+        } catch {
+            print("Error saving completed service: \(error)")
+        }
+    }
+    
     private func formatMileage(_ mileage: Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return (formatter.string(from: NSNumber(value: mileage)) ?? "\(mileage)") + " mi"
+    }
+}
+
+// MARK: - Complete With Location View
+struct CompleteWithLocationView: View {
+    @Binding var coordinate: CLLocationCoordinate2D?
+    @Binding var address: String
+    let onSave: () -> Void
+    let onSkip: () -> Void
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Image(systemName: "mappin.circle.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(.blue)
+                
+                Text("Where was this service done?")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                
+                Text("Add the service location to track on your map timeline.")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                LocationPickerView(
+                    selectedCoordinate: $coordinate,
+                    selectedAddress: $address
+                )
+                .padding(.horizontal)
+                
+                Spacer()
+                
+                VStack(spacing: 12) {
+                    Button(action: onSave) {
+                        Text("Complete with Location")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(coordinate != nil ? Color.green : Color.gray)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                    }
+                    .disabled(coordinate == nil)
+                    
+                    Button(action: onSkip) {
+                        Text("Skip Location")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom)
+            }
+            .padding(.top, 30)
+            .navigationBarTitleDisplayMode(.inline)
+        }
     }
 }
 

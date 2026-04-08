@@ -1,6 +1,8 @@
 import SwiftUI
+import CoreData
 
 struct DealCheckerView: View {
+    @Environment(\.managedObjectContext) private var viewContext
     @State private var make: String = ""
     @State private var model: String = ""
     @State private var year: String = ""
@@ -184,7 +186,13 @@ struct DealCheckerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showingResults) {
                 if let result = analysisResult {
-                    DealAnalysisResultView(result: result)
+                    DealAnalysisResultView(
+                        result: result,
+                        make: make,
+                        model: model,
+                        year: Int(year) ?? 0,
+                        mileage: Int(mileage) ?? 0
+                    )
                 }
             }
             .sheet(isPresented: $showingTrimSelection) {
@@ -245,6 +253,15 @@ struct DealCheckerView: View {
         
         analysisResult = result
         showingResults = true
+        
+        _ = ListingEntity(
+            context: viewContext,
+            make: make, model: model, year: yearInt,
+            trim: trimName, mileage: mileageInt,
+            askingPrice: priceDouble,
+            dealScore: result.overallScore
+        )
+        try? viewContext.save()
     }
 }
 

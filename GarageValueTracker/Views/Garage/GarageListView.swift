@@ -51,7 +51,7 @@ struct GarageListView: View {
                     Button(action: { selectedTab = .wishlist }) {
                         VStack(spacing: 8) {
                             HStack(spacing: 4) {
-                                Text("Wishlist")
+                                Text("Watchlist")
                                     .font(.headline)
                                     .fontWeight(selectedTab == .wishlist ? .bold : .regular)
                                 
@@ -118,7 +118,17 @@ struct GarageListView: View {
             // Content
             GeometryReader { geometry in
                 if selectedTab == .myGarage {
-                    myGarageView
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            if vehicles.count >= 1 {
+                                PortfolioSummaryView(vehicles: Array(vehicles))
+                                    .padding(.top, 8)
+                                    .padding(.bottom, 12)
+                            }
+                            
+                            myGarageContent
+                        }
+                    }
                 } else {
                     wishlistView
                 }
@@ -126,17 +136,17 @@ struct GarageListView: View {
         }
     }
     
-    private var myGarageView: some View {
+    private var myGarageContent: some View {
         Group {
             if appSettings.garageViewMode == .card {
-                cardView
+                cardViewContent
             } else {
-                listView
+                listViewContent
             }
         }
     }
     
-    private var cardView: some View {
+    private var cardViewContent: some View {
         VStack(spacing: 0) {
             // Page indicator at top
             if vehicles.count > 1 {
@@ -165,15 +175,13 @@ struct GarageListView: View {
         }
     }
     
-    private var listView: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(vehicles, id: \.id) { vehicle in
-                    VehicleListRow(vehicle: vehicle)
-                }
+    private var listViewContent: some View {
+        LazyVStack(spacing: 12) {
+            ForEach(vehicles, id: \.id) { vehicle in
+                VehicleListRow(vehicle: vehicle)
             }
-            .padding()
         }
+        .padding()
     }
     
     private var wishlistView: some View {
@@ -184,7 +192,7 @@ struct GarageListView: View {
                         .font(.system(size: 80))
                         .foregroundColor(.secondary)
                     
-                    Text("No Cars in Wishlist")
+                    Text("No Cars in Watchlist")
                         .font(.title2)
                         .fontWeight(.bold)
                     

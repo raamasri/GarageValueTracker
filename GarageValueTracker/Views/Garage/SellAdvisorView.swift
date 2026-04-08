@@ -13,6 +13,8 @@ struct SellAdvisorView: View {
 
     @State private var analysis: SellAnalysis?
     @State private var selectedChartPoint: ChartPoint?
+    @State private var aiNarrative: String?
+    @State private var isGeneratingAI = false
 
     init(vehicle: VehicleEntity) {
         self.vehicle = vehicle
@@ -100,7 +102,13 @@ struct SellAdvisorView: View {
                         .fontWeight(.bold)
                         .foregroundColor(verdictColor(rec.verdict))
 
-                    Text(rec.reason)
+                    if isGeneratingAI {
+                        HStack(spacing: 6) {
+                            ProgressView().scaleEffect(0.7)
+                            Text("AI analyzing...").font(.caption).foregroundColor(.secondary)
+                        }
+                    }
+                    Text(aiNarrative ?? rec.reason)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -410,12 +418,35 @@ struct SellAdvisorView: View {
 
         let loanBalance: Double? = loans.first?.currentBalance
 
-        analysis = SellAdvisorService.shared.analyze(
+        let result = SellAdvisorService.shared.analyze(
             vehicle: vehicle,
             valuationSnapshots: Array(valuationSnapshots),
             monthlyCosts: monthlyCosts,
             loanBalance: loanBalance
         )
+        analysis = result
+        
+        guard AIServiceWrapper.shared.isAvailable else { return }
+        isGeneratingAI = true
+        Task {
+            let narrative = await AIServiceWrapper.shared.generateSellAdvisorNarrative(
+                vehicleName: vehicle.displayName,
+                currentValue: vehicle.currentValue,
+                purchasePrice: vehicle.purchasePrice,
+                equity: result.equity,
+                monthlyDepreciation: result.monthlyDepreciation,
+                retainedPercent: result.retainedValuePercent,
+                trend: result.trend.label,
+                loanBalance: loanBalance,
+                sweetSpotMonths: result.sweetSpotMonths,
+                costPerMonth: result.costPerMonth,
+                segment: vehicle.resolvedSegment
+            )
+            await MainActor.run {
+                aiNarrative = narrative
+                isGeneratingAI = false
+            }
+        }
     }
 
     private func buildHistoricalPoints() -> [ChartPoint] {

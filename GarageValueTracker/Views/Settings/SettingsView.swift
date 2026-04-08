@@ -12,6 +12,7 @@ struct SettingsView: View {
             Form {
                 appearanceSection
                 unitsSection
+                liveDataSection
                 toolsSection
                 dataSection
                 notificationsSection
@@ -178,6 +179,48 @@ struct SettingsView: View {
         }
     }
     
+    // MARK: - Live Data Section
+    private var liveDataSection: some View {
+        Section(header: Text("Live Market Data")) {
+            NavigationLink(destination: APISettingsView()) {
+                HStack {
+                    Label("API Keys", systemImage: "key.fill")
+                    Spacer()
+                    HStack(spacing: 6) {
+                        if APIKeyManager.shared.hasMarketcheck {
+                            Text("MC")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.green.opacity(0.15))
+                                .foregroundColor(.green)
+                                .clipShape(Capsule())
+                        }
+                        if APIKeyManager.shared.hasCarMD {
+                            Text("CMD")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.green.opacity(0.15))
+                                .foregroundColor(.green)
+                                .clipShape(Capsule())
+                        }
+                        Text("NHTSA")
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.15))
+                            .foregroundColor(.green)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Data Section
     private var dataSection: some View {
         Section(header: Text("Data Management")) {

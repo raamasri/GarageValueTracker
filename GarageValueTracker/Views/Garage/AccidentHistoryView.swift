@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import CoreLocation
 
 struct AccidentHistoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -250,6 +251,8 @@ struct AddAccidentView: View {
     @State private var damageType = ""
     @State private var repairCost = ""
     @State private var notes = ""
+    @State private var selectedCoordinate: CLLocationCoordinate2D?
+    @State private var selectedAddress = ""
     
     private let damageTypes = [
         "Front-end collision",
@@ -321,6 +324,13 @@ struct AddAccidentView: View {
                     }
                 }
                 
+                Section("Location (Optional)") {
+                    LocationPickerView(
+                        selectedCoordinate: $selectedCoordinate,
+                        selectedAddress: $selectedAddress
+                    )
+                }
+                
                 Section("Notes") {
                     TextEditor(text: $notes)
                         .frame(minHeight: 80)
@@ -355,6 +365,18 @@ struct AddAccidentView: View {
         
         vehicle.addAccident(record)
         vehicle.accidentValueImpact = vehicle.calculateAccidentImpact()
+        
+        if let coord = selectedCoordinate {
+            LocationService.shared.createLocationEvent(
+                context: viewContext,
+                vehicleID: vehicle.id,
+                date: date,
+                coordinate: coord,
+                address: selectedAddress,
+                eventType: .accident,
+                title: "\(severity.rawValue) - \(damageType)"
+            )
+        }
         
         do {
             try viewContext.save()

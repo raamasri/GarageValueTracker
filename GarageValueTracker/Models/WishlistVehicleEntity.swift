@@ -18,6 +18,10 @@ public class WishlistVehicleEntity: NSManagedObject {
     @NSManaged public var notes: String?
     @NSManaged public var imageData: Data?
     @NSManaged public var lastPriceUpdate: Date?
+    @NSManaged public var alertEnabled: Bool
+    @NSManaged public var alertThreshold: Double
+    @NSManaged public var condition: String?
+    @NSManaged public var alertTypesJSON: String?
     @NSManaged public var createdAt: Date
     @NSManaged public var updatedAt: Date
     

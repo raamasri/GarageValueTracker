@@ -22,17 +22,23 @@
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="ValuationSnapshotEntity" representedClassName="ValuationSnapshotEntity" syncable="YES">
+        <attribute name="confidence" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="estimatedValue" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="mileageAtTime" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="source" attributeType="String" defaultValueString="Manual"/>
+        <attribute name="valueHigh" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="valueLow" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="TrimEntity" representedClassName="TrimEntity" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="engineVariant" optional="YES" attributeType="String"/>
         <attribute name="features" optional="YES" attributeType="String"/>
+        <attribute name="gearboxType" optional="YES" attributeType="String"/>
+        <attribute name="generation" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="make" attributeType="String"/>
         <attribute name="marketValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -88,16 +94,24 @@
     <entity name="VehicleEntity" representedClassName="VehicleEntity" syncable="YES">
         <attribute name="accidentDetails" optional="YES" attributeType="String"/>
         <attribute name="accidentValueImpact" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="condition" optional="YES" attributeType="String"/>
         <attribute name="coverageLevel" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="currentValue" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="engineVariant" optional="YES" attributeType="String"/>
+        <attribute name="gearboxType" optional="YES" attributeType="String"/>
+        <attribute name="generation" optional="YES" attributeType="String"/>
         <attribute name="hasAccidentHistory" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="inspectionDueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="inspectionState" optional="YES" attributeType="String"/>
         <attribute name="insurancePremium" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="insuranceProvider" optional="YES" attributeType="String"/>
         <attribute name="insuranceRenewalDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastValuationUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="licensePlate" optional="YES" attributeType="String"/>
+        <attribute name="licensePlateState" optional="YES" attributeType="String"/>
         <attribute name="location" optional="YES" attributeType="String"/>
         <attribute name="make" attributeType="String"/>
         <attribute name="mileage" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -105,19 +119,20 @@
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="purchaseDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="purchasePrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="registrationRenewalDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="segment" optional="YES" attributeType="String"/>
         <attribute name="selectedTrimID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="trim" optional="YES" attributeType="String"/>
         <attribute name="trimMSRP" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="inspectionDueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="inspectionState" optional="YES" attributeType="String"/>
-        <attribute name="licensePlate" optional="YES" attributeType="String"/>
-        <attribute name="licensePlateState" optional="YES" attributeType="String"/>
-        <attribute name="registrationRenewalDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="vin" optional="YES" attributeType="String"/>
         <attribute name="year" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="WishlistVehicleEntity" representedClassName="WishlistVehicleEntity" syncable="YES">
+        <attribute name="alertEnabled" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="alertThreshold" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="alertTypesJSON" optional="YES" attributeType="String"/>
+        <attribute name="condition" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="currentPrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
@@ -145,20 +160,107 @@
         <attribute name="wishlistVehicleID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="LoanEntity" representedClassName="LoanEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="downPayment" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="extraPaymentsJSON" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="interestRate" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="isActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
         <attribute name="lenderName" optional="YES" attributeType="String"/>
         <attribute name="loanAmount" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="downPayment" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="interestRate" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="termMonths" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="monthlyPayment" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="startDate" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="extraPaymentsJSON" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
-        <attribute name="isActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="startDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="termMonths" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="VehicleLocationEventEntity" representedClassName="VehicleLocationEventEntity" syncable="YES">
+        <attribute name="address" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="eventType" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="sourceEntityID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="TripEventEntity" representedClassName="TripEventEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="destination" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="vehicleID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="MarketIndexEntity" representedClassName="MarketIndexEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="indexDescription" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
+    <entity name="MarketIndexMemberEntity" representedClassName="MarketIndexMemberEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="indexID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="make" attributeType="String"/>
+        <attribute name="model" attributeType="String"/>
+        <attribute name="trimFilter" optional="YES" attributeType="String"/>
+        <attribute name="yearEnd" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="yearStart" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="AlertEntity" representedClassName="AlertEntity" syncable="YES">
+        <attribute name="alertType" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isEnabled" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="lastTriggered" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="message" optional="YES" attributeType="String"/>
+        <attribute name="threshold" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="vehicleID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="SignalEntity" representedClassName="SignalEntity" syncable="YES">
+        <attribute name="actionType" optional="YES" attributeType="String"/>
+        <attribute name="body" attributeType="String"/>
+        <attribute name="category" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isRead" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="severity" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="vehicleID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="ListingEntity" representedClassName="ListingEntity" syncable="YES">
+        <attribute name="askingPrice" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dealScore" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastChecked" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="make" attributeType="String"/>
+        <attribute name="mileage" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="model" attributeType="String"/>
+        <attribute name="priceHistoryJSON" optional="YES" attributeType="String"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+        <attribute name="trim" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="year" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="ScenarioEntity" representedClassName="ScenarioEntity" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="parametersJSON" attributeType="String"/>
+        <attribute name="resultJSON" optional="YES" attributeType="String"/>
+        <attribute name="scenarioType" attributeType="String"/>
+        <attribute name="vehicleID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
 </model>
-

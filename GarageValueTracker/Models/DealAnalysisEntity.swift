@@ -108,11 +108,34 @@ struct DealAnalysisResult {
     let recommendation: String
     let grade: DealGrade
     
-    // Score breakdowns
-    let priceDifference: Double  // % difference from market
+    let priceDifference: Double
     let expectedMileage: Int
     let mileageDifference: Int
     let accidentImpact: Double?
     let locationAdjustment: Double?
+    
+    var fairValueLow: Double?
+    var fairValueMid: Double?
+    var fairValueHigh: Double?
+    var verdict: DealVerdict?
+    var daysOnMarketEstimate: ClosedRange<Int>?
+    var regionalContext: String?
+    var syntheticComps: [SyntheticComp]?
+    var segment: String?
+    var confidence: Double?
+}
+
+enum DealVerdict: String {
+    case underpriced = "UNDERPRICED"
+    case fair = "FAIR"
+    case rich = "RICH"
+    
+    var color: String {
+        switch self {
+        case .underpriced: return "green"
+        case .fair: return "blue"
+        case .rich: return "red"
+        }
+    }
 }
 

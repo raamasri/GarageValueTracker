@@ -49,7 +49,7 @@ class AppSettingsManager: ObservableObject {
            let mode = AppearanceMode(rawValue: savedMode) {
             self.appearanceMode = mode
         } else {
-            self.appearanceMode = .system
+            self.appearanceMode = .dark
         }
         
         // Load accent color
@@ -57,7 +57,7 @@ class AppSettingsManager: ObservableObject {
            let color = AccentColorOption(rawValue: savedColor) {
             self.accentColor = color
         } else {
-            self.accentColor = .blue
+            self.accentColor = .orange
         }
         
         // Load show photos preference
@@ -97,8 +97,8 @@ class AppSettingsManager: ObservableObject {
     
     // MARK: - Reset Settings
     func resetToDefaults() {
-        appearanceMode = .system
-        accentColor = .blue
+        appearanceMode = .dark
+        accentColor = .orange
         showVehiclePhotos = true
         distanceUnit = .miles
         currencySymbol = "$"

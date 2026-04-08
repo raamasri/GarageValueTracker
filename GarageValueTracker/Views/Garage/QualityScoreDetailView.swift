@@ -4,6 +4,8 @@ struct QualityScoreDetailView: View {
     let score: QualityScoreResult
     let vehicle: VehicleEntity
     @Environment(\.presentationMode) var presentationMode
+    @State private var aiNarrative: String?
+    @State private var isGeneratingAI = false
     
     var body: some View {
         NavigationView {
@@ -35,6 +37,31 @@ struct QualityScoreDetailView: View {
                     .background(Color(.systemBackground))
                     .cornerRadius(16)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    
+                    // AI Quality Summary
+                    if aiNarrative != nil || isGeneratingAI {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(Color(red: 0.83, green: 0.66, blue: 0.26))
+                                Text("AI Assessment")
+                                    .font(.headline)
+                                if isGeneratingAI {
+                                    ProgressView().scaleEffect(0.7)
+                                }
+                            }
+                            if let narrative = aiNarrative {
+                                Text(narrative)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
                     
                     // Score Breakdown
                     VStack(alignment: .leading, spacing: 16) {
@@ -169,6 +196,28 @@ struct QualityScoreDetailView: View {
                     }
                     .fontWeight(.semibold)
                 }
+            }
+            .onAppear { generateAINarrative() }
+        }
+    }
+    
+    private func generateAINarrative() {
+        guard AIServiceWrapper.shared.isAvailable else { return }
+        isGeneratingAI = true
+        let age = Calendar.current.component(.year, from: Date()) - Int(vehicle.year)
+        Task {
+            let narrative = await AIServiceWrapper.shared.generateQualityNarrative(
+                vehicleName: vehicle.displayName,
+                overallScore: score.totalScore,
+                hasAccidents: vehicle.hasAccidentHistory,
+                mileage: Int(vehicle.mileage),
+                age: age,
+                condition: vehicle.conditionTier.rawValue,
+                segment: vehicle.resolvedSegment
+            )
+            await MainActor.run {
+                aiNarrative = narrative
+                isGeneratingAI = false
             }
         }
     }

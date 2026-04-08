@@ -11,6 +11,9 @@ public class TrimEntity: NSManagedObject, Identifiable {
     @NSManaged public var msrp: Double
     @NSManaged public var features: String? // JSON encoded array
     @NSManaged public var marketValue: Double
+    @NSManaged public var generation: String?
+    @NSManaged public var engineVariant: String?
+    @NSManaged public var gearboxType: String?
     @NSManaged public var createdAt: Date
     @NSManaged public var updatedAt: Date
 }

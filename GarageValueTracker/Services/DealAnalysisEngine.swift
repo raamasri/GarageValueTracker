@@ -86,7 +86,7 @@ class DealAnalysisEngine {
         default: grade = .poor
         }
         
-        return DealAnalysisResult(
+        var result = DealAnalysisResult(
             overallScore: overallScore,
             priceScore: priceResult.score,
             mileageScore: mileageResult.score,
@@ -101,6 +101,47 @@ class DealAnalysisEngine {
             accidentImpact: conditionResult.accidentImpact,
             locationAdjustment: marketResult.locationAdjustment
         )
+        
+        let valuation = ValuationEngine.shared.valuate(
+            make: make, model: model, year: year,
+            mileage: mileage, trim: trim, location: location
+        )
+        
+        result.fairValueLow = valuation.low
+        result.fairValueMid = valuation.mid
+        result.fairValueHigh = valuation.high
+        result.segment = valuation.segment
+        result.confidence = valuation.confidence
+        
+        if askingPrice < valuation.low {
+            result.verdict = .underpriced
+        } else if askingPrice > valuation.high {
+            result.verdict = .rich
+        } else {
+            result.verdict = .fair
+        }
+        
+        let priceVsMarket = valuation.mid > 0 ? ((askingPrice - valuation.mid) / valuation.mid) * 100 : 0
+        result.daysOnMarketEstimate = ValuationEngine.shared.estimatedDaysOnMarket(
+            segment: valuation.segment, priceVsMarket: priceVsMarket
+        )
+        
+        if let loc = location, !loc.isEmpty {
+            let adjusted = LocationMarketService.shared.getLocationAdjustedValue(
+                baseValue: valuation.mid, location: loc, make: make, model: model
+            )
+            let regionName = adjusted.regionName
+            let adjPct = adjusted.adjustmentPercent
+            let demand = adjPct > 5 ? "high" : (adjPct < -5 ? "low" : "average")
+            result.regionalContext = "In \(regionName), demand for this type of vehicle is \(demand) (\(adjPct >= 0 ? "+" : "")\(String(format: "%.0f", adjPct))% vs national average)."
+        }
+        
+        result.syntheticComps = ValuationEngine.shared.generateSyntheticComps(
+            make: make, model: model, year: year,
+            mileage: mileage, trim: trim, location: location
+        )
+        
+        return result
     }
     
     // MARK: - Price Score Calculation

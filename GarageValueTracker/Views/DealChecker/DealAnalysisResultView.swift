@@ -2,7 +2,15 @@ import SwiftUI
 
 struct DealAnalysisResultView: View {
     let result: DealAnalysisResult
+    var make: String = ""
+    var model: String = ""
+    var year: Int = 0
+    var mileage: Int = 0
     @Environment(\.presentationMode) var presentationMode
+    @State private var aiInsight: String?
+    @State private var isGeneratingAI = false
+    @State private var realListings: [MarketCheckListing] = []
+    @State private var realMarketStats: MarketStats?
     
     var body: some View {
         NavigationView {
@@ -44,12 +52,20 @@ struct DealAnalysisResultView: View {
                         .padding()
                         
                         // Recommendation
-                        Text(result.recommendation)
-                            .font(.body)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .background(scoreColor.opacity(0.1))
-                            .cornerRadius(12)
+                        VStack(spacing: 8) {
+                            if isGeneratingAI {
+                                HStack(spacing: 6) {
+                                    ProgressView().scaleEffect(0.7)
+                                    Text("AI analyzing deal...").font(.caption).foregroundColor(.secondary)
+                                }
+                            }
+                            Text(aiInsight ?? result.recommendation)
+                                .font(.body)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding()
+                        .background(scoreColor.opacity(0.1))
+                        .cornerRadius(12)
                     }
                     .padding()
                     .background(Color(.systemBackground))
@@ -127,6 +143,257 @@ struct DealAnalysisResultView: View {
                     .cornerRadius(16)
                     .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                     
+                    // Fair Value Band
+                    if let low = result.fairValueLow, let mid = result.fairValueMid, let high = result.fairValueHigh {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Fair Value Range")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                if let verdict = result.verdict {
+                                    Text(verdict.rawValue)
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 4)
+                                        .background(verdictColor(verdict).opacity(0.15))
+                                        .foregroundColor(verdictColor(verdict))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                            
+                            HStack {
+                                VStack(spacing: 2) {
+                                    Text("Low")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    Text(formatCurrency(low))
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                }
+                                Spacer()
+                                VStack(spacing: 2) {
+                                    Text("Mid")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    Text(formatCurrency(mid))
+                                        .font(.headline)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.blue)
+                                }
+                                Spacer()
+                                VStack(spacing: 2) {
+                                    Text("High")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                    Text(formatCurrency(high))
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                }
+                            }
+                            
+                            if let conf = result.confidence {
+                                HStack(spacing: 4) {
+                                    Circle()
+                                        .fill(conf >= 0.7 ? Color.green : Color.orange)
+                                        .frame(width: 8, height: 8)
+                                    Text("\(conf >= 0.8 ? "High" : conf >= 0.6 ? "Medium" : "Low") confidence estimate")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+                    
+                    // Days on Market + Regional Context
+                    if result.daysOnMarketEstimate != nil || result.regionalContext != nil {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Market Context")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            
+                            if let dom = result.daysOnMarketEstimate {
+                                HStack {
+                                    Image(systemName: "clock")
+                                        .foregroundColor(.blue)
+                                        .frame(width: 30)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("Estimated Days on Market")
+                                            .font(.subheadline)
+                                        Text("\(dom.lowerBound)-\(dom.upperBound) days at this price")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                            
+                            if let regional = result.regionalContext {
+                                HStack(alignment: .top) {
+                                    Image(systemName: "location.fill")
+                                        .foregroundColor(.blue)
+                                        .frame(width: 30)
+                                    Text(regional)
+                                        .font(.subheadline)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+                    
+                    // Real Market Listings (from Marketcheck)
+                    if !realListings.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "antenna.radiowaves.left.and.right")
+                                    .foregroundColor(.green)
+                                Text("Live Market Listings")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                            }
+
+                            HStack(spacing: 4) {
+                                Circle().fill(Color.green).frame(width: 6, height: 6)
+                                Text("Real active listings from Marketcheck")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            if let stats = realMarketStats {
+                                HStack(spacing: 16) {
+                                    VStack(spacing: 2) {
+                                        Text("Median")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                        Text(formatCurrency(stats.medianPrice))
+                                            .font(.subheadline)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.blue)
+                                    }
+                                    VStack(spacing: 2) {
+                                        Text("Listings")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                        Text("\(stats.listingCount)")
+                                            .font(.subheadline)
+                                            .fontWeight(.bold)
+                                    }
+                                    if let dom = stats.averageDaysOnMarket {
+                                        VStack(spacing: 2) {
+                                            Text("Avg DOM")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                            Text("\(dom) days")
+                                                .font(.subheadline)
+                                                .fontWeight(.bold)
+                                        }
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.green.opacity(0.08))
+                                .cornerRadius(10)
+                            }
+
+                            ForEach(realListings.prefix(8)) { listing in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(listing.formattedPrice)
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        if let trim = listing.trim {
+                                            Text(trim)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    Spacer()
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text(listing.formattedMiles)
+                                            .font(.caption)
+                                        if let dealer = listing.dealer {
+                                            Text(dealer.locationString)
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        if let dom = listing.dom {
+                                            Text("\(dom)d on market")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+
+                    // Comparable Sales (Synthetic fallback)
+                    if let comps = result.syntheticComps, !comps.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text(realListings.isEmpty ? "Estimated Comparables" : "Model-Based Estimates")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                Spacer()
+                            }
+                            
+                            Text("Based on valuation model estimates, not actual sales")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            
+                            ForEach(comps) { comp in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(formatCurrency(comp.price))
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                        Text("\(comp.condition.displayName) condition")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    Spacer()
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text(formatMileage(comp.mileage))
+                                            .font(.caption)
+                                        Text(comp.source)
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                        Text(comp.soldDate, style: .relative)
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+                    
                     // Detailed Metrics
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Detailed Metrics")
@@ -192,6 +459,48 @@ struct DealAnalysisResultView: View {
                     .fontWeight(.semibold)
                 }
             }
+            .onAppear {
+                generateAIDealInsight()
+                loadRealListings()
+            }
+        }
+    }
+    
+    private func loadRealListings() {
+        guard MarketCheckService.shared.isConfigured, !make.isEmpty, year > 0 else { return }
+        Task {
+            let comps = await LiveMarketDataService.shared.getRealComps(
+                make: make, model: model, year: year,
+                mileage: mileage, askingPrice: result.fairValueMid ?? 0
+            )
+            await MainActor.run {
+                realListings = comps.listings
+                realMarketStats = comps.stats
+            }
+        }
+    }
+
+    private func generateAIDealInsight() {
+        guard AIServiceWrapper.shared.isAvailable else { return }
+        guard let mid = result.fairValueMid else { return }
+        isGeneratingAI = true
+        let domStr = result.daysOnMarketEstimate.map { "\($0.lowerBound)-\($0.upperBound) days" } ?? "Unknown"
+        Task {
+            let insight = await AIServiceWrapper.shared.generateDealInsight(
+                vehicleDescription: "Score \(result.overallScore)/100, Grade: \(result.grade.rawValue)",
+                askingPrice: mid + (result.priceDifference / 100.0 * mid),
+                fairValueLow: result.fairValueLow ?? 0,
+                fairValueMid: mid,
+                fairValueHigh: result.fairValueHigh ?? 0,
+                verdict: result.verdict?.rawValue ?? "FAIR",
+                overallScore: result.overallScore,
+                daysOnMarketEstimate: domStr,
+                regionalContext: result.regionalContext
+            )
+            await MainActor.run {
+                aiInsight = insight
+                isGeneratingAI = false
+            }
         }
     }
     
@@ -246,6 +555,21 @@ struct DealAnalysisResultView: View {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         return sign + (formatter.string(from: NSNumber(value: abs(diff))) ?? "\(abs(diff))") + " mi"
+    }
+    
+    private func formatCurrency(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: value)) ?? "$\(Int(value))"
+    }
+    
+    private func verdictColor(_ verdict: DealVerdict) -> Color {
+        switch verdict {
+        case .underpriced: return .green
+        case .fair: return .blue
+        case .rich: return .red
+        }
     }
 }
 

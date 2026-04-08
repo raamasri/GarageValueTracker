@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import CoreLocation
 
 struct AddFuelEntryView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -13,6 +14,8 @@ struct AddFuelEntryView: View {
     @State private var totalCost = ""
     @State private var station = ""
     @State private var notes = ""
+    @State private var selectedCoordinate: CLLocationCoordinate2D?
+    @State private var selectedAddress = ""
     
     init(vehicle: VehicleEntity) {
         self.vehicle = vehicle
@@ -88,6 +91,13 @@ struct AddFuelEntryView: View {
                         .frame(minHeight: 80)
                 }
                 
+                Section("Location (Optional)") {
+                    LocationPickerView(
+                        selectedCoordinate: $selectedCoordinate,
+                        selectedAddress: $selectedAddress
+                    )
+                }
+                
                 Section {
                     Button(action: saveFuelEntry) {
                         HStack {
@@ -139,6 +149,19 @@ struct AddFuelEntryView: View {
         // Update vehicle mileage if this is more recent
         if mileageValue > vehicle.mileage {
             vehicle.mileage = Int32(mileageValue)
+        }
+        
+        if let coord = selectedCoordinate {
+            LocationService.shared.createLocationEvent(
+                context: viewContext,
+                vehicleID: vehicle.id,
+                date: date,
+                coordinate: coord,
+                address: selectedAddress.isEmpty ? station : selectedAddress,
+                eventType: .fuel,
+                title: station.isEmpty ? "Fuel Fill-Up" : station,
+                sourceEntityID: entry.id
+            )
         }
         
         do {

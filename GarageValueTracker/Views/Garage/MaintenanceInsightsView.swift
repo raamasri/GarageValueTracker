@@ -6,6 +6,10 @@ struct MaintenanceInsightsView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State private var insights: MaintenanceInsights?
+    @State private var aiNarrative: String?
+    @State private var isGeneratingAI = false
+    @State private var carmdSummary: CarMDMaintenanceSummary?
+    @State private var isLoadingCarMD = false
     
     var body: some View {
         NavigationView {
@@ -85,6 +89,107 @@ struct MaintenanceInsightsView: View {
                         .cornerRadius(16)
                         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                         
+                        // AI Maintenance Insight
+                        if aiNarrative != nil || isGeneratingAI {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Image(systemName: "sparkles")
+                                        .foregroundColor(Color(red: 0.83, green: 0.66, blue: 0.26))
+                                    Text("AI Insight")
+                                        .font(.headline)
+                                    if isGeneratingAI {
+                                        ProgressView().scaleEffect(0.7)
+                                    }
+                                }
+                                if let narrative = aiNarrative {
+                                    Text(narrative)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .cornerRadius(16)
+                            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                        }
+                        
+                        // CarMD Real Maintenance Data
+                        if isLoadingCarMD {
+                            VStack(spacing: 8) {
+                                HStack(spacing: 6) {
+                                    ProgressView().scaleEffect(0.7)
+                                    Text("Loading CarMD data...")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color(.systemBackground))
+                            .cornerRadius(16)
+                            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                        }
+
+                        if let carmd = carmdSummary {
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Image(systemName: "antenna.radiowaves.left.and.right")
+                                        .foregroundColor(.green)
+                                    Text("OEM Maintenance Schedule")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                    Spacer()
+                                    HStack(spacing: 3) {
+                                        Circle().fill(Color.green).frame(width: 5, height: 5)
+                                        Text("CarMD")
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.green)
+                                    }
+                                }
+
+                                if !carmd.overdueItems.isEmpty {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Label("Overdue", systemImage: "exclamationmark.triangle.fill")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.red)
+                                        ForEach(carmd.overdueItems) { item in
+                                            CarMDItemRow(item: item, isOverdue: true)
+                                        }
+                                    }
+                                }
+
+                                if !carmd.upcomingItems.isEmpty {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text("Upcoming")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.secondary)
+                                        ForEach(carmd.upcomingItems) { item in
+                                            CarMDItemRow(item: item, isOverdue: false)
+                                        }
+                                    }
+                                }
+
+                                Divider()
+
+                                HStack {
+                                    Text("Total scheduled service cost")
+                                        .font(.subheadline)
+                                    Spacer()
+                                    Text(formatCurrency(carmd.estimatedTotalCost))
+                                        .font(.headline)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .cornerRadius(16)
+                            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                        }
+
                         // 5-Year Predictions
                         VStack(alignment: .leading, spacing: 16) {
                             Text("5-Year Cost Projection")
@@ -206,10 +311,50 @@ struct MaintenanceInsightsView: View {
     
     private func generateInsights() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            insights = MaintenanceInsightService.shared.generateInsights(
+            let result = MaintenanceInsightService.shared.generateInsights(
                 for: vehicle,
                 costEntries: costEntries
             )
+            insights = result
+
+            loadCarMDData()
+
+            guard AIServiceWrapper.shared.isAvailable else { return }
+            isGeneratingAI = true
+            Task {
+                let narrative = await AIServiceWrapper.shared.generateMaintenanceNarrative(
+                    vehicleName: vehicle.displayName,
+                    make: vehicle.make,
+                    mileage: Int(vehicle.mileage),
+                    yearlyAverage: result.yearlyAverage,
+                    typicalYearly: result.comparison.typicalYearly,
+                    comparisonStatus: result.comparison.status.rawValue,
+                    upcomingServices: result.upcomingMaintenance.map(\.service),
+                    costTrend: result.analytics.trend.rawValue,
+                    totalSpent: result.analytics.totalSpent
+                )
+                await MainActor.run {
+                    aiNarrative = narrative
+                    isGeneratingAI = false
+                }
+            }
+        }
+    }
+
+    private func loadCarMDData() {
+        guard CarMDService.shared.isConfigured else { return }
+        isLoadingCarMD = true
+        Task {
+            let summary = await CarMDService.shared.getUpcomingMaintenanceSummary(
+                year: Int(vehicle.year),
+                make: vehicle.make,
+                model: vehicle.model,
+                mileage: Int(vehicle.mileage)
+            )
+            await MainActor.run {
+                carmdSummary = summary
+                isLoadingCarMD = false
+            }
         }
     }
     
@@ -409,6 +554,41 @@ struct AnalyticRow: View {
         .padding()
         .background(Color(.systemGray6))
         .cornerRadius(10)
+    }
+}
+
+// MARK: - CarMD Item Row
+
+struct CarMDItemRow: View {
+    let item: CarMDMaintenanceItem
+    let isOverdue: Bool
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.desc ?? "Service")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(isOverdue ? .red : .primary)
+                if let due = item.due_mileage {
+                    Text("Due at \(due.formatted()) mi")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(item.formattedTotalCost)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text(item.difficultyLabel)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(10)
+        .background(isOverdue ? Color.red.opacity(0.08) : Color(.systemGray6))
+        .cornerRadius(8)
     }
 }
 

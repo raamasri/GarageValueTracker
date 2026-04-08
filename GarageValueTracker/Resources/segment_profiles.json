@@ -1,0 +1,81 @@
+{
+  "segments": {
+    "sports": {
+      "displayName": "Sports Cars",
+      "icon": "sportscourt",
+      "cyclicalityScore": 55,
+      "provenancePremium": 70,
+      "basePopularity": 45,
+      "peakMultiplier": 1.25,
+      "troughMultiplier": 0.78,
+      "topModels": ["Corvette", "Mustang", "911", "Cayman", "Supra", "GR86", "Miata", "M3", "M4", "Camaro"],
+      "description": "Performance-oriented vehicles. Manual transmissions and limited editions often appreciate. Seasonal demand drives pricing volatility."
+    },
+    "sedan": {
+      "displayName": "Sedans",
+      "icon": "car.fill",
+      "cyclicalityScore": 25,
+      "provenancePremium": 15,
+      "basePopularity": 80,
+      "peakMultiplier": 1.10,
+      "troughMultiplier": 0.90,
+      "topModels": ["Camry", "Accord", "Civic", "Corolla", "3 Series", "C-Class", "Model 3", "Altima", "Sonata"],
+      "description": "Daily transportation workhorses. High volume, low volatility. Value driven primarily by mileage and condition."
+    },
+    "suv": {
+      "displayName": "SUVs & Crossovers",
+      "icon": "suv.side.fill",
+      "cyclicalityScore": 30,
+      "provenancePremium": 25,
+      "basePopularity": 90,
+      "peakMultiplier": 1.15,
+      "troughMultiplier": 0.88,
+      "topModels": ["4Runner", "Wrangler", "RAV4", "CR-V", "Bronco", "Highlander", "Telluride", "Explorer", "Tahoe"],
+      "description": "Largest market segment. Strong demand keeps values stable. Off-road capable models hold value exceptionally well."
+    },
+    "truck": {
+      "displayName": "Trucks",
+      "icon": "truck.box.fill",
+      "cyclicalityScore": 35,
+      "provenancePremium": 30,
+      "basePopularity": 85,
+      "peakMultiplier": 1.20,
+      "troughMultiplier": 0.85,
+      "topModels": ["F-150", "Silverado", "RAM 1500", "Tacoma", "Tundra", "Sierra", "Ranger", "Colorado", "Gladiator"],
+      "description": "Strong regional demand especially in rural and southern markets. Work trucks hold value well; luxury trims depreciate faster."
+    },
+    "ev": {
+      "displayName": "Electric Vehicles",
+      "icon": "bolt.car.fill",
+      "cyclicalityScore": 60,
+      "provenancePremium": 10,
+      "basePopularity": 55,
+      "peakMultiplier": 1.30,
+      "troughMultiplier": 0.65,
+      "topModels": ["Model Y", "Model 3", "Model S", "Mach-E", "IONIQ 5", "EV6", "ID.4", "Bolt EV", "Rivian R1S"],
+      "description": "High volatility due to rapid technology changes and manufacturer price cuts. Battery health is the key value driver."
+    },
+    "luxury": {
+      "displayName": "Luxury",
+      "icon": "crown.fill",
+      "cyclicalityScore": 65,
+      "provenancePremium": 50,
+      "basePopularity": 40,
+      "peakMultiplier": 1.20,
+      "troughMultiplier": 0.75,
+      "topModels": ["S-Class", "7 Series", "A8", "LS", "Continental GT", "Panamera", "Cayenne", "Range Rover"],
+      "description": "Heavy initial depreciation, but well-maintained examples with full service history can stabilize. Sensitive to economic cycles."
+    },
+    "exotic": {
+      "displayName": "Exotic & Collectible",
+      "icon": "sparkles",
+      "cyclicalityScore": 80,
+      "provenancePremium": 95,
+      "basePopularity": 10,
+      "peakMultiplier": 1.50,
+      "troughMultiplier": 0.65,
+      "topModels": ["488", "Huracan", "720S", "GT3", "GT4", "AMG GT", "DB11", "F-Type R", "Continental GT"],
+      "description": "Low volume, high provenance sensitivity. Original paint, matching numbers, and documented history create massive premiums. Highly cyclical."
+    }
+  }
+}

@@ -81,6 +81,10 @@ class MarketAPIService {
         return estimateMSRP(make: make)
     }
     
+    func estimateMSRPForMake(_ make: String) -> Double {
+        return estimateMSRP(make: make)
+    }
+    
     private func estimateMSRP(make: String) -> Double {
         let upperMake = make.uppercased()
         let luxury: Set = ["BMW", "MERCEDES-BENZ", "AUDI", "LEXUS", "PORSCHE", "CADILLAC", "INFINITI", "ACURA", "GENESIS", "VOLVO", "LINCOLN", "LAND ROVER", "JAGUAR", "MASERATI", "ALFA ROMEO"]

@@ -3,130 +3,76 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \VehicleEntity.year, ascending: false)],
-        animation: .default)
-    private var vehicles: FetchedResults<VehicleEntity>
-    
-    @State private var showingAddVehicle = false
-    @State private var showingAddWishlist = false
-    @State private var showingSettings = false
-    @State private var showingAddOptions = false
-    @State private var showingShareGarage = false
-    @State private var selectedTab: GarageListView.GarageTab = .myGarage
-    
+    @State private var selectedTab = 0
+
     var body: some View {
-        NavigationView {
-            ZStack {
-                if vehicles.isEmpty {
-                    // Empty state
-                    VStack(spacing: 20) {
-                        Image(systemName: "car.fill")
-                            .font(.system(size: 70))
-                            .foregroundColor(.blue)
-                        
-                        Text("Welcome to Garage Value Tracker")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Add your first vehicle to get started")
-                            .foregroundColor(.secondary)
-                        
-                        HStack(spacing: 16) {
-                            Button(action: {
-                                showingAddVehicle = true
-                            }) {
-                                VStack {
-                                    Image(systemName: "car.fill")
-                                        .font(.title)
-                                    Text("Add Vehicle")
-                                        .font(.headline)
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(16)
-                            }
-                            
-                            Button(action: {
-                                showingAddWishlist = true
-                            }) {
-                                VStack {
-                                    Image(systemName: "heart.fill")
-                                        .font(.title)
-                                    Text("Add Wishlist")
-                                        .font(.headline)
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.orange)
-                                .foregroundColor(.white)
-                                .cornerRadius(16)
-                            }
-                        }
-                        .padding(.top)
-                    }
-                    .padding()
-                } else {
-                    // Vehicle list
-                    GarageListView()
+        TabView(selection: $selectedTab) {
+            GarageTabView()
+                .environment(\.managedObjectContext, viewContext)
+                .tag(0)
+                .tabItem {
+                    Label("GARAGE", systemImage: "car.fill")
                 }
-            }
-            .navigationTitle("My Garage")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        showingSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                    }
+
+            DealCheckTabView()
+                .environment(\.managedObjectContext, viewContext)
+                .tag(1)
+                .tabItem {
+                    Label("DEAL CHECK", systemImage: "target")
                 }
-                
-                if !vehicles.isEmpty {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        HStack(spacing: 16) {
-                            Button(action: {
-                                showingShareGarage = true
-                            }) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                            
-                            Menu {
-                                Button(action: {
-                                    showingAddVehicle = true
-                                }) {
-                                    Label("Add to My Garage", systemImage: "car.fill")
-                                }
-                                
-                                Button(action: {
-                                    showingAddWishlist = true
-                                }) {
-                                    Label("Add to Wishlist", systemImage: "heart.fill")
-                                }
-                            } label: {
-                                Image(systemName: "plus")
-                            }
-                        }
-                    }
+
+            MarketTabView()
+                .environment(\.managedObjectContext, viewContext)
+                .tag(2)
+                .tabItem {
+                    Label("MARKET", systemImage: "diamond.fill")
                 }
-            }
-            .sheet(isPresented: $showingAddVehicle) {
-                AddVehicleView()
-                    .environment(\.managedObjectContext, viewContext)
-            }
-            .sheet(isPresented: $showingAddWishlist) {
-                AddWishlistVehicleView()
-                    .environment(\.managedObjectContext, viewContext)
-            }
-            .sheet(isPresented: $showingSettings) {
-                SettingsView()
-            }
-            .sheet(isPresented: $showingShareGarage) {
-                ShareGarageView(vehicles: Array(vehicles))
-            }
+
+            WatchlistTabView()
+                .environment(\.managedObjectContext, viewContext)
+                .tag(3)
+                .tabItem {
+                    Label("WATCHLIST", systemImage: "eye.circle")
+                }
+
+            SignalsTabView()
+                .environment(\.managedObjectContext, viewContext)
+                .tag(4)
+                .tabItem {
+                    Label("SIGNALS", systemImage: "antenna.radiowaves.left.and.right")
+                }
         }
+        .tint(GIQ.accent)
+        .preferredColorScheme(.dark)
+        .onAppear {
+            configureTabBarAppearance()
+            BackgroundRefreshService.shared.performForegroundRefresh(context: viewContext)
+        }
+    }
+
+    private func configureTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(red: 0.06, green: 0.06, blue: 0.06, alpha: 1)
+
+        let itemAppearance = UITabBarItemAppearance()
+        itemAppearance.normal.iconColor = UIColor.white.withAlphaComponent(0.35)
+        itemAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.white.withAlphaComponent(0.35),
+            .font: UIFont.monospacedSystemFont(ofSize: 9, weight: .medium)
+        ]
+        itemAppearance.selected.iconColor = UIColor(red: 0.83, green: 0.66, blue: 0.26, alpha: 1)
+        itemAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor(red: 0.83, green: 0.66, blue: 0.26, alpha: 1),
+            .font: UIFont.monospacedSystemFont(ofSize: 9, weight: .bold)
+        ]
+
+        appearance.stackedLayoutAppearance = itemAppearance
+        appearance.inlineLayoutAppearance = itemAppearance
+        appearance.compactInlineLayoutAppearance = itemAppearance
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 }
 

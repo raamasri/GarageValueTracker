@@ -8,7 +8,10 @@ public class ValuationSnapshotEntity: NSManagedObject {
     @NSManaged public var date: Date
     @NSManaged public var estimatedValue: Double
     @NSManaged public var mileageAtTime: Int32
-    @NSManaged public var source: String // API, Manual, etc.
+    @NSManaged public var source: String
+    @NSManaged public var valueLow: Double
+    @NSManaged public var valueHigh: Double
+    @NSManaged public var confidence: Double
     @NSManaged public var createdAt: Date
 }
 

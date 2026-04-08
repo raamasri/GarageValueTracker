@@ -31,6 +31,11 @@ public class VehicleEntity: NSManagedObject, Identifiable {
     @NSManaged public var inspectionState: String?
     @NSManaged public var licensePlate: String?
     @NSManaged public var licensePlateState: String?
+    @NSManaged public var generation: String?
+    @NSManaged public var engineVariant: String?
+    @NSManaged public var gearboxType: String?
+    @NSManaged public var condition: String?
+    @NSManaged public var segment: String?
     @NSManaged public var createdAt: Date
     @NSManaged public var updatedAt: Date
 }
@@ -48,7 +53,8 @@ extension VehicleEntity {
                      vin: String? = nil,
                      mileage: Int = 0,
                      purchasePrice: Double,
-                     purchaseDate: Date = Date()) {
+                     purchaseDate: Date = Date(),
+                     condition: String? = nil) {
         self.init(context: context)
         self.id = UUID()
         self.make = make
@@ -60,8 +66,19 @@ extension VehicleEntity {
         self.purchasePrice = purchasePrice
         self.purchaseDate = purchaseDate
         self.currentValue = purchasePrice
+        self.condition = condition
+        self.segment = LocationMarketService.shared.classifyVehicle(make: make, model: model)
         self.createdAt = Date()
         self.updatedAt = Date()
+    }
+    
+    var resolvedSegment: String {
+        segment ?? LocationMarketService.shared.classifyVehicle(make: make, model: model)
+    }
+    
+    var conditionTier: ValuationEngine.ConditionTier {
+        guard let condition = condition else { return .good }
+        return ValuationEngine.ConditionTier(rawValue: condition) ?? .good
     }
     
     var displayName: String {
