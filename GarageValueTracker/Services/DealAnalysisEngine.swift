@@ -95,6 +95,7 @@ class DealAnalysisEngine {
             insights: insights,
             recommendation: recommendation,
             grade: grade,
+            askingPrice: askingPrice,
             priceDifference: priceResult.percentDifference,
             expectedMileage: mileageResult.expectedMileage,
             mileageDifference: mileageResult.difference,

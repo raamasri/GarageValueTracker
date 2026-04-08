@@ -56,6 +56,13 @@ struct FuelTrackerView: View {
         return totalCost / totalGallons
     }
     
+    private var mileageData: [(date: Date, mileage: Int32)] {
+        fuelEntries
+            .filter { $0.mileage > 0 }
+            .sorted { $0.date < $1.date }
+            .map { (date: $0.date, mileage: $0.mileage) }
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -166,6 +173,119 @@ struct FuelTrackerView: View {
                         .background(.ultraThinMaterial)
                         .cornerRadius(16)
                         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                    }
+                    .padding(.horizontal)
+                }
+                
+                // Mileage Over Time Chart
+                if mileageData.count >= 2 {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Mileage Over Time")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            if let first = mileageData.first, let last = mileageData.last {
+                                let driven = last.mileage - first.mileage
+                                if driven > 0 {
+                                    Text("+\(NumberFormatter.localizedString(from: NSNumber(value: driven), number: .decimal)) mi")
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.cyan)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        
+                        Chart(mileageData, id: \.date) { entry in
+                            AreaMark(
+                                x: .value("Date", entry.date),
+                                y: .value("Mileage", entry.mileage)
+                            )
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Color.cyan.opacity(0.3), Color.cyan.opacity(0.05)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .interpolationMethod(.catmullRom)
+                            
+                            LineMark(
+                                x: .value("Date", entry.date),
+                                y: .value("Mileage", entry.mileage)
+                            )
+                            .foregroundStyle(Color.cyan.gradient)
+                            .interpolationMethod(.catmullRom)
+                            .lineStyle(StrokeStyle(lineWidth: 2.5))
+                            
+                            PointMark(
+                                x: .value("Date", entry.date),
+                                y: .value("Mileage", entry.mileage)
+                            )
+                            .foregroundStyle(Color.cyan)
+                            .symbolSize(30)
+                            .annotation(position: .top, spacing: 6) {
+                                if entry.date == mileageData.last?.date {
+                                    Text("\(NumberFormatter.localizedString(from: NSNumber(value: entry.mileage), number: .decimal))")
+                                        .font(.caption2)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.cyan)
+                                }
+                            }
+                        }
+                        .frame(height: 220)
+                        .chartYScale(domain: .automatic(includesZero: false))
+                        .chartYAxis {
+                            AxisMarks(position: .leading) { value in
+                                AxisValueLabel {
+                                    if let miles = value.as(Int.self) {
+                                        Text("\(miles / 1000)k")
+                                            .font(.caption2)
+                                    }
+                                }
+                                AxisGridLine()
+                            }
+                        }
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .day, count: mileageData.count < 10 ? 1 : 7)) { _ in
+                                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                            }
+                        }
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(16)
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                        
+                        // Fill-up frequency info
+                        if mileageData.count >= 2,
+                           let firstDate = mileageData.first?.date,
+                           let lastDate = mileageData.last?.date {
+                            let days = max(Calendar.current.dateComponents([.day], from: firstDate, to: lastDate).day ?? 1, 1)
+                            let avgDaysBetween = Double(days) / Double(mileageData.count - 1)
+                            let totalDriven = (mileageData.last?.mileage ?? 0) - (mileageData.first?.mileage ?? 0)
+                            let milesPerDay = days > 0 ? Double(totalDriven) / Double(days) : 0
+                            
+                            HStack(spacing: 12) {
+                                MileageStatPill(
+                                    icon: "calendar.badge.clock",
+                                    label: "Avg between fill-ups",
+                                    value: String(format: "%.0f days", avgDaysBetween)
+                                )
+                                
+                                MileageStatPill(
+                                    icon: "road.lanes",
+                                    label: "Daily average",
+                                    value: String(format: "%.0f mi/day", milesPerDay)
+                                )
+                            }
+                        }
                     }
                     .padding(.horizontal)
                 }
@@ -401,6 +521,34 @@ struct FuelEntryRow: View {
         }
         .background(.ultraThinMaterial)
         .cornerRadius(16)
+        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}
+
+// MARK: - Mileage Stat Pill
+struct MileageStatPill: View {
+    let icon: String
+    let label: String
+    let value: String
+    
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(.cyan)
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.bold)
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 8)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }

@@ -108,6 +108,7 @@ struct DealAnalysisResult {
     let recommendation: String
     let grade: DealGrade
     
+    let askingPrice: Double
     let priceDifference: Double
     let expectedMileage: Int
     let mileageDifference: Int

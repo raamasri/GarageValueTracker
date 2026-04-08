@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 import FoundationModels
 
 @available(iOS 26, *)
@@ -9,8 +10,21 @@ class OnDeviceAIService {
     private(set) var isAvailable = false
     private(set) var unavailableReason: String?
     
+    private var responseCache: [String: CachedResponse] = [:]
+    private let cacheTTL: TimeInterval = 3600 * 2
+    private let cacheQueue = DispatchQueue(label: "ai.cache", attributes: .concurrent)
+    
+    private struct CachedResponse {
+        let text: String
+        let createdAt: Date
+    }
+    
     private init() {
         checkAvailability()
+    }
+    
+    func clearCache() {
+        cacheQueue.async(flags: .barrier) { self.responseCache.removeAll() }
     }
     
     func checkAvailability() {
@@ -63,10 +77,19 @@ class OnDeviceAIService {
         let gainLoss = currentValue - purchasePrice
         let gainLossPercent = purchasePrice > 0 ? (gainLoss / purchasePrice) * 100 : 0
         
+        let positionSummary: String
+        if gainLossPercent > 5 {
+            positionSummary = "The owner is in a gain position at \(String(format: "%+.1f", gainLossPercent))%."
+        } else if gainLossPercent < -5 {
+            positionSummary = "The owner is in a loss position at \(String(format: "%.1f", gainLossPercent))%."
+        } else {
+            positionSummary = "The owner is roughly break-even at \(String(format: "%+.1f", gainLossPercent))%."
+        }
+        
         let prompt = """
-        You are an expert automotive market analyst writing a concise market signal for a vehicle owner. \
-        Write 2-3 sentences of actionable insight. Be specific about the vehicle segment, market timing, and what the owner should do. \
-        Use a confident, editorial tone.
+        Write a 2-3 sentence market signal for this vehicle owner. \(positionSummary) \
+        Explain the trend data and give a specific action recommendation (hold, sell soon, or keep monitoring). \
+        Do not invent market facts — only reference the data below.
         
         Vehicle: \(year) \(make) \(model) \(trimStr)
         Segment: \(segment)
@@ -75,15 +98,15 @@ class OnDeviceAIService {
         Current estimated value: $\(Int(currentValue))
         Purchase price: $\(Int(purchasePrice))
         Gain/loss: \(gainLoss >= 0 ? "+" : "")\(String(format: "%.1f", gainLossPercent))%
-        3-month trend: \(String(format: "%+.1f", trend3m))%
-        12-month trend: \(String(format: "%+.1f", trend12m))%
-        36-month trend: \(String(format: "%+.1f", trend36m))%
+        3-month projected trend: \(String(format: "%+.1f", trend3m))%
+        12-month projected trend: \(String(format: "%+.1f", trend12m))%
+        36-month projected trend: \(String(format: "%+.1f", trend36m))%
         Volatility score: \(riskVolatility)/100
         Liquidity score: \(riskLiquidity)/100
         Estimated cost to hold 12 more months: $\(Int(costToHold12m))
         """
         
-        return await generate(prompt: prompt, instructions: "You are a concise automotive market analyst. Write short, actionable signals about vehicle values and timing. Never use bullet points. Maximum 3 sentences.")
+        return await generate(prompt: prompt, instructions: "You are a concise automotive market analyst. Write short, actionable signals based strictly on the provided data. Never invent statistics, market conditions, or external factors not in the data. Never use bullet points. Maximum 3 sentences.")
     }
     
     // MARK: - Deal Analysis Insight
@@ -101,20 +124,29 @@ class OnDeviceAIService {
     ) async -> String? {
         guard isAvailable else { return nil }
         
+        let dealQuality: String
+        switch overallScore {
+        case 90...100: dealQuality = "an exceptional deal"
+        case 75..<90: dealQuality = "a good deal"
+        case 60..<75: dealQuality = "a fair deal"
+        case 40..<60: dealQuality = "a below-average deal"
+        default: dealQuality = "a poor deal"
+        }
+        
         let prompt = """
-        You are evaluating a vehicle deal for a buyer. Give a concise 2-3 sentence verdict. \
-        Be direct about whether this is a good buy and what the buyer should do next.
+        Our scoring system has determined this is \(dealQuality) with a score of \(overallScore)/100 and a verdict of \(verdict). \
+        Your job is to explain WHY this score makes sense given the numbers below. Do NOT contradict the score or verdict. \
+        Write 2-3 sentences explaining the key factors and what the buyer should do next.
         
         Vehicle: \(vehicleDescription)
         Asking price: $\(Int(askingPrice))
-        Fair value range: $\(Int(fairValueLow)) - $\(Int(fairValueMid)) - $\(Int(fairValueHigh))
-        Verdict: \(verdict)
-        Deal score: \(overallScore)/100
+        Fair value range: $\(Int(fairValueLow)) (low) — $\(Int(fairValueMid)) (mid) — $\(Int(fairValueHigh)) (high)
+        Verdict: \(verdict) (score: \(overallScore)/100)
         Days on market estimate: \(daysOnMarketEstimate)
         \(regionalContext.map { "Regional context: \($0)" } ?? "")
         """
         
-        return await generate(prompt: prompt, instructions: "You are a direct, no-nonsense car buying advisor. Give concise deal verdicts in 2-3 sentences. Include a specific action recommendation.")
+        return await generate(prompt: prompt, instructions: "You are a car buying advisor that explains deal scores. The scoring system's verdict is authoritative — never contradict it. Your role is to explain the score using the data provided and give an action recommendation. 2-3 sentences maximum.")
     }
     
     // MARK: - Macro Market Context
@@ -300,11 +332,40 @@ class OnDeviceAIService {
     
     // MARK: - Core Generation
     
+    private func cacheKey(prompt: String, instructions: String) -> String {
+        let combined = prompt + "||" + instructions
+        let digest = SHA256.hash(data: Data(combined.utf8))
+        return digest.map { String(format: "%02x", $0) }.joined()
+    }
+    
+    private func cachedResponse(for key: String) -> String? {
+        cacheQueue.sync {
+            guard let entry = responseCache[key],
+                  Date().timeIntervalSince(entry.createdAt) < cacheTTL else { return nil }
+            return entry.text
+        }
+    }
+    
+    private func storeCachedResponse(_ text: String, for key: String) {
+        cacheQueue.async(flags: .barrier) {
+            self.responseCache[key] = CachedResponse(text: text, createdAt: Date())
+            if self.responseCache.count > 100 {
+                let cutoff = Date().addingTimeInterval(-self.cacheTTL)
+                self.responseCache = self.responseCache.filter { $0.value.createdAt > cutoff }
+            }
+        }
+    }
+    
     private func generate(prompt: String, instructions: String) async -> String? {
+        let key = cacheKey(prompt: prompt, instructions: instructions)
+        if let cached = cachedResponse(for: key) { return cached }
+        
         do {
             let session = LanguageModelSession(instructions: instructions)
             let response = try await session.respond(to: prompt)
-            return response.content
+            let text = response.content
+            storeCachedResponse(text, for: key)
+            return text
         } catch {
             print("On-device AI generation failed: \(error)")
             return nil

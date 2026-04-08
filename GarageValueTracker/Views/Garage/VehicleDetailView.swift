@@ -24,6 +24,7 @@ struct VehicleDetailView: View {
     @State private var showingMapTimeline = false
     @State private var showingScenarioModel = false
     @State private var showingAskAI = false
+    @State private var showingMileageEditor = false
     @State private var dashboardScore: DashboardScore?
     @State private var knownIssueCount: Int = 0
     
@@ -79,6 +80,46 @@ struct VehicleDetailView: View {
                     }
                 }
                 .padding()
+                
+                // Mileage Card (tappable to edit)
+                Button(action: { showingMileageEditor = true }) {
+                    HStack(spacing: 14) {
+                        Image(systemName: "speedometer")
+                            .font(.system(size: 28))
+                            .foregroundColor(.cyan)
+                            .frame(width: 44, height: 44)
+                            .background(Color.cyan.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Odometer")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            
+                            Text(vehicle.mileage > 0 ? "\(NumberFormatter.localizedString(from: NSNumber(value: vehicle.mileage), number: .decimal)) mi" : "Not set")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.primary)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(spacing: 2) {
+                            Image(systemName: "pencil.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.cyan)
+                            Text("Update")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal)
                 
                 // AI Signal + Market Range + Risk + Cost-to-Hold
                 VehicleDetailInlineSection(vehicle: vehicle)
@@ -654,6 +695,10 @@ struct VehicleDetailView: View {
         .sheet(isPresented: $showingAskAI) {
             AskAIView(vehicle: vehicle)
         }
+        .sheet(isPresented: $showingMileageEditor) {
+            MileageEditorView(vehicle: vehicle)
+                .environment(\.managedObjectContext, viewContext)
+        }
         .onAppear {
             calculateDashboardScore()
             knownIssueCount = KnownIssuesService.shared.getIssues(
@@ -824,6 +869,108 @@ struct ReceiptImageView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: - Mileage Editor
+struct MileageEditorView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.presentationMode) var presentationMode
+    
+    let vehicle: VehicleEntity
+    @State private var mileageText: String
+    @State private var showError = false
+    @State private var errorMessage = ""
+    
+    init(vehicle: VehicleEntity) {
+        self.vehicle = vehicle
+        _mileageText = State(initialValue: vehicle.mileage > 0 ? "\(vehicle.mileage)" : "")
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 24) {
+                VStack(spacing: 8) {
+                    Image(systemName: "speedometer")
+                        .font(.system(size: 56))
+                        .foregroundColor(.cyan)
+                    
+                    Text("Update Odometer")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    if vehicle.mileage > 0 {
+                        Text("Current: \(NumberFormatter.localizedString(from: NSNumber(value: vehicle.mileage), number: .decimal)) mi")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.top, 20)
+                
+                VStack(spacing: 12) {
+                    TextField("Enter current mileage", text: $mileageText)
+                        .keyboardType(.numberPad)
+                        .font(.system(size: 36, weight: .bold))
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(16)
+                    
+                    Text("miles")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 32)
+                
+                if showError {
+                    Text(errorMessage)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .padding(.horizontal)
+                }
+                
+                Button(action: saveMileage) {
+                    Text("Save")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.cyan)
+                        .foregroundColor(.white)
+                        .cornerRadius(14)
+                }
+                .padding(.horizontal, 32)
+                
+                Spacer()
+            }
+            .navigationTitle("Odometer")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func saveMileage() {
+        guard let value = Int32(mileageText), value > 0 else {
+            errorMessage = "Please enter a valid mileage"
+            showError = true
+            return
+        }
+        
+        vehicle.mileage = value
+        vehicle.updatedAt = Date()
+        
+        do {
+            try viewContext.save()
+            presentationMode.wrappedValue.dismiss()
+        } catch {
+            errorMessage = "Failed to save: \(error.localizedDescription)"
+            showError = true
         }
     }
 }

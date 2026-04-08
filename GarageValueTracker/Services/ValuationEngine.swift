@@ -157,19 +157,22 @@ class ValuationEngine {
         let conditions: [ConditionTier] = [.excellent, .good, .good, .driver, .driver]
         let mileageVariations = [-15000, -5000, 2000, 10000, 20000]
         
+        let seedBase = "\(make)-\(model)-\(year)-\(mileage)".hashValue
+        var rng = SeededRandomNumberGenerator(seed: UInt64(bitPattern: Int64(seedBase)))
+        
         for i in 0..<min(count, conditions.count) {
             let compMileage = max(mileage + mileageVariations[i], 1000)
             let result = valuate(make: make, model: model, year: year, mileage: compMileage, trim: trim, msrp: msrp, location: location, condition: conditions[i])
             
-            let daysAgo = Int.random(in: 7...90)
+            let daysAgo = Int.random(in: 7...90, using: &rng)
             let soldDate = Calendar.current.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
             
             comps.append(SyntheticComp(
-                price: result.mid * Double.random(in: 0.95...1.05),
+                price: result.mid * Double.random(in: 0.95...1.05, using: &rng),
                 mileage: compMileage,
                 condition: conditions[i],
                 soldDate: soldDate,
-                source: ["Private Party", "Dealer", "Auction"][Int.random(in: 0...2)]
+                source: ["Private Party", "Dealer", "Auction"][Int.random(in: 0...2, using: &rng)]
             ))
         }
         
@@ -336,4 +339,20 @@ struct MileagePenaltyData: Codable {
     let perThousandUnder: Double
     let averageAnnualMiles: Int
     let highMileageThreshold: Int
+}
+
+struct SeededRandomNumberGenerator: RandomNumberGenerator {
+    private var state: UInt64
+    
+    init(seed: UInt64) {
+        state = seed == 0 ? 1 : seed
+    }
+    
+    mutating func next() -> UInt64 {
+        state &+= 0x9e3779b97f4a7c15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xbf58476d1ce4e5b9
+        z = (z ^ (z >> 27)) &* 0x94d049bb133111eb
+        return z ^ (z >> 31)
+    }
 }

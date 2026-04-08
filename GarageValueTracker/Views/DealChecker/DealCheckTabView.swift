@@ -8,6 +8,10 @@ struct DealCheckTabView: View {
     @State private var showingResults = false
     @State private var showingAdvanced = false
     @State private var parseError = false
+    @State private var lastMake = ""
+    @State private var lastModel = ""
+    @State private var lastYear = 0
+    @State private var lastMileage = 0
 
     private let examples = [
         "2006 Honda S2000 AP2, 62k miles, $38,500, San Jose CA",
@@ -112,7 +116,13 @@ struct DealCheckTabView: View {
             .navigationBarHidden(true)
             .sheet(isPresented: $showingResults) {
                 if let result = analysisResult {
-                    DealAnalysisResultView(result: result)
+                    DealAnalysisResultView(
+                        result: result,
+                        make: lastMake,
+                        model: lastModel,
+                        year: lastYear,
+                        mileage: lastMileage
+                    )
                 }
             }
             .sheet(isPresented: $showingAdvanced) {
@@ -178,6 +188,10 @@ struct DealCheckTabView: View {
         )
         try? viewContext.save()
 
+        lastMake = make
+        lastModel = model
+        lastYear = year
+        lastMileage = mileage
         analysisResult = result
         showingResults = true
     }

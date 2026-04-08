@@ -243,7 +243,7 @@ struct VehicleDetailInlineSection: View {
             }
         }
 
-        guard AIServiceWrapper.shared.isAvailable else { return }
+        guard aiSignalText == nil, AIServiceWrapper.shared.isAvailable else { return }
         isGeneratingAI = true
         
         let segment = vehicle.resolvedSegment

@@ -481,14 +481,15 @@ struct DealAnalysisResultView: View {
     }
 
     private func generateAIDealInsight() {
+        guard aiInsight == nil else { return }
         guard AIServiceWrapper.shared.isAvailable else { return }
         guard let mid = result.fairValueMid else { return }
         isGeneratingAI = true
         let domStr = result.daysOnMarketEstimate.map { "\($0.lowerBound)-\($0.upperBound) days" } ?? "Unknown"
         Task {
             let insight = await AIServiceWrapper.shared.generateDealInsight(
-                vehicleDescription: "Score \(result.overallScore)/100, Grade: \(result.grade.rawValue)",
-                askingPrice: mid + (result.priceDifference / 100.0 * mid),
+                vehicleDescription: "\(year > 0 ? "\(year) " : "")\(make) \(model) — Score \(result.overallScore)/100, Grade: \(result.grade.rawValue)",
+                askingPrice: result.askingPrice,
                 fairValueLow: result.fairValueLow ?? 0,
                 fairValueMid: mid,
                 fairValueHigh: result.fairValueHigh ?? 0,
@@ -664,6 +665,7 @@ struct DealAnalysisResultView_Previews: PreviewProvider {
             ],
             recommendation: "Great Deal! This vehicle offers excellent value.",
             grade: .good,
+            askingPrice: 25000,
             priceDifference: -15.0,
             expectedMileage: 60000,
             mileageDifference: -10000,
